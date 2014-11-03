@@ -41,7 +41,7 @@ class MAIN():
     def main_loop(self):
         self.triggered = False
         # main loop
-        while (not xbmc.abortRequested) and (WIN.getProperty('culrc.quit') == ''):
+        while (not self.Monitor.abortRequested()) and (WIN.getProperty('culrc.quit') == ''):
             # check if we are on the music visualization screen
             if xbmc.getCondVisibility("Window.IsVisible(12006)"):
                 if not self.triggered:
@@ -275,7 +275,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def gui_loop(self):
         # gui loop
-        while self.showgui and (not xbmc.abortRequested) and xbmc.getCondVisibility('Player.HasAudio'):
+        while self.showgui and (not self.Monitor.abortRequested()) and xbmc.getCondVisibility('Player.HasAudio'):
             # check if we have new lyrics
             if WIN.getProperty("culrc.newlyrics") == "TRUE":
                 WIN.clearProperty('culrc.newlyrics')
@@ -290,7 +290,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         if (not xbmc.getCondVisibility('Player.HasAudio')):
             self.exit_gui('quit')
         # xbmc quits, close the gui 
-        elif xbmc.abortRequested:
+        elif self.Monitor.abortRequested():
             self.exit_gui('quit')
 
     def setup_gui(self):
