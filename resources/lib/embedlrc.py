@@ -14,19 +14,22 @@ def getEmbedLyrics(song, getlrc):
     lyrics.source = __language__( 32002 )
     lyrics.lrc = getlrc
     filename = song.filepath.decode("utf-8")
+    ext = os.path.splitext(filename)[1].lower()
     lry = None
     try:
-        lry = getLyrics3(filename, getlrc)
+        if ext == '.mp3':
+            lry = getLyrics3(filename, getlrc)
     except:
         pass
     if lry:
         enc = chardet.detect(lry)
         lyrics.lyrics = lry.decode(enc['encoding'])
     else:
-        lry = getID3Lyrics(filename, getlrc)
+        if ext == '.mp3':
+            lry = getID3Lyrics(filename, getlrc)
         if not lry:
             lry = getFlacLyrics(filename, getlrc)
-            if not lry:
+            if not lry and (ext == '.flac'):
                 return None
         lyrics.lyrics = lry
     return lyrics
