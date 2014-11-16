@@ -83,7 +83,9 @@ class MAIN():
 
     def find_lyrics(self, song):
         # search embedded lrc lyrics
-        if ( __addon__.getSetting( "search_embedded" ) == "true" and song.analyze_safe ):
+        ext = os.path.splitext(song.filepath.decode("utf-8"))[1].lower()
+        sup_ext = ['.mp3', '.flac']
+        if ( __addon__.getSetting( "search_embedded" ) == "true") and song.analyze_safe and (ext in sup_ext):
             log('searching for embedded lrc lyrics')
             try:
                 lyrics = getEmbedLyrics(song, True)
