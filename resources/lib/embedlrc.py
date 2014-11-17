@@ -27,10 +27,10 @@ def getEmbedLyrics(song, getlrc):
     else:
         if ext == '.mp3':
             lry = getID3Lyrics(filename, getlrc)
-        if not lry:
+        elif  ext == '.flac':
             lry = getFlacLyrics(filename, getlrc)
-            if not lry and (ext == '.flac'):
-                return None
+        if not lry:
+            return None
         lyrics.lyrics = lry
     return lyrics
 
