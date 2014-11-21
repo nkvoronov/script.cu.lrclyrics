@@ -253,6 +253,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXMLDialog.__init__(self)
         self.mode = kwargs[ "mode" ]
+        self.Monitor = MyMonitor(function = None)
        
     def onInit(self):
         self.setup_gui()
