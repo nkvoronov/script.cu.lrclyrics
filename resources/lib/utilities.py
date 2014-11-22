@@ -81,9 +81,9 @@ class Lyrics:
         self.lrc = False
 
 class Song:
-    def __init__(self):
-        self.artist = ""
-        self.title = ""
+    def __init__(self, in_artist="", in_title=""):
+        self.artist = in_artist
+        self.title = in_title
         self.filepath = ""
         self.analyze_safe = True
 
