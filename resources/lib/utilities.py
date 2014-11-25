@@ -19,12 +19,12 @@ ACTION_OSD = ( 122, )
 LYRIC_SCRAPER_DIR = os.path.join(__cwd__, "resources", "lib", "culrcscrapers")
 WIN = xbmcgui.Window( 10000 )
 
-def log(txt, loglevel=xbmc.LOGDEBUG):
-    if (__addon__.getSetting( "log_enabled" ) == "true") or (loglevel != xbmc.LOGDEBUG):
+def log(txt):
+    if (__addon__.getSetting( "log_enabled" ) == "true"):
         if isinstance (txt,str):
             txt = txt.decode("utf-8")
         message = u'%s: %s' % (__addonname__, txt)
-        xbmc.log(msg=message.encode("utf-8"), level=loglevel)
+        xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
 
 def deAccent(str):
     return unicodedata.normalize('NFKD', unicode(str, 'utf-8'))
