@@ -397,7 +397,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
         if lyrics.lrc:
             self.parser_lyrics( lyrics.lyrics )
             for time, line in self.pOverlay:
-                self.getControl( 110 ).addItem( line )
+                listitem = xbmcgui.ListItem(line)
+                listitem.setProperty('time', str(time))
+                self.getControl( 110 ).addItem( listitem )
         else:
             splitLyrics = lyrics.lyrics.splitlines()
             for x in splitLyrics:
@@ -464,6 +466,10 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.close()
 
     def onClick(self, controlId):
+        if ( controlId == 110 ):
+            item = self.getControl( 110 ).getSelectedItem()
+            stamp = float(item.getProperty('time'))
+            xbmc.Player().seekTime(stamp)
         if ( controlId == 120 ):
             item = self.getControl( 120 ).getSelectedItem()
             source = item.getProperty('source').lower()
