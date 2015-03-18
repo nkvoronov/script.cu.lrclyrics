@@ -155,20 +155,22 @@ class MAIN():
         lyrics.song = song
         lyrics.source = __language__( 32000 )
         lyrics.lrc = getlrc
-        # Search save path by Cu LRC Lyrics
-        lyricsfile = song.path1(getlrc)
-        if xbmcvfs.exists(lyricsfile):
-            lyr = get_textfile( lyricsfile )
-            if lyr:
-                lyrics.lyrics = lyr
-                return lyrics
-        # Search same path with song file
-        lyricsfile = song.path2(getlrc)
-        if xbmcvfs.exists(lyricsfile):
-            lyr = get_textfile( lyricsfile )
-            if lyr:
-                lyrics.lyrics = lyr
-                return lyrics
+        if __addon__.getSetting( "save_lyrics1" ) == "true":
+            # Search save path by Cu LRC Lyrics
+            lyricsfile = song.path1(getlrc)
+            if xbmcvfs.exists(lyricsfile):
+                lyr = get_textfile( lyricsfile )
+                if lyr:
+                    lyrics.lyrics = lyr
+                    return lyrics
+        if __addon__.getSetting( "save_lyrics2" ) == "true":
+            # Search same path with song file
+            lyricsfile = song.path2(getlrc)
+            if xbmcvfs.exists(lyricsfile):
+                lyr = get_textfile( lyricsfile )
+                if lyr:
+                    lyrics.lyrics = lyr
+                    return lyrics
         return None
 
     def save_lyrics_to_memory(self, lyrics):
