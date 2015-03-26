@@ -493,6 +493,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.reshow_choices()
         elif ( actionId in ACTION_OSD ):
             xbmc.executebuiltin("ActivateWindow(10120)")
+        elif ( actionId in ACTION_CODEC ):
+            xbmc.executebuiltin("Action(codecinfo)")
 
 class MyPlayer(xbmc.Player):
     def __init__(self, *args, **kwargs):

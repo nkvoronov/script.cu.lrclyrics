@@ -15,7 +15,8 @@ __profile__   = sys.modules[ "__main__" ].__profile__
 __cwd__       = sys.modules[ "__main__" ].__cwd__
 
 CANCEL_DIALOG = ( 9, 10, 92, 216, 247, 257, 275, 61467, 61448, )
-ACTION_OSD = ( 122, )
+ACTION_OSD = ( 24, 122, )
+ACTION_CODEC = ( 0, 27, )
 LYRIC_SCRAPER_DIR = os.path.join(__cwd__, "resources", "lib", "culrcscrapers")
 WIN = xbmcgui.Window( 10000 )
 
