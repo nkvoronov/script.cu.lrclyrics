@@ -492,7 +492,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
         elif ( actionId == 101 ) or ( actionId == 117 ): # ACTION_MOUSE_RIGHT_CLICK / ACTION_CONTEXT_MENU
             self.reshow_choices()
         elif ( actionId in ACTION_OSD ):
-            xbmc.executebuiltin("ActivateWindow(10120)")
+            if actionId == 122: # ACTION_BUILT_IN_FUNCTION
+                if action.getButtonCode() == 61517: # 'm' key
+                    xbmc.executebuiltin("ActivateWindow(10120)")
+            else:
+                xbmc.executebuiltin("ActivateWindow(10120)")
         elif ( actionId in ACTION_CODEC ):
             xbmc.executebuiltin("Action(codecinfo)")
 
