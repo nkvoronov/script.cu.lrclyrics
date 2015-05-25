@@ -23,12 +23,18 @@ class MAIN():
         if ( __addon__.getSetting( "save_lyrics_path" ) == "" ):
             __addon__.setSetting(id="save_lyrics_path", value=os.path.join( __profile__.encode("utf-8"), "lyrics" ))
         self.main_loop()
+        self.cleanup_main()
 
     def setup_main(self):
         self.fetchedLyrics = []
         self.current_lyrics = Lyrics()
         self.MyPlayer = MyPlayer(function=self.myPlayerChanged)
         self.Monitor = MyMonitor(function = self.update_settings)
+
+    def cleanup_main(self):
+        # Clean up the monitor and Player classes on exit
+        del self.MyPlayer
+        del self.Monitor
 
     def get_scraper_list(self):
         self.scrapers = []
