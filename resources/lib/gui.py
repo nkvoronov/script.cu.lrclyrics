@@ -54,7 +54,7 @@ class MAIN():
                 self.get_manual_lyrics()
             # check if we are on the music visualization screen
             # do not try and get lyrics if TvTunes is running as it will just be a theme that is about to stop
-            elif xbmc.getCondVisibility("Window.IsVisible(12006)") and xbmcgui.Window(10025).getProperty("TvTunesIsRunning") in [None, ""]:
+            elif xbmc.getCondVisibility("Window.IsVisible(12006)") and xbmcgui.Window(10025).getProperty("PlayingBackgroundMedia") in [None, ""]:
                 if not self.triggered:
                     self.triggered = True
                     # notify user the script is running
