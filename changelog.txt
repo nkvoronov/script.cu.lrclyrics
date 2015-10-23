@@ -1,3 +1,6 @@
+v4.0.2
+- added scraper for genius.com
+
 v4.0.1
 - update menu action code for jarvis
 
