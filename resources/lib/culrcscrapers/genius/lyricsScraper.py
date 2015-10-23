@@ -49,9 +49,10 @@ class LyricsFetcher:
         try:
             lyricscode = (matchcode.group(1))
             htmlparser = HTMLParser.HTMLParser()
-            lyricstext = htmlparser.unescape(lyricscode).replace('<br />', '\n').strip()
-            lyr = re.sub('<[^<]+?>', '', lyricstext)
-            lyrics.lyrics = lyr
+            lyricstext = htmlparser.unescape(lyricscode).replace('<br />', '\n')
+            templyr = re.sub('<[^<]+?>', '', lyricstext)
+            lyr = re.sub('\[(.*?)\]', '', templyr)
+            lyrics.lyrics = lyr.strip().replace('\n\n', '\n')
             return lyrics
         except:
             return None
