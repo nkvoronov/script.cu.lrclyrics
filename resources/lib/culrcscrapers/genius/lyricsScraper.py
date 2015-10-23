@@ -52,7 +52,7 @@ class LyricsFetcher:
             lyricstext = htmlparser.unescape(lyricscode).replace('<br />', '\n')
             templyr = re.sub('<[^<]+?>', '', lyricstext)
             lyr = re.sub('\[(.*?)\]', '', templyr)
-            lyrics.lyrics = lyr.strip().replace('\n\n', '\n')
+            lyrics.lyrics = lyr.strip().replace('\n\n\n', '\n\n')
             return lyrics
         except:
             return None
