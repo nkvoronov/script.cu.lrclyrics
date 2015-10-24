@@ -8,7 +8,7 @@ else:
 from utilities import *
 
 __title__ = 'genius'
-__priority__ = '230'
+__priority__ = '210'
 __lrc__ = False
 
 socket.setdefaulttimeout(10)
