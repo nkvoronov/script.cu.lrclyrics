@@ -10,8 +10,8 @@
 __all__ = ["ASF", "Open"]
 
 import struct
-from mutagen import FileType, Metadata
-from mutagen._util import insert_bytes, delete_bytes, DictMixin
+from mutagen_culrc import FileType, Metadata
+from mutagen_culrc._util import insert_bytes, delete_bytes, DictMixin
 
 
 class error(IOError):

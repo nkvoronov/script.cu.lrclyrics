@@ -33,8 +33,8 @@ __all__ = ["APEv2", "APEv2File", "Open", "delete"]
 import struct
 from cStringIO import StringIO
 
-from mutagen import Metadata, FileType
-from mutagen._util import DictMixin, cdata, utf8, delete_bytes
+from mutagen_culrc import Metadata, FileType
+from mutagen_culrc._util import DictMixin, cdata, utf8, delete_bytes
 
 
 def is_valid_apev2_key(key):
@@ -293,7 +293,7 @@ class APEv2(DictMixin, Metadata):
         reference), use the APEValue factory and set the value to the
         result of that::
 
-            from mutagen.apev2 import APEValue, EXTERNAL
+            from mutagen_culrc.apev2 import APEValue, EXTERNAL
             tag['Website'] = APEValue('http://example.org', EXTERNAL)
         """
 

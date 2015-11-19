@@ -8,7 +8,7 @@ import struct
 from struct import unpack, pack
 from warnings import warn
 
-from mutagen._id3util import ID3JunkFrameError, ID3Warning, BitPaddedInt
+from mutagen_culrc._id3util import ID3JunkFrameError, ID3Warning, BitPaddedInt
 
 
 class Spec(object):

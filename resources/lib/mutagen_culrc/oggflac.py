@@ -9,7 +9,7 @@
 """Read and write Ogg FLAC comments.
 
 This module handles FLAC files wrapped in an Ogg bitstream. The first
-FLAC stream found is used. For 'naked' FLACs, see mutagen.flac.
+FLAC stream found is used. For 'naked' FLACs, see mutagen_culrc.flac.
 
 This module is based off the specification at
 http://flac.sourceforge.net/ogg_mapping.html.
@@ -21,8 +21,8 @@ import struct
 
 from cStringIO import StringIO
 
-from mutagen.flac import StreamInfo, VCFLACDict, StrictFileObject
-from mutagen.ogg import OggPage, OggFileType, error as OggError
+from mutagen_culrc.flac import StreamInfo, VCFLACDict, StrictFileObject
+from mutagen_culrc.ogg import OggPage, OggFileType, error as OggError
 
 
 class error(OggError):

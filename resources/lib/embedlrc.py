@@ -1,9 +1,9 @@
 import os
 import re
 import chardet
-from mutagen.flac import FLAC
-from mutagen.mp3 import MP3
-from mutagen.mp4 import MP4
+from mutagen_culrc.flac import FLAC
+from mutagen_culrc.mp3 import MP3
+from mutagen_culrc.mp4 import MP4
 import xbmcvfs
 from utilities import *
 
@@ -17,7 +17,6 @@ def getEmbedLyrics(song, getlrc):
     filename = song.filepath.decode("utf-8")
     ext = os.path.splitext(filename)[1].lower()
     lry = None
-
     if ext == '.mp3':
         lry = getID3Lyrics(filename, getlrc)
         if not lry:

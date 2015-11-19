@@ -18,8 +18,8 @@ import sys
 
 from cStringIO import StringIO
 
-import mutagen
-from mutagen._util import DictMixin, cdata
+import mutagen_culrc
+from mutagen_culrc._util import DictMixin, cdata
 
 
 def is_valid_key(key):
@@ -49,7 +49,7 @@ class VorbisEncodingError(error):
     pass
 
 
-class VComment(mutagen.Metadata, list):
+class VComment(mutagen_culrc.Metadata, list):
     """A Vorbis comment parser, accessor, and renderer.
 
     All comment ordering is preserved. A VComment is a list of
@@ -63,7 +63,7 @@ class VComment(mutagen.Metadata, list):
     vendor -- the stream 'vendor' (i.e. writer); default 'Mutagen'
     """
 
-    vendor = u"Mutagen " + mutagen.version_string
+    vendor = u"Mutagen " + mutagen_culrc.version_string
 
     def __init__(self, data=None, *args, **kwargs):
         # Collect the args to pass to load, this lets child classes

@@ -1,4 +1,4 @@
-# MP3 stream header information support for Mutagen.
+# MP3 stream header information support for mutagen_culrc.
 # Copyright 2006 Joe Wreschnig
 #
 # This program is free software; you can redistribute it and/or modify
@@ -10,7 +10,7 @@
 import os
 import struct
 
-from mutagen.id3 import ID3FileType, BitPaddedInt, delete
+from mutagen_culrc.id3 import ID3FileType, BitPaddedInt, delete
 
 __all__ = ["MP3", "Open", "delete", "MP3"]
 
@@ -92,7 +92,7 @@ class MPEGInfo(object):
         """
 
         try:
-            size = os.path.getsize(fileobj.name)
+            size = fileobj.size()
         except (IOError, OSError, AttributeError):
             fileobj.seek(0, 2)
             size = fileobj.tell()
@@ -246,7 +246,7 @@ class MP3(ID3FileType):
     """An MPEG audio (usually MPEG-1 Layer 3) file.
 
     :ivar info: :class:`MPEGInfo`
-    :ivar tags: :class:`ID3 <mutagen.id3.ID3>`
+    :ivar tags: :class:`ID3 <mutagen_culrc.id3.ID3>`
     """
 
     _Info = MPEGInfo
@@ -268,8 +268,8 @@ class EasyMP3(MP3):
     """Like MP3, but uses EasyID3 for tags.
 
     :ivar info: :class:`MPEGInfo`
-    :ivar tags: :class:`EasyID3 <mutagen.easyid3.EasyID3>`
+    :ivar tags: :class:`EasyID3 <mutagen_culrc.easyid3.EasyID3>`
     """
 
-    from mutagen.easyid3 import EasyID3 as ID3
+    from mutagen_culrc.easyid3 import EasyID3 as ID3
     ID3 = ID3

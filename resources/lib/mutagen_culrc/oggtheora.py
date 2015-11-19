@@ -18,9 +18,9 @@ __all__ = ["OggTheora", "Open", "delete"]
 
 import struct
 
-from mutagen._vorbis import VCommentDict
-from mutagen._util import cdata
-from mutagen.ogg import OggPage, OggFileType, error as OggError
+from mutagen_culrc._vorbis import VCommentDict
+from mutagen_culrc._util import cdata
+from mutagen_culrc.ogg import OggPage, OggFileType, error as OggError
 
 
 class error(OggError):

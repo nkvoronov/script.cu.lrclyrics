@@ -8,10 +8,10 @@ from zlib import error as zlibError
 from warnings import warn
 from struct import unpack
 
-from mutagen._id3util import (
+from mutagen_culrc._id3util import (
     ID3Warning, ID3JunkFrameError, ID3BadCompressedData,
     ID3EncryptionUnsupportedError, ID3BadUnsynchData, unsynch)
-from mutagen._id3specs import (
+from mutagen_culrc._id3specs import (
     BinaryDataSpec, StringSpec, Latin1TextSpec, EncodedTextSpec, ByteSpec,
     EncodingSpec, ASPIIndexSpec, SizedIntegerSpec, IntegerSpec,
     VolumeAdjustmentsSpec, VolumePeakSpec, VolumeAdjustmentSpec,
@@ -421,7 +421,7 @@ class TCON(TextFrame):
     use the 'genres' property rather than the 'text' attribute.
     """
 
-    from mutagen._constants import GENRES
+    from mutagen_culrc._constants import GENRES
     GENRES = GENRES
 
     def __get_genres(self):

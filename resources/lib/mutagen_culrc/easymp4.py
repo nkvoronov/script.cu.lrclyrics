@@ -4,9 +4,9 @@
 # it under the terms of version 2 of the GNU General Public License as
 # published by the Free Software Foundation.
 
-from mutagen import Metadata
-from mutagen._util import DictMixin, dict_match, utf8
-from mutagen.mp4 import MP4, MP4Tags, error, delete
+from mutagen_culrc import Metadata
+from mutagen_culrc._util import DictMixin, dict_match, utf8
+from mutagen_culrc.mp4 import MP4, MP4Tags, error, delete
 
 __all__ = ["EasyMP4Tags", "EasyMP4", "delete", "error"]
 
@@ -249,10 +249,10 @@ for name, key in {
 
 
 class EasyMP4(MP4):
-    """Like :class:`MP4 <mutagen.mp4.MP4>`,
+    """Like :class:`MP4 <mutagen_culrc.mp4.MP4>`,
     but uses :class:`EasyMP4Tags` for tags.
 
-    :ivar info: :class:`MP4Info <mutagen.mp4.MP4Info>`
+    :ivar info: :class:`MP4Info <mutagen_culrc.mp4.MP4Info>`
     :ivar tags: :class:`EasyMP4Tags`
     """
 

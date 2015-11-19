@@ -25,9 +25,9 @@ import sys
 
 from cStringIO import StringIO
 
-from mutagen import FileType, Metadata
-from mutagen._constants import GENRES
-from mutagen._util import cdata, insert_bytes, delete_bytes, DictProxy
+from mutagen_culrc import FileType, Metadata
+from mutagen_culrc._constants import GENRES
+from mutagen_culrc._util import cdata, insert_bytes, delete_bytes, DictProxy
 
 
 class error(IOError):
@@ -48,7 +48,7 @@ class M4AMetadataValueError(ValueError, M4AMetadataError):
 
 import warnings
 warnings.warn(
-    "mutagen.m4a is deprecated; use mutagen.mp4 instead.", DeprecationWarning)
+    "mutagen_culrc.m4a is deprecated; use mutagen_culrc.mp4 instead.", DeprecationWarning)
 
 
 # This is not an exhaustive list of container atoms, but just the
@@ -90,7 +90,7 @@ class Atom(object):
     name -- four byte name of the atom, as a str
     offset -- location in the constructor-given fileobj of this atom
 
-    This structure should only be used internally by Mutagen.
+    This structure should only be used internally by mutagen_culrc.
     """
 
     children = None
@@ -154,7 +154,7 @@ class Atoms(object):
     Attributes:
     atoms -- a list of top-level atoms as Atom objects
 
-    This structure should only be used internally by Mutagen.
+    This structure should only be used internally by mutagen_culrc.
     """
     def __init__(self, fileobj):
         self.atoms = []

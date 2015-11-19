@@ -22,7 +22,7 @@ __all__ = ["OptimFROG", "Open", "delete"]
 
 import struct
 
-from mutagen.apev2 import APEv2File, error, delete
+from mutagen_culrc.apev2 import APEv2File, error, delete
 
 
 class OptimFROGHeaderError(error):

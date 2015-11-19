@@ -24,9 +24,9 @@ were all consulted.
 import struct
 import sys
 
-from mutagen import FileType, Metadata
-from mutagen._constants import GENRES
-from mutagen._util import cdata, insert_bytes, DictProxy, utf8
+from mutagen_culrc import FileType, Metadata
+from mutagen_culrc._constants import GENRES
+from mutagen_culrc._util import cdata, insert_bytes, DictProxy, utf8
 
 
 class error(IOError):

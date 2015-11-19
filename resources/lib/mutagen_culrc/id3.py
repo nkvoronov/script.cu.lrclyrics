@@ -22,7 +22,7 @@ will not interpret the / characters as a separator, and will almost
 always accept null separators to generate multi-valued text frames.
 
 Because ID3 frame structure differs between frame types, each frame is
-implemented as a different class (e.g. TIT2 as mutagen.id3.TIT2). Each
+implemented as a different class (e.g. TIT2 as mutagen_culrc.id3.TIT2). Each
 frame's documentation contains a list of its attributes.
 
 Since this file's documentation is a little unwieldy, you are probably
@@ -35,16 +35,16 @@ import struct
 
 from struct import unpack, pack, error as StructError
 
-import mutagen
-from mutagen._util import insert_bytes, delete_bytes, DictProxy
+import mutagen_culrc
+from mutagen_culrc._util import insert_bytes, delete_bytes, DictProxy
 
-from mutagen._id3util import *
-from mutagen._id3frames import *
-from mutagen._id3specs import *
+from mutagen_culrc._id3util import *
+from mutagen_culrc._id3frames import *
+from mutagen_culrc._id3specs import *
 
 import xbmcvfs
 
-class ID3(DictProxy, mutagen.Metadata):
+class ID3(DictProxy, mutagen_culrc.Metadata):
     """A file with an ID3v2 tag.
 
     Attributes:
@@ -102,10 +102,10 @@ class ID3(DictProxy, mutagen.Metadata):
 
         Example of loading a custom frame::
 
-            my_frames = dict(mutagen.id3.Frames)
+            my_frames = dict(mutagen_culrc.id3.Frames)
             class XMYF(Frame): ...
             my_frames["XMYF"] = XMYF
-            mutagen.id3.ID3(filename, known_frames=my_frames)
+            mutagen_culrc.id3.ID3(filename, known_frames=my_frames)
         """
 
         if not v2_version in (3, 4):
@@ -116,7 +116,7 @@ class ID3(DictProxy, mutagen.Metadata):
         self.filename = filename
         self.__known_frames = known_frames
         self.__fileobj = xbmcvfs.File(filename)
-        self.__filesize = getsize(filename)
+        self.__filesize = self.__fileobj.size()
         try:
             try:
                 self.__load_header()
@@ -855,7 +855,7 @@ def MakeID3v1(id3):
             "%(track)s%(genre)s") % v1
 
 
-class ID3FileType(mutagen.FileType):
+class ID3FileType(mutagen_culrc.FileType):
     """An unknown type of file with ID3 tags."""
 
     ID3 = ID3
@@ -878,7 +878,7 @@ class ID3FileType(mutagen.FileType):
         """Add an empty ID3 tag to the file.
 
         A custom tag reader may be used in instead of the default
-        mutagen.id3.ID3 object, e.g. an EasyID3 reader.
+        mutagen_culrc.id3.ID3 object, e.g. an EasyID3 reader.
         """
         if ID3 is None:
             ID3 = self.ID3
@@ -892,7 +892,7 @@ class ID3FileType(mutagen.FileType):
         """Load stream and tag information from a file.
 
         A custom tag reader may be used in instead of the default
-        mutagen.id3.ID3 object, e.g. an EasyID3 reader.
+        mutagen_culrc.id3.ID3 object, e.g. an EasyID3 reader.
         """
 
         if ID3 is None:
@@ -914,7 +914,7 @@ class ID3FileType(mutagen.FileType):
         else:
             offset = None
         try:
-            fileobj = open(filename, "rb")
+            fileobj = xbmcvfs.File(filename)
             self.info = self._Info(fileobj, offset)
         finally:
             fileobj.close()
