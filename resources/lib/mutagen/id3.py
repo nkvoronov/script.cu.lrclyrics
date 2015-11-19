@@ -42,6 +42,7 @@ from mutagen._id3util import *
 from mutagen._id3frames import *
 from mutagen._id3specs import *
 
+import xbmcvfs
 
 class ID3(DictProxy, mutagen.Metadata):
     """A file with an ID3v2 tag.
@@ -114,7 +115,7 @@ class ID3(DictProxy, mutagen.Metadata):
 
         self.filename = filename
         self.__known_frames = known_frames
-        self.__fileobj = open(filename, 'rb')
+        self.__fileobj = xbmcvfs.File(filename)
         self.__filesize = getsize(filename)
         try:
             try:

@@ -1,3 +1,6 @@
+v4.1.0
+- improve embedded mp3 lyrics support
+
 v4.0.2
 - added scraper for genius.com
 - removed lyricstime scraper
