@@ -1,5 +1,5 @@
 v4.1.1
-- version bump
+- option to remove chinese text from lyrics
 
 v4.1.0
 - improve embedded mp3 lyrics support
