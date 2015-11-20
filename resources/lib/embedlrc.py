@@ -102,7 +102,7 @@ def getID3Lyrics(filename, getlrc):
             if not getlrc and (tag.startswith('USLT') or tag.startswith('TXXX')):
                 if tag.startswith('USLT'):
                     text = data[tag].text
-                else:
+                elif tag.lower().endswith('lyrics'): # TXXX tags contain arbitrary info. only accept 'TXXX:lyrics'
                     text = data[tag].text[0]
                 lyr = text.encode("utf-8")
                 return lyr
