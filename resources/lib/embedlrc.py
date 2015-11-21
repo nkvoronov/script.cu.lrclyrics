@@ -53,8 +53,9 @@ def getLyrics3(filename, getlrc):
         buf = f.read(5100+11)
         f.close();
         start = buf.find("LYRICSBEGIN")
+        content = buf[start+11:]
         if (getlrc and isLRC(content)) or (not getlrc and not isLRC(content)):
-            return buf[start+11:]
+            return content
     elif (buf == "LYRICS200"):
         """ Find Lyrics3v2 """
         f.seek(-9-6, os.SEEK_CUR)
