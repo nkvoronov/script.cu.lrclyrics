@@ -1,26 +1,32 @@
+# -*- coding: utf-8 -*-
+
 # Copyright (C) 2005  Michael Urman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of version 2 of the GNU General Public License as
 # published by the Free Software Foundation.
 
-from zlib import error as zlibError
-from warnings import warn
+import zlib
 from struct import unpack
 
-from mutagen_culrc._id3util import (
-    ID3Warning, ID3JunkFrameError, ID3BadCompressedData,
-    ID3EncryptionUnsupportedError, ID3BadUnsynchData, unsynch)
-from mutagen_culrc._id3specs import (
+from ._util import ID3JunkFrameError, ID3EncryptionUnsupportedError, unsynch
+from ._specs import (
     BinaryDataSpec, StringSpec, Latin1TextSpec, EncodedTextSpec, ByteSpec,
     EncodingSpec, ASPIIndexSpec, SizedIntegerSpec, IntegerSpec,
     VolumeAdjustmentsSpec, VolumePeakSpec, VolumeAdjustmentSpec,
     ChannelSpec, MultiSpec, SynchronizedTextSpec, KeyEventSpec, TimeStampSpec,
-    EncodedNumericPartTextSpec, EncodedNumericTextSpec)
+    EncodedNumericPartTextSpec, EncodedNumericTextSpec, SpecError)
+from .._compat import text_type, string_types, swap_to_string, iteritems, izip
 
 
 def is_valid_frame_id(frame_id):
     return frame_id.isalnum() and frame_id.isupper()
+
+
+def _bytes2key(b):
+    assert isinstance(b, bytes)
+
+    return b.decode("latin1")
 
 
 class Frame(object):
@@ -52,24 +58,26 @@ class Frame(object):
         if len(args) == 1 and len(kwargs) == 0 and \
                 isinstance(args[0], type(self)):
             other = args[0]
-            for checker in self._framespec:
-                try:
-                    val = checker.validate(self, getattr(other, checker.name))
-                except ValueError as e:
-                    e.message = "%s: %s" % (checker.name, e.message)
-                    raise
-                setattr(self, checker.name, val)
+            # ask the sub class to fill in our data
+            other._to_other(self)
         else:
-            for checker, val in zip(self._framespec, args):
+            for checker, val in izip(self._framespec, args):
                 setattr(self, checker.name, checker.validate(self, val))
             for checker in self._framespec[len(args):]:
                 try:
                     validated = checker.validate(
                         self, kwargs.get(checker.name, None))
                 except ValueError as e:
-                    e.message = "%s: %s" % (checker.name, e.message)
-                    raise
+                    raise ValueError("%s: %s" % (checker.name, e))
                 setattr(self, checker.name, validated)
+
+    def _to_other(self, other):
+        # this impl covers subclasses with the same framespec
+        if other._framespec is not self._framespec:
+            raise ValueError
+
+        for checker in other._framespec:
+            setattr(other, checker.name, getattr(self, checker.name))
 
     def _get_v23_frame(self, **kwargs):
         """Returns a frame copy which is suitable for writing into a v2.3 tag.
@@ -104,30 +112,31 @@ class Frame(object):
         """
         kw = []
         for attr in self._framespec:
-            kw.append('%s=%r' % (attr.name, getattr(self, attr.name)))
+            # so repr works during __init__
+            if hasattr(self, attr.name):
+                kw.append('%s=%r' % (attr.name, getattr(self, attr.name)))
         return '%s(%s)' % (type(self).__name__, ', '.join(kw))
 
     def _readData(self, data):
-        odata = data
+        """Raises ID3JunkFrameError; Returns leftover data"""
+
         for reader in self._framespec:
             if len(data):
                 try:
                     value, data = reader.read(self, data)
-                except UnicodeDecodeError:
-                    raise ID3JunkFrameError
+                except SpecError as e:
+                    raise ID3JunkFrameError(e)
             else:
-                raise ID3JunkFrameError
+                raise ID3JunkFrameError("no data left")
             setattr(self, reader.name, value)
-        if data.strip('\x00'):
-            warn('Leftover data: %s: %r (from %r)' % (
-                 type(self).__name__, data, odata),
-                 ID3Warning)
+
+        return data
 
     def _writeData(self):
         data = []
         for writer in self._framespec:
             data.append(writer.write(self, getattr(self, writer.name)))
-        return ''.join(data)
+        return b''.join(data)
 
     def pprint(self):
         """Return a human-readable representation of the frame."""
@@ -137,10 +146,17 @@ class Frame(object):
         return "[unrepresentable data]"
 
     @classmethod
-    def fromData(cls, id3, tflags, data):
-        """Construct this ID3 frame from raw string data."""
+    def _fromData(cls, id3, tflags, data):
+        """Construct this ID3 frame from raw string data.
 
-        if id3._V24 <= id3.version:
+        Raises:
+
+        ID3JunkFrameError in case parsing failed
+        NotImplementedError in case parsing isn't implemented
+        ID3EncryptionUnsupportedError in case the frame is encrypted.
+        """
+
+        if id3.version >= id3._V24:
             if tflags & (Frame.FLAG24_COMPRESS | Frame.FLAG24_DATALEN):
                 # The data length int is syncsafe in 2.4 (but not 2.3).
                 # However, we don't actually need the data length int,
@@ -151,25 +167,28 @@ class Frame(object):
             if tflags & Frame.FLAG24_UNSYNCH or id3.f_unsynch:
                 try:
                     data = unsynch.decode(data)
-                except ValueError, err:
-                    if id3.PEDANTIC:
-                        raise ID3BadUnsynchData('%s: %r' % (err, data))
+                except ValueError:
+                    # Some things write synch-unsafe data with either the frame
+                    # or global unsynch flag set. Try to load them as is.
+                    # https://bitbucket.org/lazka/mutagen_culrc/issue/210
+                    # https://bitbucket.org/lazka/mutagen_culrc/issue/223
+                    pass
             if tflags & Frame.FLAG24_ENCRYPT:
                 raise ID3EncryptionUnsupportedError
             if tflags & Frame.FLAG24_COMPRESS:
                 try:
-                    data = data.decode('zlib')
-                except zlibError, err:
-                    # the initial mutagen that went out with QL 0.12 did not
+                    data = zlib.decompress(data)
+                except zlib.error as err:
+                    # the initial mutagen_culrc that went out with QL 0.12 did not
                     # write the 4 bytes of uncompressed size. Compensate.
                     data = datalen_bytes + data
                     try:
-                        data = data.decode('zlib')
-                    except zlibError, err:
-                        if id3.PEDANTIC:
-                            raise ID3BadCompressedData('%s: %r' % (err, data))
+                        data = zlib.decompress(data)
+                    except zlib.error as err:
+                        raise ID3JunkFrameError(
+                            'zlib: %s: %r' % (err, data))
 
-        elif id3._V23 <= id3.version:
+        elif id3.version >= id3._V23:
             if tflags & Frame.FLAG23_COMPRESS:
                 usize, = unpack('>L', data[:4])
                 data = data[4:]
@@ -177,14 +196,11 @@ class Frame(object):
                 raise ID3EncryptionUnsupportedError
             if tflags & Frame.FLAG23_COMPRESS:
                 try:
-                    data = data.decode('zlib')
-                except zlibError, err:
-                    if id3.PEDANTIC:
-                        raise ID3BadCompressedData('%s: %r' % (err, data))
+                    data = zlib.decompress(data)
+                except zlib.error as err:
+                    raise ID3JunkFrameError('zlib: %s: %r' % (err, data))
 
         frame = cls()
-        frame._rawdata = data
-        frame._flags = tflags
         frame._readData(data)
         return frame
 
@@ -210,25 +226,42 @@ class FrameOpt(Frame):
             else:
                 break
 
+    def _to_other(self, other):
+        super(FrameOpt, self)._to_other(other)
+
+        # this impl covers subclasses with the same optionalspec
+        if other._optionalspec is not self._optionalspec:
+            raise ValueError
+
+        for checker in other._optionalspec:
+            if hasattr(self, checker.name):
+                setattr(other, checker.name, getattr(self, checker.name))
+
     def _readData(self, data):
-        odata = data
+        """Raises ID3JunkFrameError; Returns leftover data"""
+
         for reader in self._framespec:
             if len(data):
-                value, data = reader.read(self, data)
+                try:
+                    value, data = reader.read(self, data)
+                except SpecError as e:
+                    raise ID3JunkFrameError(e)
             else:
-                raise ID3JunkFrameError
+                raise ID3JunkFrameError("no data left")
             setattr(self, reader.name, value)
+
         if data:
             for reader in self._optionalspec:
                 if len(data):
-                    value, data = reader.read(self, data)
+                    try:
+                        value, data = reader.read(self, data)
+                    except SpecError as e:
+                        raise ID3JunkFrameError(e)
                 else:
                     break
                 setattr(self, reader.name, value)
-        if data.strip('\x00'):
-            warn('Leftover data: %s: %r (from %r)' % (
-                 type(self).__name__, data, odata),
-                 ID3Warning)
+
+        return data
 
     def _writeData(self):
         data = []
@@ -239,7 +272,7 @@ class FrameOpt(Frame):
                 data.append(writer.write(self, getattr(self, writer.name)))
             except AttributeError:
                 break
-        return ''.join(data)
+        return b''.join(data)
 
     def __repr__(self):
         kw = []
@@ -251,6 +284,7 @@ class FrameOpt(Frame):
         return '%s(%s)' % (type(self).__name__, ', '.join(kw))
 
 
+@swap_to_string
 class TextFrame(Frame):
     """Text strings.
 
@@ -271,17 +305,17 @@ class TextFrame(Frame):
         MultiSpec('text', EncodedTextSpec('text'), sep=u'\u0000'),
     ]
 
-    def __str__(self):
-        return self.__unicode__().encode('utf-8')
+    def __bytes__(self):
+        return text_type(self).encode('utf-8')
 
-    def __unicode__(self):
+    def __str__(self):
         return u'\u0000'.join(self.text)
 
     def __eq__(self, other):
-        if isinstance(other, str):
-            return str(self) == other
-        elif isinstance(other, unicode):
-            return unicode(self) == other
+        if isinstance(other, bytes):
+            return bytes(self) == other
+        elif isinstance(other, text_type):
+            return text_type(self) == other
         return self.text == other
 
     __hash__ = Frame.__hash__
@@ -344,6 +378,7 @@ class NumericPartTextFrame(TextFrame):
         return int(self.text[0].split("/")[0])
 
 
+@swap_to_string
 class TimeStampTextFrame(TextFrame):
     """A list of time stamps.
 
@@ -356,16 +391,17 @@ class TimeStampTextFrame(TextFrame):
         MultiSpec('text', TimeStampSpec('stamp'), sep=u','),
     ]
 
-    def __str__(self):
-        return self.__unicode__().encode('utf-8')
+    def __bytes__(self):
+        return text_type(self).encode('utf-8')
 
-    def __unicode__(self):
-        return ','.join([stamp.text for stamp in self.text])
+    def __str__(self):
+        return u','.join([stamp.text for stamp in self.text])
 
     def _pprint(self):
-        return " / ".join([stamp.text for stamp in self.text])
+        return u" / ".join([stamp.text for stamp in self.text])
 
 
+@swap_to_string
 class UrlFrame(Frame):
     """A frame containing a URL string.
 
@@ -380,10 +416,10 @@ class UrlFrame(Frame):
 
     _framespec = [Latin1TextSpec('url')]
 
-    def __str__(self):
+    def __bytes__(self):
         return self.url.encode('utf-8')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.url
 
     def __eq__(self, other):
@@ -446,7 +482,7 @@ class TCON(TextFrame):
                 if genreid:
                     for gid in genreid[1:-1].split(")("):
                         if gid.isdigit() and int(gid) < len(self.GENRES):
-                            gid = unicode(self.GENRES[int(gid)])
+                            gid = text_type(self.GENRES[int(gid)])
                             newgenres.append(gid)
                         elif gid == "CR":
                             newgenres.append(u"Cover")
@@ -467,12 +503,12 @@ class TCON(TextFrame):
         return genres
 
     def __set_genres(self, genres):
-        if isinstance(genres, basestring):
+        if isinstance(genres, string_types):
             genres = [genres]
-        self.text = map(self.__decode, genres)
+        self.text = [self.__decode(g) for g in genres]
 
     def __decode(self, value):
-        if isinstance(value, str):
+        if isinstance(value, bytes):
             enc = EncodedTextSpec._encodings[self.encoding][0]
             return value.decode(enc)
         else:
@@ -869,6 +905,7 @@ class SYTC(Frame):
     __hash__ = Frame.__hash__
 
 
+@swap_to_string
 class USLT(Frame):
     """Unsynchronised lyrics/text transcription.
 
@@ -885,12 +922,12 @@ class USLT(Frame):
 
     @property
     def HashKey(self):
-        return '%s:%s:%r' % (self.FrameID, self.desc, self.lang)
+        return '%s:%s:%s' % (self.FrameID, self.desc, self.lang)
 
-    def __str__(self):
+    def __bytes__(self):
         return self.text.encode('utf-8')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.text
 
     def __eq__(self, other):
@@ -899,6 +936,7 @@ class USLT(Frame):
     __hash__ = Frame.__hash__
 
 
+@swap_to_string
 class SYLT(Frame):
     """Synchronised lyrics/text."""
 
@@ -913,7 +951,7 @@ class SYLT(Frame):
 
     @property
     def HashKey(self):
-        return '%s:%s:%r' % (self.FrameID, self.desc, self.lang)
+        return '%s:%s:%s' % (self.FrameID, self.desc, self.lang)
 
     def __eq__(self, other):
         return str(self) == other
@@ -921,7 +959,10 @@ class SYLT(Frame):
     __hash__ = Frame.__hash__
 
     def __str__(self):
-        return "".join([text for (text, time) in self.text]).encode('utf-8')
+        return u"".join(text for (text, time) in self.text)
+
+    def __bytes__(self):
+        return text_type(self).encode("utf-8")
 
 
 class COMM(TextFrame):
@@ -940,10 +981,10 @@ class COMM(TextFrame):
 
     @property
     def HashKey(self):
-        return '%s:%s:%r' % (self.FrameID, self.desc, self.lang)
+        return '%s:%s:%s' % (self.FrameID, self.desc, self.lang)
 
     def _pprint(self):
-        return "%s=%r=%s" % (self.desc, self.lang, " / ".join(self.text))
+        return "%s=%s=%s" % (self.desc, self.lang, " / ".join(self.text))
 
 
 class RVA2(Frame):
@@ -1077,6 +1118,12 @@ class APIC(Frame):
     def HashKey(self):
         return '%s:%s' % (self.FrameID, self.desc)
 
+    def _validate_from_22(self, other, checker):
+        if checker.name == "mime":
+            self.mime = other.mime.decode("ascii", "ignore")
+        else:
+            super(APIC, self)._validate_from_22(other, checker)
+
     def _pprint(self):
         return "%s (%s, %d bytes)" % (
             self.desc, self.mime, len(self.data))
@@ -1102,7 +1149,7 @@ class PCNT(Frame):
         return self.count
 
     def _pprint(self):
-        return unicode(self.count)
+        return text_type(self.count)
 
 
 class POPM(FrameOpt):
@@ -1202,6 +1249,7 @@ class RBUF(FrameOpt):
         return self.size
 
 
+@swap_to_string
 class AENC(FrameOpt):
     """Audio encryption.
 
@@ -1227,10 +1275,10 @@ class AENC(FrameOpt):
     def HashKey(self):
         return '%s:%s' % (self.FrameID, self.owner)
 
-    def __str__(self):
+    def __bytes__(self):
         return self.owner.encode('utf-8')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.owner
 
     def __eq__(self, other):
@@ -1259,8 +1307,8 @@ class LINK(FrameOpt):
     @property
     def HashKey(self):
         try:
-            return "%s:%s:%s:%r" % (
-                self.FrameID, self.frameid, self.url, self.data)
+            return "%s:%s:%s:%s" % (
+                self.FrameID, self.frameid, self.url, _bytes2key(self.data))
         except AttributeError:
             return "%s:%s:%s" % (self.FrameID, self.frameid, self.url)
 
@@ -1323,13 +1371,10 @@ class UFID(Frame):
     __hash__ = Frame.__hash__
 
     def _pprint(self):
-        isascii = ord(max(self.data)) < 128
-        if isascii:
-            return "%s=%s" % (self.owner, self.data)
-        else:
-            return "%s (%d bytes)" % (self.owner, len(self.data))
+        return "%s=%r" % (self.owner, self.data)
 
 
+@swap_to_string
 class USER(Frame):
     """Terms of use.
 
@@ -1348,12 +1393,12 @@ class USER(Frame):
 
     @property
     def HashKey(self):
-        return '%s:%r' % (self.FrameID, self.lang)
+        return '%s:%s' % (self.FrameID, self.lang)
 
-    def __str__(self):
+    def __bytes__(self):
         return self.text.encode('utf-8')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.text
 
     def __eq__(self, other):
@@ -1365,6 +1410,7 @@ class USER(Frame):
         return "%r=%s" % (self.lang, self.text)
 
 
+@swap_to_string
 class OWNE(Frame):
     """Ownership frame."""
 
@@ -1375,10 +1421,10 @@ class OWNE(Frame):
         EncodedTextSpec('seller'),
     ]
 
-    def __str__(self):
+    def __bytes__(self):
         return self.seller.encode('utf-8')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.seller
 
     def __eq__(self, other):
@@ -1407,7 +1453,7 @@ class COMR(FrameOpt):
 
     @property
     def HashKey(self):
-        return '%s:%s' % (self.FrameID, self._writeData())
+        return '%s:%s' % (self.FrameID, _bytes2key(self._writeData()))
 
     def __eq__(self, other):
         return self._writeData() == other._writeData()
@@ -1415,6 +1461,7 @@ class COMR(FrameOpt):
     __hash__ = FrameOpt.__hash__
 
 
+@swap_to_string
 class ENCR(Frame):
     """Encryption method registration.
 
@@ -1432,7 +1479,7 @@ class ENCR(Frame):
     def HashKey(self):
         return "%s:%s" % (self.FrameID, self.owner)
 
-    def __str__(self):
+    def __bytes__(self):
         return self.data
 
     def __eq__(self, other):
@@ -1441,6 +1488,7 @@ class ENCR(Frame):
     __hash__ = Frame.__hash__
 
 
+@swap_to_string
 class GRID(FrameOpt):
     """Group identification registration."""
 
@@ -1458,10 +1506,10 @@ class GRID(FrameOpt):
     def __pos__(self):
         return self.group
 
-    def __str__(self):
+    def __bytes__(self):
         return self.owner.encode('utf-8')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.owner
 
     def __eq__(self, other):
@@ -1470,6 +1518,7 @@ class GRID(FrameOpt):
     __hash__ = FrameOpt.__hash__
 
 
+@swap_to_string
 class PRIV(Frame):
     """Private frame."""
 
@@ -1481,24 +1530,21 @@ class PRIV(Frame):
     @property
     def HashKey(self):
         return '%s:%s:%s' % (
-            self.FrameID, self.owner, self.data.decode('latin1'))
+            self.FrameID, self.owner, _bytes2key(self.data))
 
-    def __str__(self):
+    def __bytes__(self):
         return self.data
 
     def __eq__(self, other):
         return self.data == other
 
     def _pprint(self):
-        isascii = ord(max(self.data)) < 128
-        if isascii:
-            return "%s=%s" % (self.owner, self.data)
-        else:
-            return "%s (%d bytes)" % (self.owner, len(self.data))
+        return "%s=%r" % (self.owner, self.data)
 
     __hash__ = Frame.__hash__
 
 
+@swap_to_string
 class SIGN(Frame):
     """Signature frame."""
 
@@ -1509,9 +1555,9 @@ class SIGN(Frame):
 
     @property
     def HashKey(self):
-        return '%s:%c:%s' % (self.FrameID, self.group, self.sig)
+        return '%s:%s:%s' % (self.FrameID, self.group, _bytes2key(self.sig))
 
-    def __str__(self):
+    def __bytes__(self):
         return self.sig
 
     def __eq__(self, other):
@@ -1555,15 +1601,6 @@ class ASPI(Frame):
         return self.Fi == other
 
     __hash__ = Frame.__hash__
-
-
-Frames = dict([(k, v) for (k, v) in globals().items()
-               if len(k) == 4 and isinstance(v, type) and
-               issubclass(v, Frame)])
-"""All supported ID3v2 frames, keyed by frame name."""
-
-del(k)
-del(v)
 
 
 # ID3v2.2 frames
@@ -1779,8 +1816,8 @@ class COM(COMM):
     "Comment"
 
 
-#class RVA(RVAD)
-#class EQU(EQUA)
+# class RVA(RVAD)
+# class EQU(EQUA)
 
 
 class REV(RVRB):
@@ -1793,9 +1830,24 @@ class PIC(APIC):
     The 'mime' attribute of an ID3v2.2 attached picture must be either
     'PNG' or 'JPG'.
     """
-    _framespec = [EncodingSpec('encoding'), StringSpec('mime', 3),
-                  ByteSpec('type'), EncodedTextSpec('desc'),
-                  BinaryDataSpec('data')]
+
+    _framespec = [
+        EncodingSpec('encoding'),
+        StringSpec('mime', 3),
+        ByteSpec('type'),
+        EncodedTextSpec('desc'),
+        BinaryDataSpec('data')
+    ]
+
+    def _to_other(self, other):
+        if not isinstance(other, APIC):
+            raise TypeError
+
+        other.encoding = self.encoding
+        other.mime = self.mime
+        other.type = self.type
+        other.desc = self.desc
+        other.data = self.data
 
 
 class GEO(GEOB):
@@ -1830,13 +1882,44 @@ class CRA(AENC):
 
 class LNK(LINK):
     """Linked information"""
-    _framespec = [StringSpec('frameid', 3), Latin1TextSpec('url')]
+
+    _framespec = [
+        StringSpec('frameid', 3),
+        Latin1TextSpec('url')
+    ]
+
     _optionalspec = [BinaryDataSpec('data')]
 
+    def _to_other(self, other):
+        if not isinstance(other, LINK):
+            raise TypeError
 
-Frames_2_2 = dict([(k, v) for (k, v) in globals().items()
-                   if len(k) == 3 and isinstance(v, type) and
-                   issubclass(v, Frame)])
+        other.frameid = self.frameid
+        other.url = self.url
+        if hasattr(self, "data"):
+            other.data = self.data
 
-del k
-del v
+
+Frames = {}
+"""All supported ID3v2.3/4 frames, keyed by frame name."""
+
+
+Frames_2_2 = {}
+"""All supported ID3v2.2 frames, keyed by frame name."""
+
+
+k, v = None, None
+for k, v in iteritems(globals()):
+    if isinstance(v, type) and issubclass(v, Frame):
+        v.__module__ = "mutagen_culrc.id3"
+
+        if len(k) == 3:
+            Frames_2_2[k] = v
+        elif len(k) == 4:
+            Frames[k] = v
+
+try:
+    del k
+    del v
+except NameError:
+    pass
