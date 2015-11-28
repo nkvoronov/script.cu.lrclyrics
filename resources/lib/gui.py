@@ -482,9 +482,13 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def onClick(self, controlId):
         if ( controlId == 110 ):
-            item = self.getControl( 110 ).getSelectedItem()
-            stamp = float(item.getProperty('time'))
-            xbmc.Player().seekTime(stamp)
+            # will only works for lrc based lyrics
+            try:
+                item = self.getControl( 110 ).getSelectedItem()
+                stamp = float(item.getProperty('time'))
+                xbmc.Player().seekTime(stamp)
+            except:
+                pass
         if ( controlId == 120 ):
             item = self.getControl( 120 ).getSelectedItem()
             source = item.getProperty('source').lower()
