@@ -27,6 +27,7 @@ def getEmbedLyrics(song, getlrc):
             except:
                 pass
     elif  ext == '.flac':
+        print '==================FLAC================='
         lry = getFlacLyrics(filename, getlrc)
     elif  ext == '.m4a':
         lry = getMP4Lyrics(filename, getlrc)
@@ -115,8 +116,8 @@ def getFlacLyrics(filename, getlrc):
         tags = FLAC(filename)
         if tags.has_key('lyrics'):
             lyr = tags['lyrics'][0]
-            match1 = re.compile('\[(\d+):(\d\d)(\.\d+|)\]').search(lyr)
-            if (getlrc and match1) or ((not getlrc) and (not match1)):
+            match = re.compile('\[(\d+):(\d\d)(\.\d+|)\]').search(lyr)
+            if (getlrc and match) or ((not getlrc) and (not match)):
                 return lyr
     except:
         return None
@@ -126,16 +127,15 @@ def getMP4Lyrics(filename, getlrc):
         tags = MP4(filename)
         if tags.has_key('\xa9lyr'):
             lyr = tags['\xa9lyr'][0]
-            match1 = re.compile('\[(\d+):(\d\d)(\.\d+|)\]').search(lyr)
-            if (getlrc and match1) or ((not getlrc) and (not match1)):
+            match = re.compile('\[(\d+):(\d\d)(\.\d+|)\]').search(lyr)
+            if (getlrc and match) or ((not getlrc) and (not match)):
                 return lyr
     except:
         return None
 
-def isLRC(text):
-    # test last line if it's in lrc format: [mm:ss.xx] ....
-    lyrics = text.strip().split('\n')
-    if lyrics[-1].strip().startswith('[') and lyrics[-1].strip()[3] == ':' and lyrics[-1].strip()[5] == '.':
+def isLRC(lyr):
+    match = re.compile('\[(\d+):(\d\d)(\.\d+|)\]').search(lyr)
+    if match:
         return True
     else:
         return False
