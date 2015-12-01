@@ -27,7 +27,6 @@ def getEmbedLyrics(song, getlrc):
             except:
                 pass
     elif  ext == '.flac':
-        print '==================FLAC================='
         lry = getFlacLyrics(filename, getlrc)
     elif  ext == '.m4a':
         lry = getMP4Lyrics(filename, getlrc)
