@@ -7,12 +7,12 @@ from mutagen_culrc.mp4 import MP4
 import xbmcvfs
 from utilities import *
 
-__language__  = sys.modules[ "__main__" ].__language__
+LANGUAGE  = sys.modules[ "__main__" ].LANGUAGE
 
 def getEmbedLyrics(song, getlrc):
     lyrics = Lyrics()
     lyrics.song = song
-    lyrics.source = __language__( 32002 )
+    lyrics.source = LANGUAGE( 32002 )
     lyrics.lrc = getlrc
     filename = song.filepath.decode("utf-8")
     ext = os.path.splitext(filename)[1].lower()
