@@ -4,10 +4,7 @@ import re
 import chardet
 import unicodedata
 import xbmc, xbmcvfs, xbmcgui
-if sys.version_info < (2, 7):
-    import simplejson
-else:
-    import json as simplejson
+import json
 
 ADDON     = sys.modules[ "__main__" ].ADDON
 ADDONNAME = sys.modules[ "__main__" ].ADDONNAME
@@ -141,7 +138,7 @@ class Song:
                 pos = int(xbmc.getInfoLabel('MusicPlayer.PlaylistPosition')) + offset
                 json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Playlist.GetItems", "params": {"properties": ["file"], "playlistid": 0, "limits": {"start": %i, "end": %i} }, "id": 1}' % (pos-1, pos))
                 json_query = unicode(json_query, 'utf-8', errors='ignore')
-                json_response = simplejson.loads(json_query)
+                json_response = json.loads(json_query)
                 song.filepath = json_response['result']['items'][0]['file'].encode('utf-8')
             except:
                 song.filepath = ""

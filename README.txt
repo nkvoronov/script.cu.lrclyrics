@@ -14,18 +14,10 @@ if no lrc lyrics are available, it will continue to search for unsynchronised ly
 depending on which options you've enabled, the script searches for lyrics in this order:
 - embedded lrc lyrics
 - lrc lyrics file
-- minilyrics scraper
-- ttplayer scraper
-- alsong scraper
-- baidu scraper
-- gomaudio scraper
-- lyrdb scraper
+- lrc scrapers
 - embedded text lyrics
 - text lyrics file
-- lyricwiki scraper
-- lyricsmode scraper
-- lyricstime scraper
-- darklyrics scraper
+- text scrapers
 
 
 when the scripts downloads lyrics through one of the scrapers,
@@ -46,3 +38,9 @@ Window(Home).Property(culrc.track) - set by the client to the required track nam
 
 other addons may want to set the MusicPlayer.Property(do_not_analyze) to 'true'.
 this will tell cu lrc lyrics to skip searching for embedded lyrics.
+
+
+control id's for skinners:
+110 - list (lyrics text)
+120 - list (available lyrics)
+200 - label (used lyrics scraper)

@@ -1,10 +1,7 @@
 #-*- coding: UTF-8 -*-
 import sys, re, urllib2, socket, HTMLParser
 import xbmc, xbmcaddon
-if sys.version_info < (2, 7):
-    import simplejson
-else:
-    import json as simplejson
+import json
 from utilities import *
 
 __title__ = 'lyricwiki'
@@ -31,7 +28,7 @@ class LyricsFetcher:
         except:
             return None
         req.close()
-        data = simplejson.loads(response)
+        data = json.loads(response)
         try:
             self.page = data['url']
         except:
