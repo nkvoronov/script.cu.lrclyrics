@@ -189,6 +189,7 @@
 					<font>font14</font>
 					<aligny>center</aligny>
 					<label>$INFO[ListItem.Label]</label>
+					<textcolor>FF12B2E7</textcolor>
 				</control>
 			</focusedlayout>
 		</control>
