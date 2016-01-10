@@ -1,6 +1,7 @@
 v5.0.0
 - remove simplejson support
 - update skin
+- add another file naming template
 
 v4.1.5
 - language update
