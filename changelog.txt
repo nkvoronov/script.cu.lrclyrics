@@ -1,3 +1,6 @@
+v3.2.1
+- add another file naming template
+
 v3.2.0
 - remove broken lrc scrapers
 - fix unicodedecode crash in gomaudio
