@@ -3,6 +3,7 @@ import re
 import chardet
 from tagger import *
 from mutagen.flac import FLAC
+from mutagen.mp4 import MP4
 import xbmcvfs
 from utilities import *
 
@@ -14,30 +15,34 @@ def getEmbedLyrics(song, getlrc):
     lyrics.source = __language__( 32002 )
     lyrics.lrc = getlrc
     filename = song.filepath.decode("utf-8")
+    ext = os.path.splitext(filename)[1].lower()
     lry = None
-    if getlrc:
-        try:
-            lry = getLyrics3(filename)
-        except:
-            pass
+    try:
+        if ext == '.mp3':
+            lry = getLyrics3(filename, getlrc)
+    except:
+        pass
     if lry:
         enc = chardet.detect(lry)
         lyrics.lyrics = lry.decode(enc['encoding'])
     else:
-        lry = getID3Lyrics(filename, getlrc)
-        if not lry:
+        if ext == '.mp3':
+            lry = getID3Lyrics(filename, getlrc)
+        elif  ext == '.flac':
             lry = getFlacLyrics(filename, getlrc)
-            if not lry:
-                return None
+        elif  ext == '.m4a':
+            lry = getMP4Lyrics(filename, getlrc)
+        if not lry:
+            return None
         lyrics.lyrics = lry
     return lyrics
 
 """
-Get LRC lyrics embed with Lyrics3/Lyrics3V2 format
+Get lyrics embed with Lyrics3/Lyrics3V2 format
 See: http://id3.org/Lyrics3
      http://id3.org/Lyrics3v2
 """
-def getLyrics3(filename):
+def getLyrics3(filename, getlrc):
     f = xbmcvfs.File(filename)
     f.seek(-128-9, os.SEEK_END)
     buf = f.read(9)
@@ -154,7 +159,7 @@ def getID3Lyrics(filename, getlrc):
                 match1 = re.compile('\[(\d+):(\d\d)(\.\d+|)\]').search(lyr)
                 if (getlrc and match1) or ((not getlrc) and (not match1)):
                     return lyr
-        elif (not getlrc) and tag.fid == uslt:
+        elif tag.fid == uslt: # people also store synchronised lyrics in this tag
             """
             Frame data in rawdata[]:
             Text encoding        $xx
@@ -173,7 +178,8 @@ def getID3Lyrics(filename, getlrc):
             lyrics = raw[pos+1:]
             if (enc == 'latin_1'):
                 enc = chardet.detect(lyrics)['encoding']
-            return lyrics.decode(enc)
+            if (getlrc and lyrics.decode(enc).startswith('[')) or (not getlrc):
+                return lyrics.decode(enc)
     return None
 
 def getFlacLyrics(filename, getlrc):
@@ -181,6 +187,17 @@ def getFlacLyrics(filename, getlrc):
         tags = FLAC(filename)
         if tags.has_key('lyrics'):
             lyr = tags['lyrics'][0]
+            match1 = re.compile('\[(\d+):(\d\d)(\.\d+|)\]').search(lyr)
+            if (getlrc and match1) or ((not getlrc) and (not match1)):
+                return lyr
+    except:
+        return None
+
+def getMP4Lyrics(filename, getlrc):
+    try:
+        tags = MP4(filename)
+        if tags.has_key('\xa9lyr'):
+            lyr = tags['\xa9lyr'][0]
             match1 = re.compile('\[(\d+):(\d\d)(\.\d+|)\]').search(lyr)
             if (getlrc and match1) or ((not getlrc) and (not match1)):
                 return lyr

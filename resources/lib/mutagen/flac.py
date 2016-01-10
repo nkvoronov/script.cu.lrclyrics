@@ -62,7 +62,7 @@ class StrictFileObject(object):
                 setattr(self, m, getattr(fileobj, m))
 
     def read(self, size=-1):
-        if size == 0: # XBMC bug: xbmcvfs.File(file).read(0) returns the entire file, instead of an empty string
+        if size == 0: # Kodi bug: xbmcvfs.File(file).read(0) returns the entire file, instead of an empty string
             return ''
         data = self._fileobj.read(size)
         if size >= 0 and len(data) != size:

@@ -44,6 +44,10 @@ msgctxt "#32103"
 msgid "- Save format"
 msgstr "- Guardar no formato"
 
+msgctxt "#32104"
+msgid "%N %A - %T"
+msgstr "%N %A - %T"
+
 msgctxt "#32105"
 msgid "%A\\%T"
 msgstr "%A\\%T"
@@ -105,8 +109,8 @@ msgid "Regular lyrics scrapers"
 msgstr "Colectores de letras normais"
 
 msgctxt "#32156"
-msgid "Run as a service"
-msgstr "Executar como um serviço"
+msgid "Display lyrics automatically"
+msgstr "Mostrar letras automaticamente"
 
 msgctxt "#32157"
 msgid "Clean song title (remove part in brackets)"
@@ -115,6 +119,10 @@ msgstr "Limpar nome da música (remover parênteses)"
 msgctxt "#32158"
 msgid "Script is already running!"
 msgstr "O scrip já está em execução!"
+
+msgctxt "#32159"
+msgid "Enable debug logging"
+msgstr "Activar o registo de depuração"
 
 msgctxt "#32199"
 msgid "CU LRC Lyrics"

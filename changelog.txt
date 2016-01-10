@@ -1,10 +1,64 @@
-v2.0.12
-- fix .xml name
+v3.2.0
+- remove broken lrc scrapers
+- fix unicodedecode crash in gomaudio
+
+v3.1.6
+- fix lyricwiki scraper
+
+v3.1.5
+- fix polish language file
+
+v3.1.4
+- add option to hide notifications
+
+v3.1.3
+- Update background media check to PlayingBackgroundMedia
+
+v3.1.2
+- Clean up the Monitor and Player classes on exit
+
+v3.1.1
+- Do not try and get lyrics if TvTunes is running
+
+v3.1.0
+- add support for mp4 files
+
+v3.0.11
+- properly handle lyrics in the uslt tag
+
+v3.0.10
+- add support for lrc lyrics inside the uslt tag
+
+v3.0.9
+- fix detection od osd key
+
+v3.0.8
+- allow codec info to be shown
+
+v3.0.7
+- better support for multiple artists
+
+v3.0.6
+- fixed missing string in language file
+
+v3.0.5
+- updated language files from Transifex
+
+v3.0.4
+- deprecate xbmc.abortRequested
+
+v3.0.3
+- re-label service setting
+
+v3.0.2
 - fix detection of text based Lyrics3 tags
 - fix some lrc lyrics did not work (time tag not recognised)
 
-v2.0.11
-- fix wikilyric scraper
+v3.0.1
+- fix lyricwiki scraper
+
+v3.0.0
+- kodi name change
 
 v2.0.10
 - several fixes

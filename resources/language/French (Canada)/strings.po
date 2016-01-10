@@ -109,16 +109,20 @@ msgid "Regular lyrics scrapers"
 msgstr "Extracteurs de paroles régulières"
 
 msgctxt "#32156"
-msgid "Run as a service"
-msgstr "Exécuter comme service"
+msgid "Display lyrics automatically"
+msgstr "Afficher les paroles automatiquement"
 
 msgctxt "#32157"
 msgid "Clean song title (remove part in brackets)"
-msgstr "Nettoyer les titres de chansons (enlever ce qui est entre parenthèses)"
+msgstr "Nettoyer les titres de chansons (supprimer ce qui est entre parenthèses)"
 
 msgctxt "#32158"
 msgid "Script is already running!"
 msgstr "Le script tourne déjà!"
+
+msgctxt "#32159"
+msgid "Enable debug logging"
+msgstr "Activer la journalisation de débogage"
 
 msgctxt "#32199"
 msgid "CU LRC Lyrics"

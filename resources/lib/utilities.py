@@ -15,15 +15,17 @@ __profile__   = sys.modules[ "__main__" ].__profile__
 __cwd__       = sys.modules[ "__main__" ].__cwd__
 
 CANCEL_DIALOG = ( 9, 10, 92, 216, 247, 257, 275, 61467, 61448, )
-ACTION_OSD = ( 122, )
+ACTION_OSD = ( 24, 122, )
+ACTION_CODEC = ( 0, 27, )
 LYRIC_SCRAPER_DIR = os.path.join(__cwd__, "resources", "lib", "culrcscrapers")
 WIN = xbmcgui.Window( 10000 )
 
 def log(txt):
-    if isinstance (txt,str):
-        txt = txt.decode("utf-8")
-    message = u'%s: %s' % (__addonname__, txt)
-    xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
+    if (__addon__.getSetting( "log_enabled" ) == "true"):
+        if isinstance (txt,str):
+            txt = txt.decode("utf-8")
+        message = u'%s: %s' % (__addonname__, txt)
+        xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
 
 def deAccent(str):
     return unicodedata.normalize('NFKD', unicode(str, 'utf-8'))
@@ -81,9 +83,9 @@ class Lyrics:
         self.lrc = False
 
 class Song:
-    def __init__(self):
-        self.artist = ""
-        self.title = ""
+    def __init__(self, in_artist="", in_title=""):
+        self.artist = in_artist
+        self.title = in_title
         self.filepath = ""
         self.analyze_safe = True
 
@@ -96,18 +98,15 @@ class Song:
         else:
             return cmp(deAccent(self.title), deAccent(song.title))
 
-    def sanitize(self, str):
-        return str.replace( "\\", "_" ).replace( "/", "_" ).replace(":","_").replace("?","_").replace("!","_").strip('.')
-
     def path1(self, lrc):
         if lrc:
             ext = '.lrc'
         else:
             ext = '.txt'
         if ( __addon__.getSetting( "save_filename_format" ) == "0" ):
-            return unicode( os.path.join( __addon__.getSetting( "save_lyrics_path" ), self.sanitize(self.artist), self.sanitize(self.title) + ext ), "utf-8" )
+            return unicode( os.path.join( __addon__.getSetting( "save_lyrics_path" ), self.artist, self.title + ext ), "utf-8" )
         else:
-            return unicode( os.path.join( __addon__.getSetting( "save_lyrics_path" ), self.sanitize(self.artist) + " - " + self.sanitize(self.title) + ext ), "utf-8" )
+            return unicode( os.path.join( __addon__.getSetting( "save_lyrics_path" ), self.artist + " - " + self.title) + ext, "utf-8" )
 
     def path2(self, lrc):
         if lrc:
@@ -121,7 +120,6 @@ class Song:
             return unicode( os.path.join( dirname, __addon__.getSetting( "save_subfolder_path" ), filename + ext ), "utf-8" )
         else:
             return unicode( os.path.join( dirname, filename + ext ), "utf-8" )
-
 
     @staticmethod
     def current():
@@ -150,12 +148,13 @@ class Song:
         else:
             offset_str = ""
             song.filepath = xbmc.getInfoLabel('Player.Filenameandpath')
-        song.title = xbmc.getInfoLabel( "MusicPlayer%s.Title" % offset_str)
-        song.artist = xbmc.getInfoLabel( "MusicPlayer%s.Artist" % offset_str)
+        song.title = xbmc.getInfoLabel( "MusicPlayer%s.Title" % offset_str).replace( "\\", " & " ).replace( "/", " & " ).replace("  "," ").replace(":","-").strip('.')
+        song.artist = xbmc.getInfoLabel( "MusicPlayer%s.Artist" % offset_str).replace( "\\", " & " ).replace( "/", " & " ).replace("  "," ").replace(":","-").strip('.')
 
         if not song.artist and not xbmc.getInfoLabel("MusicPlayer.TimeRemaining"):
             # no artist and infinite playing time ? We probably listen to a radio
             # which usually set the song title as "Artist - Title" (via ICY StreamTitle)
+            song.analyze_safe = False
             sep = song.title.find("-")
             if sep > 1:
                 song.artist = song.title[:sep - 1].strip()

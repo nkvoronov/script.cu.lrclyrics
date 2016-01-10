@@ -14,7 +14,7 @@ from utilities import *
 from audiofile import AudioFile
 
 __title__ = "GomAudio"
-__priority__ = '135'
+__priority__ = '130'
 __lrc__ = True
 
 socket.setdefaulttimeout(10)
@@ -52,9 +52,12 @@ class LyricsFetcher:
         lyrics.source = __title__
         lyrics.lrc = __lrc__
 
-
+        key = None
         try:
-            key = gomClient.GetKeyFromFile( song.filepath )
+            ext = os.path.splitext(song.filepath.decode("utf-8"))[1].lower()
+            sup_ext = ['.mp3', '.ogg', '.wma', '.flac', '.ape', '.wav']
+            if ext in sup_ext:
+                key = gomClient.GetKeyFromFile( song.filepath )
             if not key:
                 return None
             url = GOM_URL %(key, urllib.quote(song.title.decode("utf-8").encode("euc-kr")), urllib.quote(song.artist.decode("utf-8").encode("euc-kr")))
@@ -79,7 +82,10 @@ class LyricsFetcher:
             # timeformat conversion
             t = "%02d:%02d.%02d" % gomClient.mSecConv( int(sync[0]) )
             # unescape string
-            s = unicode(sync[1], "euc-kr").encode("utf-8").replace("&apos;","'").replace("&quot;",'"')
-            lyrline.append( "[%s]%s" %(t,s) )
+            try:
+                s = unicode(sync[1], "euc-kr").encode("utf-8").replace("&apos;","'").replace("&quot;",'"')
+                lyrline.append( "[%s]%s" %(t,s) )
+            except:
+                pass
         lyrics.lyrics = '\n'.join( lyrline )
         return lyrics
