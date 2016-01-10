@@ -22,7 +22,7 @@
 			<height>3240</height>
 			<animation effect="fade" start="0" end="100" time="300">WindowOpen</animation>
 			<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
-			<texture colordiffuse="C2FFFFFF">black.png</texture>
+			<texture colordiffuse="C2FFFFFF">culrc-black.png</texture>
 		</control>
 		<control type="image">
 			<description>background image</description>
@@ -30,7 +30,7 @@
 			<top>0</top>
 			<width>1320</width>
 			<height>780</height>
-			<texture border="2">dialog-bg-solid.png</texture>
+			<texture border="2">culrc-dialog-bg-solid.png</texture>
 		</control>
 		<control type="image">
 			<description>Dialog Header image</description>
@@ -38,7 +38,7 @@
 			<top>0</top>
 			<width>1320</width>
 			<height>70</height>
-			<texture colordiffuse="FF12B2E7" border="2">white70.png</texture>
+			<texture colordiffuse="FF12B2E7" border="2">culrc-white70.png</texture>
 		</control>
 		<control type="label">
 			<description>header label</description>
@@ -85,10 +85,10 @@
 			<texturenofocus>-</texturenofocus>
 			<label></label>
 			<animation effect="slide" end="-70,0" time="0" condition="true">Conditional</animation>
-			<textureradioofffocus colordiffuse="EEFFFFFF">close.png</textureradioofffocus>
-			<textureradiooffnofocus colordiffuse="EEFFFFFF">logo.png</textureradiooffnofocus>
-			<textureradioonfocus colordiffuse="EEFFFFFF">close.png</textureradioonfocus>
-			<textureradioonnofocus colordiffuse="EEFFFFFF">logo.png</textureradioonnofocus>
+			<textureradioofffocus colordiffuse="EEFFFFFF">culrc-close.png</textureradioofffocus>
+			<textureradiooffnofocus colordiffuse="EEFFFFFF">culrc-logo.png</textureradiooffnofocus>
+			<textureradioonfocus colordiffuse="EEFFFFFF">culrc-close.png</textureradioonfocus>
+			<textureradioonnofocus colordiffuse="EEFFFFFF">culrc-logo.png</textureradioonnofocus>
 			<onclick>Action(close)</onclick>
 		</control>
 		<!-- ** Required ** Do not change <id> or <type> (Smooth scrolling list for lyrics) -->
@@ -198,8 +198,8 @@
 			<top>795</top>
 			<width>48</width>
 			<height>24</height>
-			<texturefocus colordiffuse="FF12B2E7">arrowdown.png</texturefocus>
-			<texturenofocus colordiffuse="FF12B2E7">arrowdown.png</texturenofocus>
+			<texturefocus colordiffuse="FF12B2E7">culrc-arrowdown.png</texturefocus>
+			<texturenofocus colordiffuse="FF12B2E7">culrc-arrowdown.png</texturenofocus>
 			<animation effect="zoom" start="100,0" end="100,100" center="auto" time="200" delay="10">VisibleChange</animation>
 			<animation effect="zoom" start="100,0" end="100,100" delay="500" center="auto" time="200">WindowOpen</animation>
 			<animation effect="zoom" start="100,100" end="100,0" center="auto" time="200">WindowClose</animation>
@@ -212,8 +212,8 @@
 			<top>-40</top>
 			<width>48</width>
 			<height>24</height>
-			<texturefocus colordiffuse="FF12B2E7" flipy="true">arrowdown.png</texturefocus>
-			<texturenofocus colordiffuse="FF12B2E7" flipy="true">arrowdown.png</texturenofocus>
+			<texturefocus colordiffuse="FF12B2E7" flipy="true">culrc-arrowdown.png</texturefocus>
+			<texturenofocus colordiffuse="FF12B2E7" flipy="true">culrc-arrowdown.png</texturenofocus>
 			<animation effect="zoom" start="100,0" end="100,100" center="auto" time="200" delay="10">VisibleChange</animation>
 			<animation effect="zoom" start="100,0" end="100,100" delay="500" center="auto" time="200">WindowOpen</animation>
 			<animation effect="zoom" start="100,100" end="100,0" center="auto" time="200">WindowClose</animation>
@@ -227,7 +227,7 @@
 			<top>710</top>
 			<width>64</width>
 			<height>64</height>
-			<texture>contextmenu.png</texture>
+			<texture>culrc-contextmenu.png</texture>
 			<visible>!IsEmpty(Window(Home).Property(culrc.haslist))</visible>
 		</control>
 		<control type="label">
