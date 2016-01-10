@@ -11,7 +11,7 @@
 	<depth>0.50</depth>
 	<coordinates>
 		<left>300</left>
-		<top>150</top>
+		<top>80</top>
 	</coordinates>
 	<controls>
 		<control type="image">
@@ -194,7 +194,7 @@
 			</focusedlayout>
 		</control>
 		<control type="button">
-			<left>640</left>
+			<left>636</left>
 			<top>795</top>
 			<width>48</width>
 			<height>24</height>
@@ -208,7 +208,7 @@
 			<visible>Container(110).HasNext + Control.IsVisible(110)</visible>
 		</control>
 		<control type="button">
-			<left>640</left>
+			<left>636</left>
 			<top>-40</top>
 			<width>48</width>
 			<height>24</height>
