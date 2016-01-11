@@ -229,7 +229,7 @@ class MAIN():
                     # check if gui is already running
                     if not WIN.getProperty('culrc.guirunning') == 'TRUE':
                         WIN.setProperty('culrc.guirunning', 'TRUE')
-                        gui = guiThread(mode=self.mode)
+                        gui = guiThread(mode=self.mode, save=self.save_lyrics_to_file)
                         gui.start()
                 else:
                     # signal gui thread to exit
@@ -279,9 +279,10 @@ class guiThread(threading.Thread):
     def __init__(self, *args, **kwargs):
         threading.Thread.__init__(self)
         self.mode = kwargs[ "mode" ]
+        self.save = kwargs[ "save" ]
 
     def run(self):
-        ui = GUI( "script-cu-lrclyrics-main.xml" , CWD, "Default", mode=self.mode )
+        ui = GUI( "script-cu-lrclyrics-main.xml" , CWD, "Default", mode=self.mode, save=self.save )
         ui.doModal()
         del ui
         WIN.clearProperty('culrc.guirunning')
@@ -290,6 +291,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXMLDialog.__init__(self)
         self.mode = kwargs[ "mode" ]
+        self.save = kwargs[ "save" ]
         self.Monitor = MyMonitor(function = None)
        
     def onInit(self):
@@ -462,7 +464,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.selected = False
             self.getControl( 110 ).reset()
             self.show_lyrics( self.lyrics )
-#           self.save_lyrics_to_file( self.lyrics ) #FIXME
+            self.save( self.lyrics )
 
     def reset_controls(self):
         self.getControl( 110 ).reset()
