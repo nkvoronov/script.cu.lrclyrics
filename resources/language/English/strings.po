@@ -104,7 +104,7 @@ msgid "Search options"
 msgstr ""
 
 msgctxt "#32117"
-msgid "Lyrics store"
+msgid "Lyrics files"
 msgstr ""
 
 msgctxt "#32118"
