@@ -70,7 +70,7 @@ def get_artist_from_filename(filename):
             artist = at.split( "-", 1 )[ 0 ].strip()
             title = os.path.splitext( at.split( "-", 1 )[ 1 ].strip() )[ 0 ]
         # Track - Artist - title.ext
-        elif ( ADDON.getSetting( "read_filename_format" ) == "4" ):
+        elif ( __addon__.getSetting( "read_filename_format" ) == "4" ):
             artist = basename.split( "-", 2 )[ 1 ].strip()
             title = os.path.splitext( basename.split( "-", 2 )[ 2 ].strip() )[ 0 ]
     except:
