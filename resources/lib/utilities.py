@@ -151,7 +151,14 @@ class Song:
             song.filepath = xbmc.getInfoLabel('Player.Filenameandpath')
         song.title = xbmc.getInfoLabel( "MusicPlayer%s.Title" % offset_str).replace( "\\", " & " ).replace( "/", " & " ).replace("  "," ").replace(":","-").strip('.')
         song.artist = xbmc.getInfoLabel( "MusicPlayer%s.Artist" % offset_str).replace( "\\", " & " ).replace( "/", " & " ).replace("  "," ").replace(":","-").strip('.')
+        # some third party addons may insert the tracknumber in the song title
+        regex = re.compile('\d\d\.\s')
+        match = regex.match(song.title)
+        if match:
+            song.title = song.title[4:]
 
+if match:
+    song.title = song.title[4:]
         if not song.artist and not xbmc.getInfoLabel("MusicPlayer.TimeRemaining"):
             # no artist and infinite playing time ? We probably listen to a radio
             # which usually set the song title as "Artist - Title" (via ICY StreamTitle)
