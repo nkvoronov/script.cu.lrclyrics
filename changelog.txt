@@ -3,6 +3,7 @@ v5.0.0
 - update skin
 - add another file naming template
 - fix for Artist/Album/Track - title.ext
+- also strip korean text
 
 v4.1.5
 - language update
