@@ -80,7 +80,7 @@ msgid "%A\\%B\\%T"
 msgstr ""
 
 msgctxt "#32110"
-msgid "%A\\%B\\%N %T"
+msgid "%A\\%B\\%N (-) %T"
 msgstr ""
 
 msgctxt "#32111"
