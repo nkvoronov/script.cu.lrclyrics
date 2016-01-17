@@ -1,3 +1,6 @@
+v4.1.8
+- try to strip tacknumber from song title
+
 v4.1.7
 - fix for %A/%B/%N - %T
 - also strip korean text
