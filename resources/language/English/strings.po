@@ -76,7 +76,7 @@ msgid "%A\\%B\\%T"
 msgstr ""
 
 msgctxt "#32110"
-msgid "%A\\%B\\%N %T"
+msgid "%A\\%B\\%N (-) %T"
 msgstr ""
 
 msgctxt "#32111"
@@ -158,7 +158,7 @@ msgid "Hide notifications"
 msgstr ""
 
 msgctxt "#32161"
-msgid "Remove Chinese text from lyrics"
+msgid "Remove Chinese/Korean text from lyrics"
 msgstr ""
 
 #empty strings from id 32161 to 32198

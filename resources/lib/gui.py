@@ -90,8 +90,9 @@ class MAIN():
                     fulltext = lyrics.lyrics.decode("utf-8")
                 else:
                     fulltext = lyrics.lyrics
-                stripped = re.sub(ur"[\u3000-\u9fff]+", "", fulltext)
-                lyrics.lyrics = stripped.encode("utf-8")
+                strip_k = re.sub(ur"[\u1100-\u11ff]+", "", fulltext)
+                strip_c = re.sub(ur"[\u3000-\u9fff]+", "", strip_k)
+                lyrics.lyrics = strip_c.encode("utf-8")
         else:
             lyrics = Lyrics()
             lyrics.song = song

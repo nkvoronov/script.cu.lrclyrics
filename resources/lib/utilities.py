@@ -55,15 +55,15 @@ def get_artist_from_filename(filename):
         if ( ADDON.getSetting( "read_filename_format" ) == "0" ):
             artist = basename.split( "-", 1 )[ 0 ].strip()
             title = os.path.splitext( basename.split( "-", 1 )[ 1 ].strip() )[ 0 ]
-        # Artist/Album/title.ext or Artist/Album/Track title.ext
+        # Artist/Album/title.ext or Artist/Album/Track (-) title.ext
         elif ( ADDON.getSetting( "read_filename_format" ) in ( "1", "2", ) ):
             artist = os.path.basename( os.path.split( os.path.split( filename )[ 0 ] )[ 0 ] )
             # Artist/Album/title.ext
             if ( ADDON.getSetting( "read_filename_format" ) == "1" ):
                 title = os.path.splitext( basename )[ 0 ]
-            # Artist/Album/Track title.ext
+            # Artist/Album/Track (-) title.ext
             elif ( ADDON.getSetting( "read_filename_format" ) == "2" ):
-                title = os.path.splitext( basename )[ 0 ].split( " ", 1 )[ 1 ]
+                title = os.path.splitext( basename )[ 0 ].split( " ", 1 )[ 1 ].lstrip('-').strip()
         # Track Artist - title.ext
         elif ( ADDON.getSetting( "read_filename_format" ) == "3" ):
             at = basename.split( " ", 1 )[ 1 ].strip()
