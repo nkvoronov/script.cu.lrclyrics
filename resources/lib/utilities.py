@@ -10,7 +10,7 @@ else:
     import json as simplejson
 
 ADDON     = sys.modules[ "__main__" ].ADDON
-ADDONNAME = sys.modules[ "__main__" ].ADDONNAME
+ADDONID   = sys.modules[ "__main__" ].ADDONID
 PROFILE   = sys.modules[ "__main__" ].PROFILE
 CWD       = sys.modules[ "__main__" ].CWD
 
@@ -24,7 +24,7 @@ def log(txt):
     if (ADDON.getSetting( "log_enabled" ) == "true"):
         if isinstance (txt,str):
             txt = txt.decode("utf-8")
-        message = u'%s: %s' % (ADDONNAME, txt)
+        message = u'%s: %s' % (ADDONID, txt)
         xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
 
 def deAccent(str):
