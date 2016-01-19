@@ -28,8 +28,8 @@ class MAIN():
     def setup_main(self):
         self.fetchedLyrics = []
         self.current_lyrics = Lyrics()
-        self.MyPlayer = MyPlayer(function=self.myPlayerChanged)
-        self.Monitor = MyMonitor(function = self.update_settings)
+        self.MyPlayer = MyPlayer(function=self.myPlayerChanged, clear=self.clear)
+        self.Monitor = MyMonitor(function=self.update_settings)
 
     def cleanup_main(self):
         # Clean up the monitor and Player classes on exit
@@ -74,6 +74,9 @@ class MAIN():
                 self.current_lyrics = Lyrics()
             xbmc.sleep(1000)
         WIN.clearProperty('culrc.quit')
+        WIN.clearProperty('culrc.lyrics')
+        WIN.clearProperty('culrc.source')
+        WIN.clearProperty('culrc.haslist')
         WIN.clearProperty('culrc.running')
 
     def get_lyrics(self, song):
@@ -278,6 +281,12 @@ class MAIN():
             self.mode = 'manual'
             # quit the script is mode was changed from service to manual
             WIN.setProperty('culrc.quit', 'TRUE')
+
+    def clear(self):
+        WIN.clearProperty('culrc.lyrics')
+        WIN.clearProperty('culrc.source')
+        WIN.clearProperty('culrc.haslist')
+
 
 class guiThread(threading.Thread):
     def __init__(self, *args, **kwargs):
@@ -523,10 +532,15 @@ class MyPlayer(xbmc.Player):
     def __init__(self, *args, **kwargs):
         xbmc.Player.__init__(self)
         self.function = kwargs["function"]
+        self.clear = kwargs["clear"]
 
     def onPlayBackStarted(self):
+        self.clear()
         if xbmc.getCondVisibility("Window.IsVisible(12006)"):
             self.function()
+
+    def onPlayBackStopped(self):
+        self.clear()
 
 class MyMonitor(xbmc.Monitor):
     def __init__(self, *args, **kwargs):
