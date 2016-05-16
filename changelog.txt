@@ -1,3 +1,6 @@
+v5.0.2
+- a bit more logging
+
 v5.0.1
 - fixed lyricwiki scraper
 
