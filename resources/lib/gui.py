@@ -75,6 +75,7 @@ class MAIN():
             xbmc.sleep(1000)
         WIN.clearProperty('culrc.quit')
         WIN.clearProperty('culrc.lyrics')
+        WIN.clearProperty('culrc.islrc')
         WIN.clearProperty('culrc.source')
         WIN.clearProperty('culrc.haslist')
         WIN.clearProperty('culrc.running')
@@ -287,6 +288,7 @@ class MAIN():
 
     def clear(self):
         WIN.clearProperty('culrc.lyrics')
+        WIN.clearProperty('culrc.islrc')
         WIN.clearProperty('culrc.source')
         WIN.clearProperty('culrc.haslist')
 
@@ -324,6 +326,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.show_lyrics(self.lyrics)
         else:
             WIN.setProperty('culrc.lyrics', LANGUAGE( 32001 ))
+            WIN.clearProperty('culrc.islrc')
         self.getControl( 120 ).reset()
         if self.lyrics.list:
             WIN.setProperty('culrc.haslist', 'true')
@@ -428,12 +431,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
             source = lyrics.source
         self.getControl( 200 ).setLabel( source )
         if lyrics.lrc:
+            WIN.setProperty('culrc.islrc', 'true')
             self.parser_lyrics( lyrics.lyrics )
             for time, line in self.pOverlay:
                 listitem = xbmcgui.ListItem(line)
                 listitem.setProperty('time', str(time))
                 self.getControl( 110 ).addItem( listitem )
         else:
+            WIN.clearProperty('culrc.islrc')
             splitLyrics = lyrics.lyrics.splitlines()
             for x in splitLyrics:
                self.getControl( 110 ).addItem( x )
@@ -486,6 +491,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.getControl( 110 ).reset()
         self.getControl( 200 ).setLabel('')
         WIN.clearProperty('culrc.lyrics')
+        WIN.clearProperty('culrc.islrc')
         WIN.clearProperty('culrc.source')
 
     def exit_gui(self, action):
