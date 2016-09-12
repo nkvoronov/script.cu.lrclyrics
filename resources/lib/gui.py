@@ -67,6 +67,8 @@ class MAIN():
                     WIN.setProperty('culrc.force','FALSE')
                     self.current_lyrics = Lyrics()
                     self.myPlayerChanged()
+                elif xbmc.getCondVisibility("Player.IsInternetStream"):
+                    self.myPlayerChanged()
             else:
                 # we may have exited the music visualization screen
                 self.triggered = False
@@ -228,9 +230,11 @@ class MAIN():
 
     def myPlayerChanged(self):
         global lyrics
+        songchanged = False
         for cnt in range( 5 ):
             song = Song.current()
             if ( song and ( self.current_lyrics.song != song ) ):
+                songchanged = True
                 log("Current Song: %s - %s" % (song.artist, song.title))
                 lyrics = self.get_lyrics( song )
                 self.current_lyrics = lyrics
@@ -250,7 +254,8 @@ class MAIN():
                         xbmc.executebuiltin((u'Notification(%s,%s,%i)' % (ADDONNAME + ": " + LANGUAGE(32001), song.artist.decode("utf-8") + " - " + song.title.decode("utf-8"), 2000)).encode('utf-8', 'ignore'))
                 break
             xbmc.sleep( 50 )
-        if xbmc.getCondVisibility('MusicPlayer.HasNext'):
+        # only search for next lyrics if current song has changed
+        if xbmc.getCondVisibility('MusicPlayer.HasNext') and songchanged:
             next_song = Song.next()
             if next_song:
                 log("Next Song: %s - %s" % (next_song.artist, next_song.title))
