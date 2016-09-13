@@ -368,7 +368,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         listitem = xbmcgui.ListItem()
         while xbmc.getInfoLabel('Container(110).NumPages') != '2':
             self.getControl(110).addItem(listitem)
-            xbmc.sleep(10)
+            xbmc.sleep(50)
         lines = self.getControl( 110 ).size() - 1
         return lines
 
