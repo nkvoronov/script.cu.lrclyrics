@@ -1,10 +1,13 @@
- v5.0.6
- - fix focussed line selection
- - more accurate time syncing
- 
- v5.0.5
- - add support for internet streams
- 
+v5.0.7
+- add additional listitem properties for external use
+
+v5.0.6
+- fix focussed line selection
+- more accurate time syncing
+
+v5.0.5
+- add support for internet streams
+
 v5.0.4
 - add lrc window property
 
