@@ -439,19 +439,33 @@ class GUI( xbmcgui.WindowXMLDialog ):
             WIN.setProperty('culrc.islrc', 'true')
             self.parser_lyrics( lyrics.lyrics )
             for time, line in self.pOverlay:
+                parts = self.get_parts(line)
                 listitem = xbmcgui.ListItem(line)
+                for count, item in enumerate(parts):
+                    listitem.setProperty('part%i' % count, item)
                 listitem.setProperty('time', str(time))
                 self.getControl( 110 ).addItem( listitem )
         else:
             WIN.clearProperty('culrc.islrc')
             splitLyrics = lyrics.lyrics.splitlines()
-            for x in splitLyrics:
-               self.getControl( 110 ).addItem( x )
+            for line in splitLyrics:
+                parts = self.get_parts(line)
+                listitem = xbmcgui.ListItem(line)
+                for count, item in enumerate(parts):
+                    listitem.setProperty('part%i' % count, item)
+                self.getControl( 110 ).addItem( listitem )
         self.getControl( 110 ).selectItem( 0 )
         self.show_control( 110 )
         if lyrics.lrc:
             if (self.allowtimer and self.getControl( 110 ).size() > 1):
                 self.refresh()
+
+    def get_parts(self, line):
+        result = ['', '', '', '']
+        parts = line.split(' ', 3)
+        for count, item in enumerate(parts):
+            result[count] = item
+        return result
 
     def parser_lyrics(self, lyrics):
         self.pOverlay = []
