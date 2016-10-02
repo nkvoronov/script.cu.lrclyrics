@@ -442,7 +442,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 parts = self.get_parts(line)
                 listitem = xbmcgui.ListItem(line)
                 for count, item in enumerate(parts):
-                    listitem.setProperty('part%i' % count, item)
+                    listitem.setProperty('part%i' % (count + 1), item)
                 listitem.setProperty('time', str(time))
                 self.getControl( 110 ).addItem( listitem )
         else:
@@ -452,7 +452,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 parts = self.get_parts(line)
                 listitem = xbmcgui.ListItem(line)
                 for count, item in enumerate(parts):
-                    listitem.setProperty('part%i' % count, item)
+                    listitem.setProperty('part%i' % (count + 1), item)
                 self.getControl( 110 ).addItem( listitem )
         self.getControl( 110 ).selectItem( 0 )
         self.show_control( 110 )
