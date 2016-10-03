@@ -438,11 +438,15 @@ class GUI( xbmcgui.WindowXMLDialog ):
         if lyrics.lrc:
             WIN.setProperty('culrc.islrc', 'true')
             self.parser_lyrics( lyrics.lyrics )
-            for time, line in self.pOverlay:
+            for num, (time, line) in enumerate(self.pOverlay):
                 parts = self.get_parts(line)
                 listitem = xbmcgui.ListItem(line)
                 for count, item in enumerate(parts):
                     listitem.setProperty('part%i' % (count + 1), item)
+                delta = 100000 # in case duration of the last line is undefined
+                if num < len(self.pOverlay) - 1:
+                    delta = (self.pOverlay[num+1][0] - time) * 1000
+                listitem.setProperty('duration', str(int(delta)))
                 listitem.setProperty('time', str(time))
                 self.getControl( 110 ).addItem( listitem )
         else:
