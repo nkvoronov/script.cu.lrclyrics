@@ -2,6 +2,7 @@
 import sys, re, urllib2, socket, HTMLParser
 import xbmc, xbmcaddon
 import json
+import difflib
 from utilities import *
 
 __title__ = 'genius'
@@ -30,7 +31,12 @@ class LyricsFetcher:
         req.close()
         data = json.loads(response)
         try:
-            self.page = data['response']['hits'][0]['result']['url']
+            name = data['response']['hits'][0]['result']['primary_artist']['name']
+            track = data['response']['hits'][0]['result']['title']
+            if (difflib.SequenceMatcher(None, song.artist.lower(), name.lower()).ratio() > 0.8) and (difflib.SequenceMatcher(None, song.title.lower(), track.lower()).ratio() > 0.8):
+                self.page = data['response']['hits'][0]['result']['url']
+            else:
+                return None
         except:
             return None
         log( "%s: search url: %s" % (__title__, self.page))

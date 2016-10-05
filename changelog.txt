@@ -1,5 +1,6 @@
 v5.0.8
 - fix genius scraper
+- add more accurate matching to genius scraper
 
 v5.0.7
 - add additional listitem properties for external use
