@@ -45,13 +45,14 @@ class LyricsFetcher:
         except:
             return None
         req.close()
-        matchcode = re.search('div class="lyrics".*?">(.*?)</div', response, flags=re.DOTALL)
+        matchcode = re.search('lyrics class="lyrics".*?">(.*?)</lyrics', response, flags=re.DOTALL)
         try:
             lyricscode = (matchcode.group(1))
             htmlparser = HTMLParser.HTMLParser()
             lyricstext = htmlparser.unescape(lyricscode).replace('<br />', '\n')
-            templyr = re.sub('<[^<]+?>', '', lyricstext)
-            lyr = re.sub('\[(.*?)\]', '', templyr)
+            templyr = re.sub('<script .*?</script>', '', lyricstext)
+            cleanlyr = re.sub('<[^<]+?>', '', templyr)
+            lyr = re.sub('\[(.*?)\]', '', cleanlyr)
             lyrics.lyrics = lyr.strip().replace('\n\n\n', '\n\n')
             return lyrics
         except:
