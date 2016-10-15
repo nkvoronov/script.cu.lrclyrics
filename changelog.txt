@@ -1,21 +1,11 @@
-v5.0.8
+v4.2.0
 - fix genius scraper
 - add more accurate matching to genius scraper
-
-v5.0.7
 - add additional listitem properties for external use
-
-v5.0.6
 - fix focussed line selection
 - more accurate time syncing
-
-v5.0.5
 - add support for internet streams
-
-v5.0.4
 - add lrc window property
-
-v5.0.3
 - fix embedded lyrics search
 
 v4.1.11
