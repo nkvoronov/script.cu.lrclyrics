@@ -489,6 +489,20 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 for time in times:
                     self.pOverlay.append( (time, x) )
         self.pOverlay.sort( cmp=lambda x,y: cmp(x[0], y[0]) )
+        if ADDON.getSetting( 'strip' ) == "true":
+            poplist = []
+            prev_time = []
+            prev_line = ''
+            for num, (time, line) in enumerate(self.pOverlay):
+                if time == prev_time:
+                    if len(line) > len(prev_line):
+                        poplist.append(num - 1)
+                    else:
+                        poplist.append(num)
+                prev_time = time
+                prev_line = line
+            for i in reversed(poplist):
+                self.pOverlay.pop(i)
 
     def prepare_list(self, list):
         listitems = []
