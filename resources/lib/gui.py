@@ -473,18 +473,28 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def parser_lyrics(self, lyrics):
         self.pOverlay = []
-        tag = re.compile('\[(\d+):(\d\d)[\.:](\d\d)\]')
+        tag1 = re.compile('\[(\d+):(\d\d)[\.:](\d\d)\]')
+        tag2 = re.compile('\[(\d+):(\d\d)([\.:]\d+|)\]')
         lyrics = lyrics.replace( "\r\n" , "\n" )
         sep = "\n"
         for x in lyrics.split( sep ):
-            match1 = tag.match( x )
+            match1 = tag1.match( x )
+            match2 = tag2.match( x )
             times = []
             if ( match1 ):
-                while ( match1 ):
+                while ( match1 ): # [xx:yy.zz]
                     times.append( float(match1.group(1)) * 60 + float(match1.group(2)) + (float(match1.group(3))/100) )
                     y = 6 + len(match1.group(1)) + len(match1.group(3))
                     x = x[y:]
-                    match1 = tag.match( x )
+                    match1 = tag1.match( x )
+                for time in times:
+                    self.pOverlay.append( (time, x) )
+            elif ( match2 ): # [xx:yy]
+                while ( match2 ):
+                    times.append( float(match2.group(1)) * 60 + float(match2.group(2)) )
+                    y = 5 + len(match2.group(1)) + len(match2.group(3))
+                    x = x[y:]
+                    match2 = tag2.match( x )
                 for time in times:
                     self.pOverlay.append( (time, x) )
         self.pOverlay.sort( cmp=lambda x,y: cmp(x[0], y[0]) )
