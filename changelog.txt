@@ -1,3 +1,7 @@
+v4.2.2
+- add support for internet streams
+- save lyrics after selecting different lyrics
+
 v4.2.1
 - improve stripping of korean text
 - fix parsing lrc timestamps
