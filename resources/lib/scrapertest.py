@@ -12,8 +12,21 @@ FAILED = []
 def test_scrapers():
     dialog = xbmcgui.DialogProgress()
 
+    # test alsong
+    dialog.create(ADDONNAME, LANGUAGE(32163) % 'alsong')
+    log("==================== alsong ====================")
+    song = Song('Blur', "There's No Other Way")
+    lyrics = lyricsScraper_baidu.LyricsFetcher().get_lyrics(song)
+    if lyrics:
+        log(lyrics.lyrics)
+    else:
+        FAILED.append('alsong')
+        log("FAILED: alsong")
+    if dialog.iscanceled():
+        return
+
     # test baidu
-    dialog.create(ADDONNAME, LANGUAGE(32163) % 'baidu')
+    dialog.update(14, LANGUAGE(32163) % 'baidu')
     log("==================== baidu ====================")
     song = Song('Blur', "There's No Other Way")
     lyrics = lyricsScraper_baidu.LyricsFetcher().get_lyrics(song)
@@ -26,7 +39,7 @@ def test_scrapers():
         return
 
     # test darklyrics
-    dialog.update(15, LANGUAGE(32163) % 'darklyrics')
+    dialog.update(14, LANGUAGE(32163) % 'darklyrics')
     log("==================== darklyrics ====================")
     song = Song('Neurosis', 'Lost')
     lyrics = lyricsScraper_darklyrics.LyricsFetcher().get_lyrics(song)
@@ -39,7 +52,7 @@ def test_scrapers():
         return
 
     # test genius
-    dialog.update(30, LANGUAGE(32163) % 'genius')
+    dialog.update(28, LANGUAGE(32163) % 'genius')
     log("==================== genius ====================")
     song = Song('Maren Morris', 'My Church')
     lyrics = lyricsScraper_genius.LyricsFetcher().get_lyrics(song)
@@ -52,7 +65,7 @@ def test_scrapers():
         return
 
     # test gomaudio
-    dialog.update(45, LANGUAGE(32163) % 'gomaudio')
+    dialog.update(42, LANGUAGE(32163) % 'gomaudio')
     log("==================== gomaudio ====================")
     song = Song('Lady Gaga', 'Just Dance')
     lyrics = lyricsScraper_gomaudio.LyricsFetcher().get_lyrics(song, 'd106534632cb43306423acb351f8e6e9', '.mp3')
@@ -65,7 +78,7 @@ def test_scrapers():
         return
 
     # test lyricsmode
-    dialog.update(60, LANGUAGE(32163) % 'lyricsmode')
+    dialog.update(56, LANGUAGE(32163) % 'lyricsmode')
     log("==================== lyricsmode ====================")
     song = Song('Maren Morris', 'My Church')
     lyrics = lyricsScraper_lyricsmode.LyricsFetcher().get_lyrics(song)
@@ -78,7 +91,7 @@ def test_scrapers():
         return
 
     # test lyricwiki
-    dialog.update(75, LANGUAGE(32163) % 'lyricwiki')
+    dialog.update(70, LANGUAGE(32163) % 'lyricwiki')
     log("==================== lyricwiki ====================")
     song = Song('Maren Morris', 'My Church')
     lyrics = lyricsScraper_lyricwiki.LyricsFetcher().get_lyrics(song)
@@ -91,7 +104,7 @@ def test_scrapers():
         return
 
     # test ttplayer
-    dialog.update(90, LANGUAGE(32163) % 'ttplayer')
+    dialog.update(84, LANGUAGE(32163) % 'ttplayer')
     log("==================== ttplayer ====================")
     song = Song('Abba', 'Elaine')
     lyrics = lyricsScraper_ttplayer.LyricsFetcher().get_lyrics(song)
