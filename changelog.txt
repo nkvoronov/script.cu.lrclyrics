@@ -1,5 +1,6 @@
 v5.1.1
-- fix broken lrc scraper
+- fix baidu lrc scraper
+- fix alsong lrc scraper
 
 v5.1.0
 - fix broken text scrapers
