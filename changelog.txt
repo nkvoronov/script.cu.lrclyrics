@@ -1,5 +1,6 @@
 v4.3.1
-- fix broken lrc scraper
+- fix baidu lrc scraper
+- fix alsong lrc scraper
 
 v4.3.0
 - fix broken text scrapers
