@@ -1,4 +1,4 @@
-﻿#-*- coding: UTF-8 -*-
+#-*- coding: UTF-8 -*-
 """
 Scraper for http://www.viewlyrics.com
 
@@ -115,10 +115,10 @@ class LyricsFetcher:
         lyrics.source = __title__
         lyrics.lrc = __lrc__
         search_url = "http://search.crintsoft.com/searchlyrics.htm"
-        search_query_base = "<?xml version='1.0' encoding='utf-8' standalone='yes' ?><searchV1 client=\"ViewLyricsOpenSearcher\" artist=\"{artist}\" title=\"{title}\" OnlyMatched=\"1\" />"
+        search_query_base = u"<?xml version='1.0' encoding='utf-8' standalone='yes' ?><searchV1 client=\"ViewLyricsOpenSearcher\" artist=\"{artist}\" title=\"{title}\" OnlyMatched=\"1\" />"
         search_useragent = "MiniLyrics"
         search_md5watermark = b"Mlv1clt4.0"
-        search_encquery = MiniLyrics.vl_enc(search_query_base.format(artist=song.artist, title=song.title).encode("utf-8"), search_md5watermark)
+        search_encquery = MiniLyrics.vl_enc(search_query_base.format(artist=song.artist.decode("utf-8"), title=song.title.decode("utf-8")).encode("utf-8"), search_md5watermark)
         headers = {"User-Agent": "{ua}".format(ua=search_useragent),
                    "Content-Length": "{content_length}".format(content_length=len(search_encquery)),
                    "Connection": "Keep-Alive",
