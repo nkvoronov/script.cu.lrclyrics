@@ -1,3 +1,4 @@
+#-*- coding: UTF-8 -*-
 import time
 from utilities import *
 from culrcscrapers.alsong import lyricsScraper as lyricsScraper_alsong
@@ -156,7 +157,7 @@ def test_scrapers():
     # test minilyrics
     dialog.update(80, LANGUAGE(32163) % 'minilyrics')
     log("==================== minilyrics ====================")
-    song = Song('Ace Of Base', 'All That She Wants')
+    song = Song('Michael Bublé', 'Feeling Good')
     st = time.time()
     lyrics = lyricsScraper_minilyrics.LyricsFetcher().get_lyrics(song)
     ft = time.time()
