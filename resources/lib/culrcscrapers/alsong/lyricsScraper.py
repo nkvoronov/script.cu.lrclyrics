@@ -53,10 +53,11 @@ class LyricsFetcher:
         except:
             return        
         tree = xml.parseString( Page )
-        if tree.getElementsByTagName("strInfoID")[0].childNodes[0].data == '-1':
+        try:
+            name = tree.getElementsByTagName("strArtistName")[0].childNodes[0].data
+            track = tree.getElementsByTagName("strTitle")[0].childNodes[0].data
+        except:
             return
-        name = tree.getElementsByTagName("strArtistName")[0].childNodes[0].data
-        track = tree.getElementsByTagName("strTitle")[0].childNodes[0].data
         if (difflib.SequenceMatcher(None, song.artist.lower(), name.lower()).ratio() > 0.8) and (difflib.SequenceMatcher(None, song.title.lower(), track.lower()).ratio() > 0.8):
             lyr = tree.getElementsByTagName("strLyric")[0].childNodes[0].data.replace('<br>','\n')
             lyrics.lyrics = lyr.encode('utf-8')
