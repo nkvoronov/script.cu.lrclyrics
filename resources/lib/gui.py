@@ -333,6 +333,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.Monitor = MyMonitor(function = None)
        
     def onInit(self):
+        self.getControl( 120 ).setVisible( False )
         self.setup_gui()
         self.process_lyrics()
         self.gui_loop()
@@ -382,7 +383,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.timer = None
         self.allowtimer = True
         self.refreshing = False
-        self.selected = False
         self.controlId = -1
         self.pOverlay = []
         self.scroll_line = int(self.get_page_lines() / 2)
@@ -546,12 +546,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.getControl( 120 ).selectItem( 0 )
             self.stop_refresh()
             self.show_control( 120 )
-            while not self.selected:
-                xbmc.sleep(50)
-            self.selected = False
-            self.getControl( 110 ).reset()
-            self.show_lyrics( self.lyrics )
-            self.save( self.lyrics )
 
     def reset_controls(self):
         self.getControl( 110 ).reset()
@@ -586,7 +580,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
             exec ( "from culrcscrapers.%s import lyricsScraper as lyricsScraper_%s" % (source, source))
             scraper = eval('lyricsScraper_%s.LyricsFetcher()' % source)
             self.lyrics.lyrics = scraper.get_lyrics_from_list( lyric )
-            self.selected = True
+            self.getControl( 110 ).reset()
+            self.show_lyrics( self.lyrics )
+            self.save( self.lyrics )
 
     def onFocus(self, controlId):
         self.controlId = controlId
