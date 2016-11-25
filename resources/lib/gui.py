@@ -60,7 +60,7 @@ class MAIN():
             elif xbmc.getCondVisibility("Window.IsVisible(12006)") and xbmcgui.Window(10025).getProperty("PlayingBackgroundMedia") in [None, ""]:
                 if not self.triggered:
                     self.triggered = True
-                    # notify user the script is running
+                    # notify user the script is searching for lyrics
                     if ADDON.getSetting( "silent" ) == 'false':
                         xbmc.executebuiltin((u'Notification(%s,%s,%i)' % (ADDONNAME , LANGUAGE(32004), 2000)).encode('utf-8', 'ignore'))
                     # start fetching lyrics
