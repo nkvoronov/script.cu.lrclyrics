@@ -31,6 +31,9 @@ class gomClient(object):
         musf.Open(file)
         buf = musf.ReadAudioStream(100*1024)	# 100KB from audio data
         musf.Close()
+        # buffer will be empty for streaming audio
+        if not buf:
+            return
         # calculate hashkey
         m = hashlib.md5(); m.update(buf);
         return m.hexdigest()
