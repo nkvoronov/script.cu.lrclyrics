@@ -324,6 +324,18 @@ class guiThread(threading.Thread):
         del ui
         WIN.clearProperty('culrc.guirunning')
 
+class syncThread(threading.Thread):
+    def __init__(self, *args, **kwargs):
+        threading.Thread.__init__(self)
+        self.function = kwargs[ "function" ]
+        self.offset = kwargs[ "offset" ]
+
+    def run(self):
+        import sync
+        dialog = sync.GUI( "DialogSlider.xml" , CWD, "Default", offset=self.offset, function=self.function )
+        dialog.doModal()
+        del dialog
+
 class GUI( xbmcgui.WindowXMLDialog ):
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXMLDialog.__init__(self)
@@ -341,6 +353,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def process_lyrics(self):
         global lyrics
+        self.syncadjust = 0.0
         self.lyrics = lyrics
         self.stop_refresh()
         self.reset_controls()
@@ -358,7 +371,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def gui_loop(self):
         # gui loop
-        while self.showgui and (not self.Monitor.abortRequested()) and xbmc.getCondVisibility('Player.HasAudio'):
+        while self.showgui and (not self.Monitor.abortRequested()) and xbmc.Player().isPlayingAudio():
             # check if we have new lyrics
             if WIN.getProperty("culrc.newlyrics") == "TRUE":
                 WIN.clearProperty('culrc.newlyrics')
@@ -370,7 +383,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 self.exit_gui('close')
             xbmc.sleep(500)
         # music ended, close the gui
-        if (not xbmc.getCondVisibility('Player.HasAudio')):
+        if (not xbmc.Player().isPlayingAudio()):
             self.exit_gui('quit')
         # xbmc quits, close the gui 
         elif self.Monitor.abortRequested():
@@ -409,11 +422,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 cur_time = xbmc.Player().getTime()
             nums = self.getControl( 110 ).size()
             pos = self.getControl( 110 ).getSelectedPosition()
-            if (cur_time < self.pOverlay[pos][0]):
-                while (pos > 0 and self.pOverlay[pos - 1][0] > cur_time):
+            if (cur_time < (self.pOverlay[pos][0] - self.syncadjust)):
+                while (pos > 0 and (self.pOverlay[pos - 1][0] - self.syncadjust) > cur_time):
                     pos = pos -1
             else:
-                while (pos < nums - 1 and self.pOverlay[pos + 1][0] < cur_time):
+                while (pos < nums - 1 and (self.pOverlay[pos + 1][0] - self.syncadjust) < cur_time):
                     pos = pos +1
                 if (pos + self.scroll_line > nums - 1):
                     self.getControl( 110 ).selectItem( nums - 1 )
@@ -421,8 +434,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
                     self.getControl( 110 ).selectItem( pos + self.scroll_line )
             self.getControl( 110 ).selectItem( pos )
             self.setFocus( self.getControl( 110 ) )
-            if (self.allowtimer and cur_time < self.pOverlay[nums - 1][0]):
-                waittime = self.pOverlay[pos + 1][0] - cur_time
+            if (self.allowtimer and cur_time < (self.pOverlay[nums - 1][0] - self.syncadjust)):
+                waittime = (self.pOverlay[pos + 1][0] - self.syncadjust) - cur_time
                 self.timer = Timer(waittime, self.refresh)
                 self.refreshing = True
                 self.timer.start()
@@ -552,6 +565,26 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.stop_refresh()
             self.show_control( 120 )
 
+    def set_synctime(self, adjust):
+        self.syncadjust = adjust
+
+    def context_menu(self):
+        labels = ()
+        functions = ()
+        if self.getControl( 120 ).size() > 1:
+            labels += (LANGUAGE(32006),)
+            functions += ('select',)
+        if WIN.getProperty('culrc.islrc') == 'true':
+            labels += (LANGUAGE(32007),)
+            functions += ('sync',)
+        selection = xbmcgui.Dialog().contextmenu(labels)
+        if selection >= 0:
+            if functions[selection] == 'select':
+                self.reshow_choices()
+            elif functions[selection] == 'sync':
+                sync = syncThread(offset=self.syncadjust, function=self.set_synctime)
+                sync.start()
+
     def reset_controls(self):
         self.getControl( 110 ).reset()
         self.getControl( 200 ).setLabel('')
@@ -595,10 +628,13 @@ class GUI( xbmcgui.WindowXMLDialog ):
     def onAction(self, action):
         actionId = action.getId()
         if ( actionId in CANCEL_DIALOG ):
-            # dialog cancelled, close the gui
-            self.exit_gui('quit')
+            if xbmc.getCondVisibility('Control.IsVisible(120)'):
+                self.show_control( 110 )
+            else:
+                # dialog cancelled, close the gui
+                self.exit_gui('quit')
         elif ( actionId == 101 ) or ( actionId == 117 ): # ACTION_MOUSE_RIGHT_CLICK / ACTION_CONTEXT_MENU
-            self.reshow_choices()
+            self.context_menu()
         elif ( actionId in ACTION_OSD ):
             xbmc.executebuiltin("ActivateWindow(10120)")
         elif ( actionId in ACTION_CODEC ):
@@ -616,6 +652,9 @@ class MyPlayer(xbmc.Player):
             self.function()
 
     def onPlayBackStopped(self):
+        self.clear()
+
+    def onPlayBackEnded(self):
         self.clear()
 
 class MyMonitor(xbmc.Monitor):

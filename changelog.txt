@@ -1,3 +1,6 @@
+v5.3.0
+- add manual sync option
+
 v5.2.6
 - fix incorrect results from gomaudio for streaming audio
 
