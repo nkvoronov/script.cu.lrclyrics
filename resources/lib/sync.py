@@ -1,6 +1,6 @@
 from utilities import *
 
-LANGUAGE  = sys.modules[ "__main__" ].LANGUAGE
+LANGUAGE = sys.modules[ "__main__" ].LANGUAGE
 
 class GUI(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
