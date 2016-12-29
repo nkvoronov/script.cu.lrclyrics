@@ -62,7 +62,8 @@ class MAIN():
                     self.triggered = True
                     # notify user the script is searching for lyrics
                     if ADDON.getSetting( "silent" ) == 'false':
-                        xbmc.executebuiltin((u'Notification(%s,%s,%i)' % (ADDONNAME , LANGUAGE(32004), 2000)).encode('utf-8', 'ignore'))
+                        dialog = xbmcgui.Dialog()
+                        dialog.notification(ADDONNAME, LANGUAGE(32004), time=2000, sound=False)
                     # start fetching lyrics
                     self.myPlayerChanged()
                 elif WIN.getProperty('culrc.force') == 'TRUE':
@@ -261,7 +262,8 @@ class MAIN():
                     WIN.setProperty('culrc.nolyrics', 'TRUE')
                     # notify user no lyrics were found
                     if ADDON.getSetting( "silent" ) == 'false':
-                        xbmc.executebuiltin((u'Notification(%s,%s,%i)' % (ADDONNAME + ": " + LANGUAGE(32001), song.artist.decode("utf-8") + " - " + song.title.decode("utf-8"), 2000)).encode('utf-8', 'ignore'))
+                        dialog = xbmcgui.Dialog()
+                        dialog.notification(ADDONNAME + ": " + LANGUAGE(32001), song.artist + " - " + song.title, time=2000, sound=False)
                 break
             xbmc.sleep( 50 )
         # only search for next lyrics if current song has changed
