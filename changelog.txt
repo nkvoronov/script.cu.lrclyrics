@@ -1,3 +1,7 @@
+v5.3.1
+- silence notifications
+- highlight selected lyric in list
+
 v5.3.0
 - add manual sync option
 

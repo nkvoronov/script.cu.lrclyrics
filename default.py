@@ -29,7 +29,8 @@ def culrc_run(mode):
     else:
         log('script already running')
         if ADDON.getSetting('silent') == 'false':
-            xbmc.executebuiltin((u'Notification(%s,%s,%i)' % (ADDONNAME , LANGUAGE(32158), 2000)).encode('utf-8', 'ignore'))
+            dialog = xbmcgui.Dialog()
+            dialog.notification(ADDONNAME, LANGUAGE(32158), time=2000, sound=False)
 
 if (__name__ == '__main__'):
     service = ADDON.getSetting('service')
