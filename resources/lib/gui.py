@@ -347,8 +347,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.Monitor = MyMonitor(function = None)
        
     def onInit(self):
+        self.text = self.getControl( 110 )
+        self.list = self.getControl( 120 )
+        self.label = self.getControl( 200 )
+        self.list.setVisible( False )
         self.offset = float(ADDON.getSetting( 'offset' ))
-        self.getControl( 120 ).setVisible( False )
         self.setup_gui()
         self.process_lyrics()
         self.gui_loop()
@@ -364,7 +367,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         else:
             WIN.setProperty('culrc.lyrics', LANGUAGE( 32001 ))
             WIN.clearProperty('culrc.islrc')
-        self.getControl( 120 ).reset()
+        self.list.reset()
         if self.lyrics.list:
             WIN.setProperty('culrc.haslist', 'true')
             self.prepare_list(self.lyrics.list)
@@ -406,12 +409,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.selecteditem = 0
 
     def get_page_lines(self):
-        self.getControl( 110 ).setVisible( False )
+        self.text.setVisible( False )
         listitem = xbmcgui.ListItem()
         while xbmc.getInfoLabel('Container(110).NumPages') != '2':
             self.getControl(110).addItem(listitem)
             xbmc.sleep(50)
-        lines = self.getControl( 110 ).size() - 1
+        lines = self.text.size() - 1
         return lines
 
     def refresh(self):
@@ -423,8 +426,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 cur_time = time.time() - starttime
             else:
                 cur_time = xbmc.Player().getTime()
-            nums = self.getControl( 110 ).size()
-            pos = self.getControl( 110 ).getSelectedPosition()
+            nums = self.text.size()
+            pos = self.text.getSelectedPosition()
             if (cur_time < (self.pOverlay[pos][0] - self.syncadjust)):
                 while (pos > 0 and (self.pOverlay[pos - 1][0] - self.syncadjust) > cur_time):
                     pos = pos -1
@@ -432,11 +435,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 while (pos < nums - 1 and (self.pOverlay[pos + 1][0] - self.syncadjust) < cur_time):
                     pos = pos +1
                 if (pos + self.scroll_line > nums - 1):
-                    self.getControl( 110 ).selectItem( nums - 1 )
+                    self.text.selectItem( nums - 1 )
                 else:
-                    self.getControl( 110 ).selectItem( pos + self.scroll_line )
-            self.getControl( 110 ).selectItem( pos )
-            self.setFocus( self.getControl( 110 ) )
+                    self.text.selectItem( pos + self.scroll_line )
+            self.text.selectItem( pos )
+            self.setFocus( self.text )
             if (self.allowtimer and cur_time < (self.pOverlay[nums - 1][0] - self.syncadjust)):
                 waittime = (self.pOverlay[pos + 1][0] - self.syncadjust) - cur_time
                 self.timer = Timer(waittime, self.refresh)
@@ -458,8 +461,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.lock.release()
 
     def show_control(self, controlId):
-        self.getControl( 110 ).setVisible( controlId == 110 )
-        self.getControl( 120 ).setVisible( controlId == 120 )
+        self.text.setVisible( controlId == 110 )
+        self.list.setVisible( controlId == 120 )
         xbmc.sleep( 5 )
         self.setFocus( self.getControl( controlId ) )
 
@@ -470,7 +473,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             source = '%s (%d)' % (lyrics.source, len(lyrics.list))
         else:
             source = lyrics.source
-        self.getControl( 200 ).setLabel( source )
+        self.label.setLabel( source )
         if lyrics.lrc:
             WIN.setProperty('culrc.islrc', 'true')
             self.parser_lyrics( lyrics.lyrics )
@@ -484,7 +487,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                     delta = (self.pOverlay[num+1][0] - time) * 1000
                 listitem.setProperty('duration', str(int(delta)))
                 listitem.setProperty('time', str(time))
-                self.getControl( 110 ).addItem( listitem )
+                self.text.addItem( listitem )
         else:
             WIN.clearProperty('culrc.islrc')
             splitLyrics = lyrics.lyrics.splitlines()
@@ -493,11 +496,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 listitem = xbmcgui.ListItem(line)
                 for count, item in enumerate(parts):
                     listitem.setProperty('part%i' % (count + 1), item)
-                self.getControl( 110 ).addItem( listitem )
-        self.getControl( 110 ).selectItem( 0 )
+                self.text.addItem( listitem )
+        self.text.selectItem( 0 )
         self.show_control( 110 )
         if lyrics.lrc:
-            if (self.allowtimer and self.getControl( 110 ).size() > 1):
+            if (self.allowtimer and self.text.size() > 1):
                 self.refresh()
 
     def get_parts(self, line):
@@ -560,12 +563,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
             listitem.setProperty('lyric', str(song))
             listitem.setProperty('source', lyrics.source)
             listitems.append(listitem)
-        self.getControl( 120 ).addItems( listitems )
+        self.list.addItems( listitems )
 
     def reshow_choices(self):
-        if self.getControl( 120 ).size() > 1:
-            self.getControl( 120 ).selectItem( 0 )
-            self.getControl( 120 ).getListItem(self.selecteditem).select(True)
+        if self.list.size() > 1:
+            self.list.selectItem( 0 )
+            self.list.getListItem(self.selecteditem).select(True)
             self.stop_refresh()
             self.show_control( 120 )
 
@@ -575,7 +578,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
     def context_menu(self):
         labels = ()
         functions = ()
-        if self.getControl( 120 ).size() > 1:
+        if self.list.size() > 1:
             labels += (LANGUAGE(32006),)
             functions += ('select',)
         if WIN.getProperty('culrc.islrc') == 'true':
@@ -590,8 +593,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 sync.start()
 
     def reset_controls(self):
-        self.getControl( 110 ).reset()
-        self.getControl( 200 ).setLabel('')
+        self.text.reset()
+        self.label.setLabel('')
         WIN.clearProperty('culrc.lyrics')
         WIN.clearProperty('culrc.islrc')
         WIN.clearProperty('culrc.source')
@@ -610,22 +613,22 @@ class GUI( xbmcgui.WindowXMLDialog ):
         if ( controlId == 110 ):
             # will only works for lrc based lyrics
             try:
-                item = self.getControl( 110 ).getSelectedItem()
+                item = self.text.getSelectedItem()
                 stamp = float(item.getProperty('time'))
                 xbmc.Player().seekTime(stamp)
             except:
                 pass
         if ( controlId == 120 ):
-            self.getControl( 120 ).getListItem(self.selecteditem).select(False)
-            self.selecteditem = self.getControl( 120 ).getSelectedPosition()
-            self.getControl( 120 ).getListItem(self.selecteditem).select(True)
-            item = self.getControl( 120 ).getSelectedItem()
+            self.list.getListItem(self.selecteditem).select(False)
+            self.selecteditem = self.list.getSelectedPosition()
+            self.list.getListItem(self.selecteditem).select(True)
+            item = self.list.getSelectedItem()
             source = item.getProperty('source').lower()
             lyric = eval(item.getProperty('lyric'))
             exec ( "from culrcscrapers.%s import lyricsScraper as lyricsScraper_%s" % (source, source))
             scraper = eval('lyricsScraper_%s.LyricsFetcher()' % source)
             self.lyrics.lyrics = scraper.get_lyrics_from_list( lyric )
-            self.getControl( 110 ).reset()
+            self.text.reset()
             self.show_lyrics( self.lyrics )
             self.save( self.lyrics )
 
