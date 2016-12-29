@@ -403,6 +403,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.pOverlay = []
         self.scroll_line = int(self.get_page_lines() / 2)
         self.showgui = True
+        self.selecteditem = 0
 
     def get_page_lines(self):
         self.getControl( 110 ).setVisible( False )
@@ -564,6 +565,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
     def reshow_choices(self):
         if self.getControl( 120 ).size() > 1:
             self.getControl( 120 ).selectItem( 0 )
+            self.getControl( 120 ).getListItem(self.selecteditem).select(True)
             self.stop_refresh()
             self.show_control( 120 )
 
@@ -614,6 +616,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
             except:
                 pass
         if ( controlId == 120 ):
+            self.getControl( 120 ).getListItem(self.selecteditem).select(False)
+            self.selecteditem = self.getControl( 120 ).getSelectedPosition()
+            self.getControl( 120 ).getListItem(self.selecteditem).select(True)
             item = self.getControl( 120 ).getSelectedItem()
             source = item.getProperty('source').lower()
             lyric = eval(item.getProperty('lyric'))
