@@ -212,11 +212,23 @@ class MAIN():
             self.fetchedLyrics.append(lyrics)
             self.fetchedLyrics = self.fetchedLyrics[:10]
 
-    def save_lyrics_to_file(self, lyrics):
+    def save_lyrics_to_file(self, lyrics, adjust=None):
         if isinstance (lyrics.lyrics, str):
             lyr = lyrics.lyrics
         else:
             lyr = lyrics.lyrics.encode('utf-8')
+        if adjust:
+            # save our manual sync offset to file
+            adjust = int(adjust * 1000)
+            # check if there's an existing offset tag
+            found = re.search('\[offset:(.*?)\]', lyr, flags=re.DOTALL)
+            if found:
+                # get the sum of both values
+                adjust = int(found.group(1)) + adjust
+                # remove the existing offset tag
+                lyr = lyr.replace(found.group(0) + '\n','')
+            # write our new offset tag
+            lyr = '[offset:%i]\n' % adjust + lyr
         if (ADDON.getSetting('save_lyrics1') == 'true'):
             file_path = lyrics.song.path1(lyrics.lrc)
             success = self.write_lyrics_file(file_path, lyr)
@@ -324,7 +336,7 @@ class guiThread(threading.Thread):
         self.function = kwargs['function']
 
     def run(self):
-        ui = GUI('script-cu-lrclyrics-main.xml' , CWD, 'Default', mode=self.mode, save=self.save, function=self.function)
+        ui = GUI('script-cu-lrclyrics-main.xml', CWD, 'Default', mode=self.mode, save=self.save, function=self.function)
         ui.doModal()
         del ui
         WIN.clearProperty('culrc.guirunning')
@@ -333,13 +345,17 @@ class syncThread(threading.Thread):
     def __init__(self, *args, **kwargs):
         threading.Thread.__init__(self)
         self.function = kwargs['function']
-        self.offset = kwargs['offset']
+        self.adjust = kwargs['adjust']
+        self.save = kwargs['save']
+        self.lyrics = kwargs['lyrics']
 
     def run(self):
         import sync
-        dialog = sync.GUI('DialogSlider.xml' , CWD, 'Default', offset=self.offset, function=self.function)
+        dialog = sync.GUI('DialogSlider.xml' , CWD, 'Default', offset=self.adjust, function=self.function)
         dialog.doModal()
+        adjust = dialog.val
         del dialog
+        self.save(self.lyrics, adjust)
 
 class GUI(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
@@ -592,7 +608,7 @@ class GUI(xbmcgui.WindowXMLDialog):
             if functions[selection] == 'select':
                 self.reshow_choices()
             elif functions[selection] == 'sync':
-                sync = syncThread(offset=self.syncadjust, function=self.set_synctime)
+                sync = syncThread(adjust=self.syncadjust, function=self.set_synctime, save=self.save, lyrics=self.lyrics)
                 sync.start()
 
     def reset_controls(self):

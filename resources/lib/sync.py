@@ -8,9 +8,11 @@ class GUI(xbmcgui.WindowXMLDialog):
         self.offset = kwargs['offset']
 
     def onInit(self):
+        self.val = 0.0
         self._get_controls()
         self._init_values()
-        while (not xbmc.Monitor().abortRequested()) and xbmc.getCondVisibility('Player.HasAudio'):
+        self.exit = False
+        while (not xbmc.Monitor().abortRequested()) and xbmc.getCondVisibility('Player.HasAudio') and (not self.exit):
             xbmc.sleep(500)
         self.close()
 
@@ -36,10 +38,11 @@ class GUI(xbmcgui.WindowXMLDialog):
 
     def onAction(self, action):
         if action.getId() in CANCEL_DIALOG:
+            self.exit = True
             self.close()
         else:
             val = self.slider.getPercent()
-            val = round((val - 50.0) / 10.0, 1)
-            string = self._get_string(val)
+            self.val = round((val - 50.0) / 10.0, 1)
+            string = self._get_string(self.val)
             self.label.setLabel(string)
-            self.function(val)
+            self.function(self.val)
