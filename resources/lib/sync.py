@@ -13,7 +13,7 @@ class GUI(xbmcgui.WindowXMLDialog):
         self._init_values()
         self.exit = False
         while (not xbmc.Monitor().abortRequested()) and xbmc.getCondVisibility('Player.HasAudio') and (not self.exit):
-            xbmc.sleep(500)
+            xbmc.sleep(100)
         self.close()
 
     def _get_controls(self):
@@ -39,7 +39,6 @@ class GUI(xbmcgui.WindowXMLDialog):
     def onAction(self, action):
         if action.getId() in CANCEL_DIALOG:
             self.exit = True
-            self.close()
         else:
             val = self.slider.getPercent()
             self.val = round((val - 50.0) / 10.0, 1)
