@@ -101,7 +101,7 @@ class MAIN():
             return lyrics
         if song.title:
             lyrics = self.find_lyrics(song)
-            if ADDON.getSetting('strip') == 'true':
+            if lyrics.lyrics and ADDON.getSetting('strip') == 'true':
                 if isinstance (lyrics.lyrics,str):
                     fulltext = lyrics.lyrics.decode('utf-8')
                 else:
@@ -236,17 +236,34 @@ class MAIN():
             file_path = lyrics.song.path2(lyrics.lrc)
             success = self.write_lyrics_file(file_path, lyr)
 
-    def write_lyrics_file(self, file, data):
+    def write_lyrics_file(self, path, data):
         try:
-            if (not xbmcvfs.exists(os.path.dirname(file))):
-                xbmcvfs.mkdirs(os.path.dirname(file))
-            lyrics_file = xbmcvfs.File(file, 'w')
+            if (not xbmcvfs.exists(os.path.dirname(path))):
+                xbmcvfs.mkdirs(os.path.dirname(path))
+            lyrics_file = xbmcvfs.File(path, 'w')
             lyrics_file.write(data)
             lyrics_file.close()
             return True
         except:
             log('failed to save lyrics')
             return False
+
+    def delete_lyrics(self, lyrics):
+        if (ADDON.getSetting('save_lyrics1') == 'true'):
+            file_path = lyrics.song.path1(lyrics.lrc)
+            success = self.delete_file(file_path)
+        if (ADDON.getSetting('save_lyrics2') == 'true'):
+            file_path = lyrics.song.path2(lyrics.lrc)
+            success = self.delete_file(file_path)
+
+    def delete_file(self, path):
+        try:
+            xbmcvfs.delete(path)
+            return True
+        except:
+            log('failed to delete file')
+            return False
+
 
     def myPlayerChanged(self):
         global lyrics
@@ -270,7 +287,7 @@ class MAIN():
                     # check if gui is already running
                     if not WIN.getProperty('culrc.guirunning') == 'TRUE':
                         WIN.setProperty('culrc.guirunning', 'TRUE')
-                        gui = guiThread(mode=self.mode, save=self.save_lyrics_to_file, function=self.return_time)
+                        gui = guiThread(mode=self.mode, save=self.save_lyrics_to_file, delete=self.delete_lyrics, function=self.return_time)
                         gui.start()
                 else:
                     # signal gui thread to exit
@@ -333,10 +350,11 @@ class guiThread(threading.Thread):
         threading.Thread.__init__(self)
         self.mode = kwargs['mode']
         self.save = kwargs['save']
+        self.delete = kwargs['delete']
         self.function = kwargs['function']
 
     def run(self):
-        ui = GUI('script-cu-lrclyrics-main.xml', CWD, 'Default', mode=self.mode, save=self.save, function=self.function)
+        ui = GUI('script-cu-lrclyrics-main.xml', CWD, 'Default', mode=self.mode, save=self.save, delete=self.delete, function=self.function)
         ui.doModal()
         del ui
         WIN.clearProperty('culrc.guirunning')
@@ -362,6 +380,7 @@ class GUI(xbmcgui.WindowXMLDialog):
         xbmcgui.WindowXMLDialog.__init__(self)
         self.mode = kwargs['mode']
         self.save = kwargs['save']
+        self.delete = kwargs['delete']
         self.function = kwargs['function']
         self.Monitor = MyMonitor(function = None)
        
@@ -603,13 +622,22 @@ class GUI(xbmcgui.WindowXMLDialog):
         if WIN.getProperty('culrc.islrc') == 'true':
             labels += (LANGUAGE(32007),)
             functions += ('sync',)
-        selection = xbmcgui.Dialog().contextmenu(labels)
-        if selection >= 0:
-            if functions[selection] == 'select':
-                self.reshow_choices()
-            elif functions[selection] == 'sync':
-                sync = syncThread(adjust=self.syncadjust, function=self.set_synctime, save=self.save, lyrics=self.lyrics)
-                sync.start()
+        if lyrics.source != LANGUAGE(32002):
+            labels += (LANGUAGE(32167),)
+            functions += ('delete',)
+        if labels:
+            selection = xbmcgui.Dialog().contextmenu(labels)
+            if selection >= 0:
+                if functions[selection] == 'select':
+                    self.reshow_choices()
+                elif functions[selection] == 'sync':
+                    sync = syncThread(adjust=self.syncadjust, function=self.set_synctime, save=self.save, lyrics=self.lyrics)
+                    sync.start()
+                elif functions[selection] == 'delete':
+                    self.lyrics.lyrics = ''
+                    self.reset_controls()
+                    WIN.setProperty('culrc.nolyrics', 'TRUE')
+                    self.delete(self.lyrics)
 
     def reset_controls(self):
         self.text.reset()

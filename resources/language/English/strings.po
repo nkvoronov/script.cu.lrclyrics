@@ -207,7 +207,11 @@ msgctxt "#32166"
 msgid "Time offset for synchronised lyrics"
 msgstr ""
 
-#empty strings from id 32161 to 32198
+msgctxt "#32167"
+msgid "Delete lyrics"
+msgstr ""
+
+#empty strings from id 32168 to 32198
 #Skin labels
 
 msgctxt "#32199"
