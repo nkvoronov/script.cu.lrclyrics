@@ -56,6 +56,7 @@ class MAIN():
         while (not self.Monitor.abortRequested()) and (WIN.getProperty('culrc.quit') == ''):
             # Check if there is a manual override request
             if WIN.getProperty('culrc.manual') == 'true':
+                WIN.clearProperty('culrc.manual')
                 log('searching for manually defined lyrics')
                 self.get_manual_lyrics()
             # check if we are on the music visualization screen
@@ -90,7 +91,6 @@ class MAIN():
         WIN.clearProperty('culrc.running')
 
     def get_lyrics(self, song):
-        #xbmc.sleep(60)
         log('searching memory for lyrics')
         lyrics = self.get_lyrics_from_memory(song)
         if lyrics:
@@ -308,22 +308,21 @@ class MAIN():
                 log('Missing Artist or Song name in ID3 tag for next track')
 
     def get_manual_lyrics(self):
-        # Read in the manually defined artist and track
-        if WIN.getProperty('culrc.manual') == 'true':
-            artist = WIN.getProperty('culrc.artist')
-            track = WIN.getProperty('culrc.track')
-            # Make sure we have both an artist and track name
-            if artist and track:
-                song = Song(artist, track)
-                if (song and (self.current_lyrics.song != song)):
-                    log('Current Song: %s - %s' % (song.artist, song.title))
-                    lyrics = self.get_lyrics(song)
-                    self.current_lyrics = lyrics
-                    if lyrics.lyrics:
-                        # Store the details of the lyrics
-                        WIN.setProperty('culrc.newlyrics', 'TRUE')
-                        WIN.setProperty('culrc.lyrics', lyrics.lyrics)
-                        WIN.setProperty('culrc.source', lyrics.source)
+        # Read the manually defined artist and track
+        artist = WIN.getProperty('culrc.artist')
+        track = WIN.getProperty('culrc.track')
+        # Make sure we have both an artist and track name
+        if artist and track:
+            song = Song(artist, track)
+            if (song and (self.current_lyrics.song != song)):
+                log('Current Song: %s - %s' % (song.artist, song.title))
+                lyrics = self.get_lyrics(song)
+                self.current_lyrics = lyrics
+                if lyrics.lyrics:
+                    # Store the details of the lyrics
+                    WIN.setProperty('culrc.newlyrics', 'TRUE')
+                    WIN.setProperty('culrc.lyrics', lyrics.lyrics)
+                    WIN.setProperty('culrc.source', lyrics.source)
 
     def update_settings(self):
         self.get_scraper_list()
@@ -424,7 +423,7 @@ class GUI(xbmcgui.WindowXMLDialog):
             elif WIN.getProperty('culrc.nolyrics') == 'TRUE':
                 # no lyrics, close the gui
                 self.exit_gui('close')
-            xbmc.sleep(500)
+            xbmc.sleep(100)
         # music ended, close the gui
         if (not xbmc.Player().isPlayingAudio()):
             self.exit_gui('quit')
