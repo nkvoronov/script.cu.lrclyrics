@@ -1,3 +1,6 @@
+v5.3.4
+- added option to filter words from lyrics
+
 v5.3.3
 - added option to delete lyrics file
 

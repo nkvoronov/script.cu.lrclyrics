@@ -511,6 +511,11 @@ class GUI(xbmcgui.WindowXMLDialog):
         else:
             source = lyrics.source
         self.label.setLabel(source)
+        stripwords = ADDON.getSetting('words')
+        if stripwords:
+            wordlist = stripwords.strip('.^$*+?{}[]\|()').split(',')
+            for word in wordlist:
+                lyrics.lyrics = re.sub(r'\b%s\b' % word.strip(), '', lyrics.lyrics, flags=re.IGNORECASE)
         if lyrics.lrc:
             WIN.setProperty('culrc.islrc', 'true')
             self.parser_lyrics(lyrics.lyrics)

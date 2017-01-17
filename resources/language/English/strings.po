@@ -133,7 +133,11 @@ msgctxt "#32118"
 msgid "Debugging"
 msgstr ""
 
-#empty strings from id 32119 to 32148
+msgctxt "#32119"
+msgid "Words to remove (comma separated)"
+msgstr ""
+
+#empty strings from id 32120 to 32148
 
 msgctxt "#32149"
 msgid "Expert"
