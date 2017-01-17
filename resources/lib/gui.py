@@ -389,9 +389,18 @@ class GUI(xbmcgui.WindowXMLDialog):
         self.label = self.getControl(200)
         self.list.setVisible(False)
         self.offset = float(ADDON.getSetting('offset'))
+        self.get_wordlist()
         self.setup_gui()
         self.process_lyrics()
         self.gui_loop()
+
+    def get_wordlist(self):
+        wordlist = ADDON.getSetting('words')
+        for item in '.^$*?{}[]\|()+':
+            wordlist = wordlist.replace(item, '')
+        wordlist = wordlist.split(',')
+        wordlist = [word.strip() for word in wordlist]
+        self.wordlist = filter(None, wordlist)
 
     def process_lyrics(self):
         global lyrics
@@ -511,11 +520,6 @@ class GUI(xbmcgui.WindowXMLDialog):
         else:
             source = lyrics.source
         self.label.setLabel(source)
-        stripwords = ADDON.getSetting('words')
-        if stripwords:
-            wordlist = stripwords.strip('.^$*+?{}[]\|()').split(',')
-            for word in wordlist:
-                lyrics.lyrics = re.sub(r'\b%s\b' % word.strip(), '', lyrics.lyrics, flags=re.IGNORECASE)
         if lyrics.lrc:
             WIN.setProperty('culrc.islrc', 'true')
             self.parser_lyrics(lyrics.lyrics)
@@ -534,6 +538,8 @@ class GUI(xbmcgui.WindowXMLDialog):
             WIN.clearProperty('culrc.islrc')
             splitLyrics = lyrics.lyrics.splitlines()
             for line in splitLyrics:
+                if self.match_words(line):
+                    continue
                 parts = self.get_parts(line)
                 listitem = xbmcgui.ListItem(line)
                 for count, item in enumerate(parts):
@@ -544,6 +550,12 @@ class GUI(xbmcgui.WindowXMLDialog):
         if lyrics.lrc:
             if (self.allowtimer and self.text.size() > 1):
                 self.refresh()
+
+    def match_words(self, line):
+        for word in self.wordlist:
+            match = re.search(r'\b%s\b' % word.strip(), line, flags=re.IGNORECASE)
+            if match:
+                return True
 
     def get_parts(self, line):
         result = ['', '', '', '']
@@ -563,6 +575,8 @@ class GUI(xbmcgui.WindowXMLDialog):
         lyrics = lyrics.replace('\r\n' , '\n')
         sep = '\n'
         for x in lyrics.split(sep):
+            if self.match_words(x):
+                continue
             match1 = tag1.match(x)
             match2 = tag2.match(x)
             times = []
