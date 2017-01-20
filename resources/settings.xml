@@ -25,7 +25,6 @@
 		<setting id="service" type="bool" label="32156" default="true"/>
 		<setting id="silent" type="bool" label="32160" default="false"/>
 		<setting id="strip" type="bool" label="32161" default="false"/>
-		<setting id="words" type="text" label="32119" default=""/>
 		<setting type="sep" />
 		<setting label="32116" type="lsep"/>
 		<setting id="read_filename" type="bool" label="32106" default="false"/>

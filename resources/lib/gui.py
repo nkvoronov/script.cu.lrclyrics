@@ -384,23 +384,15 @@ class GUI(xbmcgui.WindowXMLDialog):
         self.Monitor = MyMonitor(function = None)
        
     def onInit(self):
+        self.matchlist = ['@', 'www\.(.*?)\.(.*?)', 'QQ(.*?)[1-9]']
         self.text = self.getControl(110)
         self.list = self.getControl(120)
         self.label = self.getControl(200)
         self.list.setVisible(False)
         self.offset = float(ADDON.getSetting('offset'))
-        self.get_wordlist()
         self.setup_gui()
         self.process_lyrics()
         self.gui_loop()
-
-    def get_wordlist(self):
-        wordlist = ADDON.getSetting('words')
-        for item in '.^$*?{}[]\|()+':
-            wordlist = wordlist.replace(item, '')
-        wordlist = wordlist.split(',')
-        wordlist = [word.strip() for word in wordlist]
-        self.wordlist = filter(None, wordlist)
 
     def process_lyrics(self):
         global lyrics
@@ -538,8 +530,6 @@ class GUI(xbmcgui.WindowXMLDialog):
             WIN.clearProperty('culrc.islrc')
             splitLyrics = lyrics.lyrics.splitlines()
             for line in splitLyrics:
-                if self.match_words(line):
-                    continue
                 parts = self.get_parts(line)
                 listitem = xbmcgui.ListItem(line)
                 for count, item in enumerate(parts):
@@ -551,9 +541,9 @@ class GUI(xbmcgui.WindowXMLDialog):
             if (self.allowtimer and self.text.size() > 1):
                 self.refresh()
 
-    def match_words(self, line):
-        for word in self.wordlist:
-            match = re.search(r'\b%s\b' % word.strip(), line, flags=re.IGNORECASE)
+    def match_pattern(self, line):
+        for item in self.matchlist:
+            match = re.search(item, line, flags=re.IGNORECASE)
             if match:
                 return True
 
@@ -575,7 +565,7 @@ class GUI(xbmcgui.WindowXMLDialog):
         lyrics = lyrics.replace('\r\n' , '\n')
         sep = '\n'
         for x in lyrics.split(sep):
-            if self.match_words(x):
+            if self.match_pattern(x):
                 continue
             match1 = tag1.match(x)
             match2 = tag2.match(x)
