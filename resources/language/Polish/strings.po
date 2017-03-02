@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: XBMC Addons\n"
 "Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: 2017-02-23 13:47+0100\n"
+"PO-Revision-Date: 2017-03-02 17:14+0100\n"
 "Last-Translator: Marcin W.\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/xbmc-addons/language/pl/)\n"
 "MIME-Version: 1.0\n"
@@ -129,7 +129,7 @@ msgstr "Pliki tekstów"
 
 msgctxt "#32118"
 msgid "Debugging"
-msgstr "Diagnozowanie"
+msgstr "Diagnostyka"
 
 # empty strings from id 32120 to 32148
 msgctxt "#32149"
@@ -162,7 +162,7 @@ msgstr "Dostawcy tekstów normalnych"
 
 msgctxt "#32156"
 msgid "Display lyrics automatically"
-msgstr "Wyświetlaj tekst utwory automatycznie"
+msgstr "Wyświetlaj tekst utworu automatycznie"
 
 msgctxt "#32157"
 msgid "Clean song title (remove part in brackets)"
