@@ -15,7 +15,7 @@ socket.setdefaulttimeout(10)
 
 class LyricsFetcher:
     def __init__(self):
-        self.url = 'https://search.letssingit.com/?a=search&s=%s'
+        self.url = 'https://search.letssingit.com/?a=search&l=song&s=%s'
 
     def get_lyrics(self, song):
         log('%s: searching lyrics for %s - %s' % (__title__, song.artist, song.title))
@@ -23,7 +23,7 @@ class LyricsFetcher:
         lyrics.song = song
         lyrics.source = __title__
         lyrics.lrc = __lrc__
-        query = '%s+lyrics+%s' % (urllib.quote_plus(song.artist), urllib.quote_plus(song.title))
+        query = '%s+%s' % (urllib.quote_plus(song.artist), urllib.quote_plus(song.title))
         try:
             request = urllib2.Request(self.url % query)
             request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0')
