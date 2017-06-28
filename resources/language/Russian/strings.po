@@ -20,9 +20,122 @@ msgctxt "#32000"
 msgid "File"
 msgstr "Файл"
 
+msgctxt "#32001"
+msgid "No lyrics found!"
+msgstr "Тексты песен не найдены!"
+
+msgctxt "#32002"
+msgid "Embedded"
+msgstr "Вложенный"
+
+msgctxt "#32003"
+msgid "Lyrics offset"
+msgstr "Смещение текста песни"
+
+msgctxt "#32004"
+msgid "Searching lyrics..."
+msgstr "Поиск текстов песен..."
+
+msgctxt "#32005"
+msgid "Select lyrics:"
+msgstr "Выбрать тексты песни:"
+
+msgctxt "#32006"
+msgid "Select different lyrics"
+msgstr "Выбрать другой текст песни"
+
+msgctxt "#32007"
+msgid "Manually sync lyrics"
+msgstr "Синхронизировать тексты песен вручную"
+
+msgctxt "#32008"
+msgid "Delayed by: %ss"
+msgstr "Задержка: %ss"
+
+msgctxt "#32009"
+msgid "Ahead by: %ss"
+msgstr "Вперед: %ss"
+
+#empty strings from id 32010 to 32100
+#Settings labels
+
+msgctxt "#32101"
+msgid "Search and save lyrics in separate lyrics folder"
+msgstr "Найти и сохранить тексты песен в отдельной папке"
+
+msgctxt "#32102"
+msgid "- Lyrics folder"
+msgstr "- Папка текстов песен"
+
+msgctxt "#32103"
+msgid "- Filename format"
+msgstr "- Формат имени файла"
+
+msgctxt "#32104"
+msgid "%N %A - %T"
+msgstr ""
+
+msgctxt "#32105"
+msgid "%A\\%T"
+msgstr ""
+
+msgctxt "#32106"
+msgid "Use only filename for search"
+msgstr "Использовать для поиска только имя файла"
+
 msgctxt "#32107"
 msgid "Filename format"
 msgstr "Формат имени файла"
+
+msgctxt "#32108"
+msgid "%A - %T"
+msgstr ""
+
+msgctxt "#32109"
+msgid "%A\\%B\\%T"
+msgstr ""
+
+msgctxt "#32110"
+msgid "%A\\%B\\%N (-) %T"
+msgstr ""
+
+msgctxt "#32111"
+msgid "Lyrics are in a subfolder"
+msgstr "Тексты песен находятся в подпапках"
+
+msgctxt "#32112"
+msgid "- Subfolder name"
+msgstr "- Название подпапки"
+
+msgctxt "#32113"
+msgid "Search and save lyrics in song folder"
+msgstr "Найти и сохранить тексты песен в папках песен"
+
+msgctxt "#32114"
+msgid "%N - %A - %T"
+msgstr ""
+
+msgctxt "#32115"
+msgid "Display options"
+msgstr "Параметры отображения"
+
+msgctxt "#32116"
+msgid "Search options"
+msgstr "Параметры поиска"
+
+msgctxt "#32117"
+msgid "Lyrics files"
+msgstr "Файлы текстов"
+
+msgctxt "#32118"
+msgid "Debugging"
+msgstr "Отладка"
+
+#empty strings from id 32120 to 32148
+
+msgctxt "#32149"
+msgid "Expert"
+msgstr "Эксперт"
 
 msgctxt "#32150"
 msgid "Scrapers"
@@ -32,6 +145,73 @@ msgctxt "#32151"
 msgid "Options"
 msgstr "Параметры"
 
+msgctxt "#32152"
+msgid "Search for embedded lyrics"
+msgstr "Поиск вложенных текстов песен"
+
+msgctxt "#32153"
+msgid "Search for local lyrics files"
+msgstr "Поиск локальных файлов текстов песен"
+
+msgctxt "#32154"
+msgid "Synchronised lyrics scrapers"
+msgstr "Синхронизированные скраперы текстов песен"
+
+msgctxt "#32155"
+msgid "Regular lyrics scrapers"
+msgstr "Регулярные скраперы текстов песен"
+
+msgctxt "#32156"
+msgid "Display lyrics automatically"
+msgstr "Отображать текст песни автоматически"
+
+msgctxt "#32157"
+msgid "Clean song title (remove part in brackets)"
+msgstr "Очистить название песни (удалить часть в скобках)"
+
+msgctxt "#32158"
+msgid "Script is already running!"
+msgstr "Скрипт уже запущен!"
+
 msgctxt "#32159"
 msgid "Enable debug logging"
 msgstr "Включить журнал отладки"
+
+msgctxt "#32160"
+msgid "Hide notifications"
+msgstr "Скрыть уведомления"
+
+msgctxt "#32161"
+msgid "Remove Chinese/Korean text from lyrics"
+msgstr "Удаление китайских/корейских символов из текста песни"
+
+msgctxt "#32162"
+msgid "Scraper test"
+msgstr "Тест скраперов"
+
+msgctxt "#32163"
+msgid "Testing: %s"
+msgstr "Тестирование: %s"
+
+msgctxt "#32164"
+msgid "All scrapers are working ok"
+msgstr "Все скраперы работают нормально"
+
+msgctxt "#32165"
+msgid "Failed scrapers: %s"
+msgstr "Сбой скрапера:% s"
+
+msgctxt "#32166"
+msgid "Time offset for synchronised lyrics"
+msgstr "Задержка для синхронизации текстов песен"
+
+msgctxt "#32167"
+msgid "Delete lyrics"
+msgstr "Удалить текст песни"
+
+#empty strings from id 32168 to 32198
+#Skin labels
+
+msgctxt "#32199"
+msgid "CU LRC Lyrics"
+msgstr "Тексты песни"
