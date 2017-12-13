@@ -12,6 +12,7 @@ from culrcscrapers.letssingit import lyricsScraper as lyricsScraper_letssingit
 from culrcscrapers.lyricwiki import lyricsScraper as lyricsScraper_lyricwiki
 from culrcscrapers.minilyrics import lyricsScraper as lyricsScraper_minilyrics
 from culrcscrapers.ttplayer import lyricsScraper as lyricsScraper_ttplayer
+from culrcscrapers.xiami import lyricsScraper as lyricsScraper_xiami
 
 FAILED = []
 
