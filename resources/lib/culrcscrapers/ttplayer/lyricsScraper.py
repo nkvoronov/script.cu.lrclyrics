@@ -141,18 +141,18 @@ class LyricsFetcher:
         title = title.strip().replace('`','').replace('/','')
         artist = artist.strip().replace('`','').replace('/','')
 
-        try:
+        if 1:
             url = self.LIST_URL %(ttpClient.EncodeArtTit(artist.replace(' ','').lower()), ttpClient.EncodeArtTit(title.replace(' ','').lower()))
             f = urllib.request.urlopen(url)
-            Page = f.read()
-        except:
-            log("%s: %s::%s (%d) [%s]" % (
-                   __title__, self.__class__.__name__,
-                   sys.exc_info()[2].tb_frame.f_code.co_name,
-                   sys.exc_info()[2].tb_lineno,
-                   sys.exc_info()[1]
-                  ))
-            return None
+            Page = f.read().decode('utf-8')
+#        except:
+#            log("%s: %s::%s (%d) [%s]" % (
+#                   __title__, self.__class__.__name__,
+#                   sys.exc_info()[2].tb_frame.f_code.co_name,
+#                   sys.exc_info()[2].tb_lineno,
+#                   sys.exc_info()[1]
+#                  ))
+#            return None
         links_query = re.compile('<lrc id=\"(.*?)\" artist=\"(.*?)\" title=\"(.*?)\"></lrc>')
         urls = re.findall(links_query, Page)
         links = []
@@ -173,18 +173,18 @@ class LyricsFetcher:
     def get_lyrics_from_list(self, link):
         title,Id,artist,song = link
         log('%s %s %s' %(Id, artist, song))
-        try:
+        if 1:
             url = self.LYRIC_URL %(int(Id),ttpClient.CodeFunc(int(Id), artist + song), random.randint(0,0xFFFFFFFFFFFF))
             f = urllib.request.urlopen(url)
-            Page = f.read()
-        except:
-            log("%s: %s::%s (%d) [%s]" % (
-                   __title__, self.__class__.__name__,
-                   sys.exc_info()[2].tb_frame.f_code.co_name,
-                   sys.exc_info()[2].tb_lineno,
-                   sys.exc_info()[1]
-                  ))
-            return None
+            Page = f.read().decode('utf-8')
+#        except:
+#            log("%s: %s::%s (%d) [%s]" % (
+#                   __title__, self.__class__.__name__,
+#                   sys.exc_info()[2].tb_frame.f_code.co_name,
+#                   sys.exc_info()[2].tb_lineno,
+#                   sys.exc_info()[1]
+#                  ))
+#            return None
         # ttplayer occasionally returns incorrect lyrics. if we have an 'ar' tag with a value we can check if the artist matches
         if Page.startswith('[ti:'):
             check = Page.split('\n')
