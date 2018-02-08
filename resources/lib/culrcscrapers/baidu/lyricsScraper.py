@@ -5,7 +5,7 @@ Scraper for http://www.baidu.com
 ronie
 '''
 
-import urllib
+import urllib.request
 import socket
 import re
 import chardet
@@ -45,7 +45,7 @@ class LyricsFetcher:
         except:
             return
 
-        enc = chardet.detect(lyr)
-        lyr = lyr.decode(enc['encoding'], 'ignore')
+#        enc = chardet.detect(lyr)
+#        lyr = lyr.decode(enc['encoding'], 'ignore')
         lyrics.lyrics = lyr
         return lyrics

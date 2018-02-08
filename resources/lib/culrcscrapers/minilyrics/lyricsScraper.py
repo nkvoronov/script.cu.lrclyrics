@@ -5,8 +5,7 @@ Scraper for http://www.viewlyrics.com
 PedroHLC
 '''
 
-import urllib
-import urllib2
+import urllib.request
 import socket
 import re
 import hashlib
@@ -126,8 +125,8 @@ class LyricsFetcher:
                    "Content-Type": "application/x-www-form-urlencoded"
                    }
         try:
-            request = urllib2.Request(search_url, data=search_encquery, headers=headers)
-            response = urllib2.urlopen(request)
+            request = urllib.Request(search_url, data=search_encquery, headers=headers)
+            response = urllib.urlopen(request)
             search_result = response.read()
         except:
             return

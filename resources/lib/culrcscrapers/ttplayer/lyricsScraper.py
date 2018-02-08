@@ -7,7 +7,7 @@ taxigps
 
 import os
 import socket
-import urllib
+import urllib.request
 import re
 import random
 import difflib

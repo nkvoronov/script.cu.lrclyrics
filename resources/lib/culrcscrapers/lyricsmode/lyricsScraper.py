@@ -1,6 +1,7 @@
 #-*- coding: UTF-8 -*-
 import sys
-import urllib
+import urllib.request
+import urllib.parse
 import re
 from utilities import *
 
@@ -36,7 +37,7 @@ class LyricsFetcher:
 
     def search_url(self, artist, title):
         try:
-            url = 'http://www.lyricsmode.com/search.php?search=' + urllib.quote_plus(artist.lower() + ' ' + title.lower())
+            url = 'http://www.lyricsmode.com/search.php?search=' + urllib.parse.quote_plus(artist.lower() + ' ' + title.lower())
             song_search = urllib.urlopen(url).read()
             matchcode = re.search('d><a href="(.*?)"', song_search, flags=re.DOTALL)
             try:

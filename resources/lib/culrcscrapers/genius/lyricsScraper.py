@@ -1,9 +1,10 @@
 #-*- coding: UTF-8 -*-
 import sys
 import re
-import urllib2
+import urllib.request
+import urllib.parse
 import socket
-import HTMLParser
+from html.parser import HTMLParser
 import xbmc
 import xbmcaddon
 import json
@@ -27,9 +28,9 @@ class LyricsFetcher:
         lyrics.source = __title__
         lyrics.lrc = __lrc__
         try:
-            request = urllib2.Request(self.url % (urllib2.quote(song.artist), '%20', urllib2.quote(song.title)))
+            request = urllib.Request(self.url % (urllib.parse.quote(song.artist), '%20', urllib.parse.quote(song.title)))
             request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0')
-            req = urllib2.urlopen(request)
+            req = urllib.urlopen(request)
             response = req.read()
         except:
             return None
@@ -46,15 +47,15 @@ class LyricsFetcher:
             return None
         log('%s: search url: %s' % (__title__, self.page))
         try:
-            request = urllib2.Request(self.page)
+            request = urllib.Request(self.page)
             request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0')
-            req = urllib2.urlopen(request)
+            req = urllib.urlopen(request)
             response = req.read()
         except:
             return None
         req.close()
         htmlparser = HTMLParser.HTMLParser()
-        response = htmlparser.unescape(response.decode('utf-8'))
+        response = htmlparser.unescape(response)
         matchcode = re.search('<div class="lyrics">(.*?)</div>', response, flags=re.DOTALL)
         try:
             lyricscode = (matchcode.group(1))

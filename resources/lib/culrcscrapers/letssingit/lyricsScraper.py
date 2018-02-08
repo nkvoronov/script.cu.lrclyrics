@@ -1,7 +1,7 @@
 #-*- coding: UTF-8 -*-
 import re
-import urllib
-import urllib2
+import urllib.request
+import urllib.parse
 import socket
 import difflib
 from utilities import *
@@ -23,11 +23,11 @@ class LyricsFetcher:
         lyrics.song = song
         lyrics.source = __title__
         lyrics.lrc = __lrc__
-        query = '%s+%s' % (urllib.quote_plus(song.artist), urllib.quote_plus(song.title))
+        query = '%s+%s' % (urllib.parse.quote_plus(song.artist), urllib.parse.quote_plus(song.title))
         try:
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0', 'Referer': 'https://www.letssingit.com/'}
-            request = urllib2.Request(self.url % query, None, headers)
-            req = urllib2.urlopen(request)
+            request = urllib.Request(self.url % query, None, headers)
+            req = urllib.urlopen(request)
             response = req.read()
         except:
             return
@@ -39,9 +39,9 @@ class LyricsFetcher:
             result = clean.replace('-lyrics-', ' ')
             if (difflib.SequenceMatcher(None, query.lower().replace('+', ''), result.lower().replace('-', '')).ratio() > 0.8):
                 try:
-                    request = urllib2.Request(lyricscode)
+                    request = urllib.Request(lyricscode)
                     request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0')
-                    req = urllib2.urlopen(request)
+                    req = urllib.urlopen(request)
                     resp = req.read()
                 except:
                     return

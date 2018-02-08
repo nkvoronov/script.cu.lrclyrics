@@ -14,7 +14,7 @@ def getEmbedLyrics(song, getlrc):
     lyrics.song = song
     lyrics.source = LANGUAGE(32002)
     lyrics.lrc = getlrc
-    filename = song.filepath.decode('utf-8')
+    filename = song.filepath
     ext = os.path.splitext(filename)[1].lower()
     lry = None
     if ext == '.mp3':

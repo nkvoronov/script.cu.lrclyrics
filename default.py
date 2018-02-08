@@ -7,8 +7,8 @@ ADDON = xbmcaddon.Addon()
 ADDONID = ADDON.getAddonInfo('id')
 ADDONNAME = ADDON.getAddonInfo('name')
 ADDONVERSION = ADDON.getAddonInfo('version')
-CWD = xbmc.translatePath(ADDON.getAddonInfo('path')).decode('utf-8')
-PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile')).decode('utf-8')
+CWD = xbmc.translatePath(ADDON.getAddonInfo('path'))
+PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile'))
 LANGUAGE = ADDON.getLocalizedString
 
 BASE_RESOURCE_PATH = os.path.join(CWD, 'resources', 'lib')

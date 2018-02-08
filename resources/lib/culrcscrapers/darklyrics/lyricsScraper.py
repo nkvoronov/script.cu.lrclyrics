@@ -6,7 +6,8 @@ scraper by smory
 '''
 
 import hashlib
-import urllib2
+import urllib.request
+import urllib.parse
 import re
 from utilities import *
 
@@ -21,10 +22,10 @@ class LyricsFetcher:
         self.searchUrl = 'http://www.darklyrics.com/search?q=%term%'
         
     def search(self, artist, title):
-        term = urllib2.quote((artist if artist else '') + ' ' + (title if title else ''));
+        term = urllib.parse.quote((artist if artist else '') + ' ' + (title if title else ''));
         
         try:
-            request = urllib2.urlopen(self.searchUrl.replace('%term%', term))
+            request = urllib.urlopen(self.searchUrl.replace('%term%', term))
             searchResponse = request.read();
         except:
             return None
@@ -51,7 +52,7 @@ class LyricsFetcher:
     
     def findLyrics(self, url, index):
         try:
-            request = urllib2.urlopen(url);
+            request = urllib.urlopen(url);
             res = request.read();
         except:
             return None
@@ -73,7 +74,7 @@ class LyricsFetcher:
         
     def getAlbumName(self, url):
         try:
-            request = urllib2.urlopen(url);
+            request = urllib.urlopen(url);
             res = request.read();
         except:
             return '';

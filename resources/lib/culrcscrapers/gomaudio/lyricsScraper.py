@@ -8,7 +8,8 @@ edge
 import sys
 import socket
 import hashlib
-import urllib
+import urllib.request
+import urllib.parse
 import re
 import unicodedata
 from utilities import *
@@ -62,13 +63,13 @@ class LyricsFetcher:
         lyrics.lrc = __lrc__
         try:
             if not ext:
-               ext = os.path.splitext(song.filepath.decode('utf-8'))[1].lower()
+               ext = os.path.splitext(song.filepath)[1].lower()
             sup_ext = ['.mp3', '.ogg', '.wma', '.flac', '.ape', '.wav']
             if ext in sup_ext and key == None:
                 key = gomClient.GetKeyFromFile(song.filepath)
             if not key:
                 return None
-            url = GOM_URL %(key, urllib.quote(remove_accents(song.title.decode('utf-8')).encode('euc-kr')), (remove_accents(song.artist.decode('utf-8')).encode('euc-kr')))
+            url = GOM_URL %(key, urllib.parse.quote(remove_accents(song.title.decode('utf-8')).encode('euc-kr')), (remove_accents(song.artist.decode('utf-8')).encode('euc-kr')))
             response = urllib.urlopen(url)
             Page = response.read()
         except:

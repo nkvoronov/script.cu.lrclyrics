@@ -23,27 +23,20 @@ WIN = xbmcgui.Window(10000)
 
 def log(txt):
     if (ADDON.getSetting('log_enabled') == 'true'):
-        if isinstance (txt,str):
-            txt = txt.decode('utf-8')
-        message = u'%s: %s' % (ADDONID, txt)
-        xbmc.log(msg=message.encode('utf-8'), level=xbmc.LOGDEBUG)
+        message = '%s: %s' % (ADDONID, txt)
+        xbmc.log(msg=message, level=xbmc.LOGDEBUG)
 
 def deAccent(str):
-    return unicodedata.normalize('NFKD', unicode(str, 'utf-8'))
+    return unicodedata.normalize('NFKD', str)
 
 def get_textfile(filepath):
     try:
-        file = xbmcvfs.File(filepath)
-        data = file.read()
-        file.close()
+        f = xbmcvfs.File(filepath)
+        data = f.readBytes()
+        f.close()
         # Detect text encoding
         enc = chardet.detect(data)
-        if (enc['encoding'] == 'utf-8'):
-            return data
-        else:
-            return unicode(data, enc['encoding']).encode('utf-8')
-    except UnicodeDecodeError:
-        return data
+        return data.decode(enc['encoding'])
     except:
         return None
 
@@ -109,9 +102,9 @@ class Song:
         else:
             ext = '.txt'
         if (ADDON.getSetting('save_filename_format') == '0'):
-            return unicode(os.path.join(ADDON.getSetting('save_lyrics_path'), self.artist, self.title + ext), 'utf-8')
+            return os.path.join(ADDON.getSetting('save_lyrics_path'), self.artist, self.title + ext)
         else:
-            return unicode(os.path.join(ADDON.getSetting('save_lyrics_path'), self.artist + ' - ' + self.title) + ext, 'utf-8')
+            return os.path.join(ADDON.getSetting('save_lyrics_path'), self.artist + ' - ' + self.title + ext)
 
     def path2(self, lrc):
         if lrc:
@@ -122,9 +115,9 @@ class Song:
         basename = os.path.basename(self.filepath)
         filename = basename.rsplit('.', 1)[0]
         if (ADDON.getSetting('save_subfolder') == 'true'):
-            return unicode(os.path.join(dirname, ADDON.getSetting('save_subfolder_path'), filename + ext), 'utf-8')
+            return os.path.join(dirname, ADDON.getSetting('save_subfolder_path'), filename + ext)
         else:
-            return unicode(os.path.join(dirname, filename + ext), 'utf-8')
+            return os.path.join(dirname, filename + ext)
 
     @staticmethod
     def current():
@@ -145,7 +138,6 @@ class Song:
             try:
                 pos = int(xbmc.getInfoLabel('MusicPlayer.PlaylistPosition')) + offset
                 json_query = xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Playlist.GetItems", "params":{"properties":["file"], "playlistid":0, "limits":{"start":%i, "end":%i}}, "id": 1}' % (pos-1, pos))
-                json_query = unicode(json_query, 'utf-8', errors='ignore')
                 json_response = json.loads(json_query)
                 song.filepath = json_response['result']['items'][0]['file'].encode('utf-8')
             except:

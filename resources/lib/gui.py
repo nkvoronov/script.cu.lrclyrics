@@ -3,7 +3,7 @@ import sys
 import os
 import re
 import time
-import thread
+import _thread
 import threading
 import xbmc
 import xbmcgui
@@ -25,7 +25,7 @@ class MAIN():
         WIN.setProperty('culrc.running', 'true')
         self.get_scraper_list()
         if (ADDON.getSetting('save_lyrics_path') == ''):
-            ADDON.setSetting(id='save_lyrics_path', value=os.path.join(PROFILE.encode('utf-8'), 'lyrics'))
+            ADDON.setSetting(id='save_lyrics_path', value=os.path.join(PROFILE, 'lyrics'))
         self.main_loop()
         self.cleanup_main()
 
@@ -45,7 +45,8 @@ class MAIN():
     def get_scraper_list(self):
         self.scrapers = []
         for scraper in os.listdir(LYRIC_SCRAPER_DIR):
-            if os.path.isdir(os.path.join(LYRIC_SCRAPER_DIR, scraper)) and ADDON.getSetting(scraper) == 'true':
+            # meh to python3 creating folders
+            if os.path.isdir(os.path.join(LYRIC_SCRAPER_DIR, scraper)) and scraper != '__pycache__' and ADDON.getSetting(scraper) == 'true':
                 exec ('from culrcscrapers.%s import lyricsScraper as lyricsScraper_%s' % (scraper, scraper))
                 exec ('self.scrapers.append([lyricsScraper_%s.__priority__,lyricsScraper_%s.LyricsFetcher(),lyricsScraper_%s.__title__,lyricsScraper_%s.__lrc__])' % (scraper, scraper, scraper, scraper))
         self.scrapers.sort()
@@ -103,13 +104,13 @@ class MAIN():
             lyrics = self.find_lyrics(song)
             if lyrics.lyrics and ADDON.getSetting('strip') == 'true':
                 if isinstance (lyrics.lyrics,str):
-                    fulltext = lyrics.lyrics.decode('utf-8')
+                    fulltext = lyrics.lyrics
                 else:
                     fulltext = lyrics.lyrics
-                strip_k1 = re.sub(ur'[\u1100-\u11ff]+', '', fulltext)
-                strip_k2 = re.sub(ur'[\uAC00-\uD7A3]+', '', strip_k1)
-                strip_c = re.sub(ur'[\u3000-\u9fff]+', '', strip_k2)
-                lyrics.lyrics = strip_c.encode('utf-8')
+                strip_k1 = re.sub('r[\u1100-\u11ff]+', '', fulltext)
+                strip_k2 = re.sub('r[\uAC00-\uD7A3]+', '', strip_k1)
+                strip_c = re.sub('r[\u3000-\u9fff]+', '', strip_k2)
+                lyrics.lyrics = strip_c
         # no song title, we can't search online. try matching local filename
         elif (ADDON.getSetting('save_lyrics2') == 'true'):
             lyrics = self.get_lyrics_from_file(song, True)
@@ -125,7 +126,7 @@ class MAIN():
 
     def find_lyrics(self, song):
         # search embedded lrc lyrics
-        ext = os.path.splitext(song.filepath.decode('utf-8'))[1].lower()
+        ext = os.path.splitext(song.filepath)[1].lower()
         sup_ext = ['.mp3', '.flac']
         if (ADDON.getSetting('search_embedded') == 'true') and song.analyze_safe and (ext in sup_ext):
             log('searching for embedded lrc lyrics')
@@ -221,7 +222,7 @@ class MAIN():
         if isinstance (lyrics.lyrics, str):
             lyr = lyrics.lyrics
         else:
-            lyr = lyrics.lyrics.encode('utf-8')
+            lyr = lyrics.lyrics
         if adjust:
             # save our manual sync offset to file
             adjust = int(adjust * 1000)
@@ -445,7 +446,7 @@ class GUI(xbmcgui.WindowXMLDialog):
         WIN.clearProperty('culrc.newlyrics')
         WIN.clearProperty('culrc.nolyrics')
         WIN.clearProperty('culrc.haslist')
-        self.lock = thread.allocate_lock()
+        self.lock = _thread.allocate_lock()
         self.timer = None
         self.allowtimer = True
         self.refreshing = False

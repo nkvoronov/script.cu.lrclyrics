@@ -6,7 +6,7 @@ driip
 
 import sys
 import socket
-import urllib2
+import urllib.request
 import difflib
 import xml.dom.minidom as xml
 from utilities import *
@@ -47,8 +47,8 @@ class LyricsFetcher:
         lyrics.lrc = __lrc__
         try:
             headers = {'Content-Type':'text/xml; charset=utf-8'}
-            request = urllib2.Request(ALSONG_URL, ALSONG_TMPL % (song.title,song.artist), headers)
-            response = urllib2.urlopen(request)
+            request = urllib.Request(ALSONG_URL, ALSONG_TMPL % (song.title,song.artist), headers)
+            response = urllib.urlopen(request)
             Page = response.read()
         except:
             return        
@@ -60,5 +60,5 @@ class LyricsFetcher:
             return
         if (difflib.SequenceMatcher(None, song.artist.lower(), name.lower()).ratio() > 0.8) and (difflib.SequenceMatcher(None, song.title.lower(), track.lower()).ratio() > 0.8):
             lyr = tree.getElementsByTagName('strLyric')[0].childNodes[0].data.replace('<br>','\n')
-            lyrics.lyrics = lyr.encode('utf-8')
+            lyrics.lyrics = lyr
             return lyrics

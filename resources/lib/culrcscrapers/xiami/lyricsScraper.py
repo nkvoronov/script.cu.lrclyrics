@@ -5,8 +5,8 @@ Scraper for http://xiami.com
 Taxigps
 """
 
-import urllib
-import urllib2
+import urllib.request
+import urllib.parse
 import socket
 import re
 import difflib
@@ -33,11 +33,11 @@ class LyricsFetcher:
         lyrics.source = __title__
         lyrics.lrc = __lrc__
         keyword = "%s %s" % (song.title, song.artist)
-        url = self.LIST_URL % (urllib.quote(keyword))
+        url = self.LIST_URL % (urllib.parse.quote(keyword))
         try:
-            request = urllib2.Request(url)
+            request = urllib.Request(url)
             request.add_header('User-Agent', UserAgent)
-            response = urllib2.urlopen(request)
+            response = urllib.urlopen(request)
             result = response.read()
         except:
             log( "%s: %s::%s (%d) [%s]" % (
@@ -67,14 +67,14 @@ class LyricsFetcher:
     def get_lyrics_from_list(self, link):
         title,id,artist,song = link
         try:
-            request = urllib2.Request(self.SONG_URL % (id))
+            request = urllib.Request(self.SONG_URL % (id))
             request.add_header('User-Agent', UserAgent)
-            response = urllib2.urlopen(request)
+            response = urllib.urlopen(request)
             data = response.read()
             url = re.compile('<lyric>(.+?)</lyric>').search(data).group(1)
-            request = urllib2.Request(url)
+            request = urllib.Request(url)
             request.add_header('User-Agent', UserAgent)
-            response = urllib2.urlopen(request)
+            response = urllib.urlopen(request)
             lyrics = response.read()
         except:
             log( "%s: %s::%s (%d) [%s]" % (
