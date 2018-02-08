@@ -3,6 +3,10 @@
 Scraper for http://www.viewlyrics.com
 
 PedroHLC
+https://github.com/PedroHLC/ViewLyricsOpenSearcher
+
+rikels
+https://github.com/rikels/LyricsSearch
 '''
 
 import urllib.request
@@ -11,6 +15,7 @@ import re
 import hashlib
 import difflib
 import chardet
+import requests
 from utilities import *
 
 __title__ = 'MiniLyrics'
@@ -25,16 +30,20 @@ class MiniLyrics(object):
     Minilyrics specific functions
     '''
     @staticmethod
+    def hexToStr(hexx):
+        string = ''
+        i = 0
+        while (i < (len(hexx) - 1)):
+            string += chr(int(hexx[i] + hexx[i + 1], 16))
+            i += 2
+        return string
+
+    @staticmethod
     def vl_enc(data, md5_extra):
         datalen = len(data)
         md5 = hashlib.md5()
         md5.update(data + md5_extra)
-        hexx = md5.hexdigest()
-        hasheddata = ''
-        i = 0
-        while (i < (len(hexx) - 1)):
-            hasheddata += chr(int(hexx[i] + hexx[i + 1], 16))
-            i += 2
+        hasheddata = MiniLyrics.hexToStr(md5.hexdigest())
         j = 0
         i = 0
         while (i < datalen):
@@ -57,13 +66,13 @@ class MiniLyrics(object):
         try:
             result = '\x02' + chr(magickey) + '\x04\x00\x00\x00' + str(hasheddata) + bytearray(encddata).decode('utf-8')
         except UnicodeDecodeError:
-            result = '\x02' + chr(magickey) + '\x04\x00\x00\x00' + str(hasheddata) + str(bytearray(encddata))
+            result = '\x02' + chr(magickey) + '\x04\x00\x00\x00' + str(hasheddata) + bytearray(encddata)
         return result
 
     @staticmethod
     def vl_dec(data):
         magickey = data[1]
-        result = ''
+        result = ""
         i = 22
         datalen = len(data)
         if isinstance(magickey, int):
@@ -117,25 +126,20 @@ class LyricsFetcher:
         search_query_base = "<?xml version='1.0' encoding='utf-8' standalone='yes' ?><searchV1 client=\"ViewLyricsOpenSearcher\" artist=\"{artist}\" title=\"{title}\" OnlyMatched=\"1\" />"
         search_useragent = 'MiniLyrics'
         search_md5watermark = b'Mlv1clt4.0'
-        search_encquery = MiniLyrics.vl_enc(search_query_base.format(artist=song.artist, title=song).encode('utf-8'), search_md5watermark)
+        search_encquery = MiniLyrics.vl_enc(search_query_base.format(artist=song.artist.encode('utf-8'), title=song.title).encode('utf-8'), search_md5watermark)
+
         headers = {"User-Agent": "{ua}".format(ua=search_useragent),
                    "Content-Length": "{content_length}".format(content_length=len(search_encquery)),
                    "Connection": "Keep-Alive",
                    "Expect": "100-continue",
                    "Content-Type": "application/x-www-form-urlencoded"
                    }
-        if 1:
-            print('1================')
+        try:
+            request = requests.post(search_url, data=search_encquery, headers=headers)
+            search_result = request.text
+        except:
+            return
 
-            print('2================')
-            log(search_encquery.encode('utf-8'))
-            print('3================')
-
-            request = urllib.request.Request(search_url, search_encquery.encode('utf-8'), headers=headers)
-            response = urllib.request.urlopen(request)
-            search_result = response.read().decode('utf-8')
-#        except:
- #           return
         xml = MiniLyrics.vl_dec(search_result)
         lrcList = self.miniLyricsParser(xml)
         links = []
@@ -154,11 +158,11 @@ class LyricsFetcher:
 
     def get_lyrics_from_list(self, link):
         title,url,artist,song = link
-        if 1:
+        try:
             f = urllib.request.urlopen('http://minilyrics.com/' + url)
             lyrics = f.read()
- #       except:
-  #          return
+        except:
+            return
         enc = chardet.detect(lyrics)
         lyrics = lyrics.decode(enc['encoding'], 'ignore')
         return lyrics
