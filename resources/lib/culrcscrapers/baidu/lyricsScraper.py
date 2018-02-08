@@ -31,7 +31,7 @@ class LyricsFetcher:
         lyrics.lrc = __lrc__
         try:
             url = self.BASE_URL % (song.title, song.artist)
-            data = urllib.request.urlopen(url).read()
+            data = urllib.request.urlopen(url).read().decode('utf-8')
             songmatch = re.search('song-title.*?<em>(.*?)</em>', data, flags=re.DOTALL)
             track = songmatch.group(1)
             artistmatch = re.search('artist-title.*?<em>(.*?)</em>', data, flags=re.DOTALL)

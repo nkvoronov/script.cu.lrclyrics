@@ -42,7 +42,8 @@ class gomClient(object):
         if not buf:
             return
         # calculate hashkey
-        m = hashlib.md5(); m.update(buf);
+        m = hashlib.md5()
+        m.update(buf)
         return m.hexdigest()
 
     @staticmethod
@@ -69,9 +70,9 @@ class LyricsFetcher:
                 key = gomClient.GetKeyFromFile(song.filepath)
             if not key:
                 return None
-            url = GOM_URL %(key, urllib.parse.quote(remove_accents(song.title.decode('utf-8')).encode('euc-kr')), (remove_accents(song.artist.decode('utf-8')).encode('euc-kr')))
+            url = GOM_URL %(key, urllib.parse.quote(remove_accents(song.title).encode('euc-kr')), (remove_accents(song.artist).encode('euc-kr')))
             response = urllib.request.urlopen(url)
-            Page = response.read()
+            Page = response.read().decode('euc-kr')
         except:
             log('%s: %s::%s (%d) [%s]' % (
                     __title__, self.__class__.__name__,

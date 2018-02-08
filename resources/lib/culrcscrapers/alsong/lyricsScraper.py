@@ -47,12 +47,13 @@ class LyricsFetcher:
         lyrics.lrc = __lrc__
         try:
             headers = {'Content-Type':'text/xml; charset=utf-8'}
-            request = urllib.request.Request(ALSONG_URL, ALSONG_TMPL % (song.title,song.artist), headers)
+            request = urllib.request.Request(ALSONG_URL, bytes(ALSONG_TMPL % (song.title,song.artist), 'utf-8'), headers)
             response = urllib.request.urlopen(request)
-            Page = response.read()
+            Page = response.read().decode('utf-8')
         except:
             return        
         tree = xml.parseString(Page)
+
         try:
             name = tree.getElementsByTagName('strArtistName')[0].childNodes[0].data
             track = tree.getElementsByTagName('strTitle')[0].childNodes[0].data

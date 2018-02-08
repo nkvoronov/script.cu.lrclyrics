@@ -114,7 +114,7 @@ class LyricsFetcher:
         lyrics.source = __title__
         lyrics.lrc = __lrc__
         search_url = 'http://search.crintsoft.com/searchlyrics.htm'
-        search_query_base = u"<?xml version='1.0' encoding='utf-8' standalone='yes' ?><searchV1 client=\"ViewLyricsOpenSearcher\" artist=\"{artist}\" title=\"{title}\" OnlyMatched=\"1\" />"
+        search_query_base = "<?xml version='1.0' encoding='utf-8' standalone='yes' ?><searchV1 client=\"ViewLyricsOpenSearcher\" artist=\"{artist}\" title=\"{title}\" OnlyMatched=\"1\" />"
         search_useragent = 'MiniLyrics'
         search_md5watermark = b'Mlv1clt4.0'
         search_encquery = MiniLyrics.vl_enc(search_query_base.format(artist=song.artist, title=song).encode('utf-8'), search_md5watermark)
@@ -124,12 +124,18 @@ class LyricsFetcher:
                    "Expect": "100-continue",
                    "Content-Type": "application/x-www-form-urlencoded"
                    }
-        try:
-            request = urllib.request.Request(search_url, data=search_encquery, headers=headers)
+        if 1:
+            print('1================')
+
+            print('2================')
+            log(search_encquery.encode('utf-8'))
+            print('3================')
+
+            request = urllib.request.Request(search_url, search_encquery.encode('utf-8'), headers=headers)
             response = urllib.request.urlopen(request)
-            search_result = response.read()
-        except:
-            return
+            search_result = response.read().decode('utf-8')
+#        except:
+ #           return
         xml = MiniLyrics.vl_dec(search_result)
         lrcList = self.miniLyricsParser(xml)
         links = []
@@ -148,11 +154,11 @@ class LyricsFetcher:
 
     def get_lyrics_from_list(self, link):
         title,url,artist,song = link
-        try:
+        if 1:
             f = urllib.request.urlopen('http://minilyrics.com/' + url)
             lyrics = f.read()
-        except:
-            return
+ #       except:
+  #          return
         enc = chardet.detect(lyrics)
         lyrics = lyrics.decode(enc['encoding'], 'ignore')
         return lyrics
