@@ -24,19 +24,13 @@ class LyricsFetcher:
         lyrics.source = __title__
         lyrics.lrc = __lrc__
         query = '%s+%s' % (urllib.parse.quote_plus(song.artist), urllib.parse.quote_plus(song.title))
-        print('0===================')
-        if 1:
+        try:
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0', 'Referer': 'https://www.letssingit.com/'}
-            print(self.url % query)
             request = urllib.request.Request(self.url % query, None, headers)
-            print('2===================')
             req = urllib.request.urlopen(request)
-            print('3===================')
             response = req.read().decode('utf-8')
-            print('4===================')
-            print(str(response))
-#        except:
- #           return
+        except:
+            return
         req.close()
         matchcode = re.search('</td><td><a href="(.*?)"', response)
         if matchcode:
@@ -44,13 +38,13 @@ class LyricsFetcher:
             clean = lyricscode.lstrip('http://www.letssingit.com/').rsplit('-',1)[0]
             result = clean.replace('-lyrics-', ' ')
             if (difflib.SequenceMatcher(None, query.lower().replace('+', ''), result.lower().replace('-', '')).ratio() > 0.8):
-                if 1:
+                try:
                     request = urllib.request.Request(lyricscode)
                     request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0')
                     req = urllib.request.urlopen(request)
                     resp = req.read().decode('utf-8')
-    #            except:
-     #               return
+                except:
+                    return
                 req.close()
                 match = re.search('id=lyrics>(.*?)<div i', resp, flags=re.DOTALL)
                 if match:
