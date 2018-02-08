@@ -47,8 +47,8 @@ class LyricsFetcher:
         lyrics.lrc = __lrc__
         try:
             headers = {'Content-Type':'text/xml; charset=utf-8'}
-            request = urllib.Request(ALSONG_URL, ALSONG_TMPL % (song.title,song.artist), headers)
-            response = urllib.urlopen(request)
+            request = urllib.request.Request(ALSONG_URL, ALSONG_TMPL % (song.title,song.artist), headers)
+            response = urllib.request.urlopen(request)
             Page = response.read()
         except:
             return        

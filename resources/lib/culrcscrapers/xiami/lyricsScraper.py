@@ -35,10 +35,10 @@ class LyricsFetcher:
         keyword = "%s %s" % (song.title, song.artist)
         url = self.LIST_URL % (urllib.parse.quote(keyword))
         try:
-            request = urllib.Request(url)
+            request = urllib.request.Request(url)
             request.add_header('User-Agent', UserAgent)
-            response = urllib.urlopen(request)
-            result = response.read()
+            response = urllib.request.urlopen(request)
+            result = response.read().decode('utf-8')
         except:
             log( "%s: %s::%s (%d) [%s]" % (
                    __title__, self.__class__.__name__,
@@ -67,15 +67,15 @@ class LyricsFetcher:
     def get_lyrics_from_list(self, link):
         title,id,artist,song = link
         try:
-            request = urllib.Request(self.SONG_URL % (id))
+            request = urllib.request.Request(self.SONG_URL % (id))
             request.add_header('User-Agent', UserAgent)
-            response = urllib.urlopen(request)
-            data = response.read()
+            response = urllib.request.urlopen(request)
+            data = response.read().decode('utf-8')
             url = re.compile('<lyric>(.+?)</lyric>').search(data).group(1)
-            request = urllib.Request(url)
+            request = urllib.request.Request(url)
             request.add_header('User-Agent', UserAgent)
-            response = urllib.urlopen(request)
-            lyrics = response.read()
+            response = urllib.request.urlopen(request)
+            lyrics = response.read().decode('utf-8')
         except:
             log( "%s: %s::%s (%d) [%s]" % (
                    __title__, self.__class__.__name__,

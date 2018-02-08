@@ -29,7 +29,7 @@ class LyricsFetcher:
         lyrics.source = __title__
         lyrics.lrc = __lrc__
         try:
-            req = urllib.urlopen(self.url % (urllib.parse.quote(song.artist), urllib.parse.quote(song.title)))
+            req = urllib.request.urlopen(self.url % (urllib.parse.quote(song.artist), urllib.parse.quote(song.title)))
             response = req.read()
         except:
             return None
@@ -42,11 +42,11 @@ class LyricsFetcher:
         if not self.page.endswith('action=edit'):
             log('%s: search url: %s' % (__title__, self.page))
             try:
-                req = urllib.urlopen(self.page)
-                response = req.read()
-            except urllib.HTTPError as error: # strange... sometimes lyrics are returned with a 404 error
+                req = urllib.request.urlopen(self.page)
+                response = req.read().decode('utf-8')
+            except urllib.request.HTTPError as error: # strange... sometimes lyrics are returned with a 404 error
                 if error.code == 404:
-                    response = error.read()
+                    response = error.read().decode('utf-8')
                 else:
                     return None
             req.close()

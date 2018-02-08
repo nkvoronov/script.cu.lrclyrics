@@ -57,7 +57,7 @@ class MiniLyrics(object):
         try:
             result = '\x02' + chr(magickey) + '\x04\x00\x00\x00' + str(hasheddata) + bytearray(encddata).decode('utf-8')
         except UnicodeDecodeError:
-            result = '\x02' + chr(magickey) + '\x04\x00\x00\x00' + str(hasheddata) + bytearray(encddata)
+            result = '\x02' + chr(magickey) + '\x04\x00\x00\x00' + str(hasheddata) + str(bytearray(encddata))
         return result
 
     @staticmethod
@@ -117,7 +117,7 @@ class LyricsFetcher:
         search_query_base = u"<?xml version='1.0' encoding='utf-8' standalone='yes' ?><searchV1 client=\"ViewLyricsOpenSearcher\" artist=\"{artist}\" title=\"{title}\" OnlyMatched=\"1\" />"
         search_useragent = 'MiniLyrics'
         search_md5watermark = b'Mlv1clt4.0'
-        search_encquery = MiniLyrics.vl_enc(search_query_base.format(artist=song.artist.decode('utf-8'), title=song.title.decode('utf-8')).encode('utf-8'), search_md5watermark)
+        search_encquery = MiniLyrics.vl_enc(search_query_base.format(artist=song.artist, title=song).encode('utf-8'), search_md5watermark)
         headers = {"User-Agent": "{ua}".format(ua=search_useragent),
                    "Content-Length": "{content_length}".format(content_length=len(search_encquery)),
                    "Connection": "Keep-Alive",
@@ -125,8 +125,8 @@ class LyricsFetcher:
                    "Content-Type": "application/x-www-form-urlencoded"
                    }
         try:
-            request = urllib.Request(search_url, data=search_encquery, headers=headers)
-            response = urllib.urlopen(request)
+            request = urllib.request.Request(search_url, data=search_encquery, headers=headers)
+            response = urllib.request.urlopen(request)
             search_result = response.read()
         except:
             return
@@ -149,7 +149,7 @@ class LyricsFetcher:
     def get_lyrics_from_list(self, link):
         title,url,artist,song = link
         try:
-            f = urllib.urlopen('http://minilyrics.com/' + url)
+            f = urllib.request.urlopen('http://minilyrics.com/' + url)
             lyrics = f.read()
         except:
             return

@@ -143,7 +143,7 @@ class LyricsFetcher:
 
         try:
             url = self.LIST_URL %(ttpClient.EncodeArtTit(artist.replace(' ','').lower()), ttpClient.EncodeArtTit(title.replace(' ','').lower()))
-            f = urllib.urlopen(url)
+            f = urllib.request.urlopen(url)
             Page = f.read()
         except:
             log("%s: %s::%s (%d) [%s]" % (
@@ -175,7 +175,7 @@ class LyricsFetcher:
         log('%s %s %s' %(Id, artist, song))
         try:
             url = self.LYRIC_URL %(int(Id),ttpClient.CodeFunc(int(Id), artist + song), random.randint(0,0xFFFFFFFFFFFF))
-            f = urllib.urlopen(url)
+            f = urllib.request.urlopen(url)
             Page = f.read()
         except:
             log("%s: %s::%s (%d) [%s]" % (

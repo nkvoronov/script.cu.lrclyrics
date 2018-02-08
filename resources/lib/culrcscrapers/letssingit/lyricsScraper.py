@@ -26,9 +26,9 @@ class LyricsFetcher:
         query = '%s+%s' % (urllib.parse.quote_plus(song.artist), urllib.parse.quote_plus(song.title))
         try:
             headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0', 'Referer': 'https://www.letssingit.com/'}
-            request = urllib.Request(self.url % query, None, headers)
-            req = urllib.urlopen(request)
-            response = req.read()
+            request = urllib.request.Request(self.url % query, None, headers)
+            req = urllib.request.urlopen(request)
+            response = req.read().decode('utf-8')
         except:
             return
         req.close()
@@ -39,10 +39,10 @@ class LyricsFetcher:
             result = clean.replace('-lyrics-', ' ')
             if (difflib.SequenceMatcher(None, query.lower().replace('+', ''), result.lower().replace('-', '')).ratio() > 0.8):
                 try:
-                    request = urllib.Request(lyricscode)
+                    request = urllib.request.Request(lyricscode)
                     request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0')
-                    req = urllib.urlopen(request)
-                    resp = req.read()
+                    req = urllib.request.urlopen(request)
+                    resp = req.read().decode('utf-8')
                 except:
                     return
                 req.close()
