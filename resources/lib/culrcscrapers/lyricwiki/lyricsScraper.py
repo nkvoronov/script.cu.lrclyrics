@@ -53,7 +53,7 @@ class LyricsFetcher:
             matchcode = re.search("lyricbox'>.*?(&#.*?)<div", response)
             try:
                 lyricscode = (matchcode.group(1))
-                htmlparser = HTMLParser.HTMLParser()
+                htmlparser = HTMLParser()
                 lyricstext = htmlparser.unescape(lyricscode).replace('<br />', '\n')
                 lyr = re.sub('<[^<]+?>', '', lyricstext)
                 if LIC_TXT in lyr:

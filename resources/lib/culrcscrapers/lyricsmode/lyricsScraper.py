@@ -29,7 +29,7 @@ class LyricsFetcher:
     def direct_url(self, url):
         try:
             log('%s: search url: %s' % (__title__, url))
-            song_search = urllib.request.urlopen(url).read()
+            song_search = urllib.request.urlopen(url).read().decode('utf-8')
             if song_search.find('ui-annotatable">') >= 0:
                 return song_search
         except:
