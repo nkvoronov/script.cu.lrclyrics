@@ -65,7 +65,7 @@ class AudioFile(object):
             buf = self.f.readBytes(1)
             if len(buf) < 1 or self.f.seek(0,1) > 1000000:
                 raise FormatError
-            if buf == '\xff':
+            if buf == b'\xff':
                 rbit = struct.unpack('B',self.f.readBytes(1))[0] >> 5
                 if rbit == 7:   # 11 1's in total
                     self.f.seek(-2,1)
@@ -79,7 +79,7 @@ class AudioFile(object):
             if len(buf) < 27 or self.f.seek(0,1) > 50000:
                 # parse error
                 raise FormatError
-            if buf[0:4] != 'OggS':
+            if buf[0:4] != b'OggS':
                 # not supported page format
                 raise UnknownFormat
             numseg = struct.unpack('B', buf[26])[0]
@@ -89,7 +89,7 @@ class AudioFile(object):
             for seglen in segtbl:
                 buf = self.f.readBytes(7)    # segment header 
                 #print "segLen(%s): %d" % (buf[1:7],seglen)
-                if buf == "\x05vorbis":
+                if buf == b"\x05vorbis":
                     self.f.seek(-7,1)   # rollback
                     self.audioStart = self.f.seek(0,1)
                     return
