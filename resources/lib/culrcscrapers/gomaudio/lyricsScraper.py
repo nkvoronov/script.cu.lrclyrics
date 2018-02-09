@@ -37,6 +37,10 @@ class gomClient(object):
         musf = AudioFile()
         musf.Open(file)
         buf = musf.ReadAudioStream(100*1024)	# 100KB from audio data
+        print('============================================================')
+        print(buf)
+        print(bytes(buf))
+        print(bytes(buf).decode('cp437'))
         musf.Close()
         # buffer will be empty for streaming audio
         if not buf:
@@ -62,25 +66,26 @@ class LyricsFetcher:
         lyrics.song = song
         lyrics.source = __title__
         lyrics.lrc = __lrc__
-        try:
+        if 1:
             if not ext:
                ext = os.path.splitext(song.filepath)[1].lower()
             sup_ext = ['.mp3', '.ogg', '.wma', '.flac', '.ape', '.wav']
             if ext in sup_ext and key == None:
                 key = gomClient.GetKeyFromFile(song.filepath)
+                print(str(key))
             if not key:
                 return None
             url = GOM_URL %(key, urllib.parse.quote(remove_accents(song.title).encode('euc-kr')), (remove_accents(song.artist).encode('euc-kr')))
             response = urllib.request.urlopen(url)
             Page = response.read().decode('euc-kr')
-        except:
-            log('%s: %s::%s (%d) [%s]' % (
-                    __title__, self.__class__.__name__,
-                    sys.exc_info()[2].tb_frame.f_code.co_name,
-                    sys.exc_info()[2].tb_lineno,
-                    sys.exc_info()[1]
-               ))
-            return None
+ #       except:
+ #           log('%s: %s::%s (%d) [%s]' % (
+ #                   __title__, self.__class__.__name__,
+ #                   sys.exc_info()[2].tb_frame.f_code.co_name,
+ #                   sys.exc_info()[2].tb_lineno,
+ #                   sys.exc_info()[1]
+ #              ))
+ #           return None
         if Page[:Page.find('>')+1] != '<lyrics_reply result="0">':
             return None
         syncs = re.compile('<sync start="(\d+)">([^<]*)</sync>').findall(Page)
