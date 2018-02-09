@@ -24,22 +24,7 @@ def test_scrapers():
     dialog.create(ADDONNAME, LANGUAGE(32163) % 'alsong')
 
 
-    # test ttplayer
-    dialog.update(90, LANGUAGE(32163) % 'ttplayer')
-    log('==================== ttplayer ====================')
-    song = Song('Abba', 'Elaine')
-    st = time.time()
-    lyrics = lyricsScraper_ttplayer.LyricsFetcher().get_lyrics(song)
-    ft = time.time()
-    tt = ft - st
-    TIMINGS.append(['ttplayer',tt])
-    if lyrics:
-        log(lyrics.lyrics)
-    else:
-        FAILED.append('ttplayer')
-        log('FAILED: ttplayer')
-    if dialog.iscanceled():
-        return
+
 
     # test xiami
     dialog.create(ADDONNAME, LANGUAGE(32163) % 'xiami')
