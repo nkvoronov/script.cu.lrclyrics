@@ -5,12 +5,13 @@ Scraper for http://xiami.com
 Taxigps
 """
 
-import urllib.request
 import urllib.parse
 import socket
 import re
 import difflib
+import json
 import chardet
+import requests
 from utilities import *
 
 __title__ = "Xiami"
@@ -24,7 +25,8 @@ socket.setdefaulttimeout(10)
 class LyricsFetcher:
     def __init__( self ):
         self.LIST_URL = 'http://www.xiami.com/search/song?key=%s'
-        self.SONG_URL = 'http://www.xiami.com/song/playlist/id/%s/object_name/default/object_id/0'
+        self.SONG_URL = 'http://www.xiami.com/song/playlist/id/%s/object_name/default/object_id/0/cat/json'
+        self.session = requests.Session()
 
     def get_lyrics(self, song):
         log( "%s: searching lyrics for %s - %s" % (__title__, song.artist, song.title))
@@ -35,10 +37,8 @@ class LyricsFetcher:
         keyword = "%s %s" % (song.title, song.artist)
         url = self.LIST_URL % (urllib.parse.quote(keyword))
         try:
-            request = urllib.request.Request(url)
-            request.add_header('User-Agent', UserAgent)
-            response = urllib.request.urlopen(request)
-            result = response.read().decode('utf-8')
+            response = self.session.get(url, headers={'User-Agent': UserAgent, 'Referer': 'http://www.xiami.com/play'})
+            result = response.text
         except:
             log( "%s: %s::%s (%d) [%s]" % (
                    __title__, self.__class__.__name__,
@@ -67,15 +67,22 @@ class LyricsFetcher:
     def get_lyrics_from_list(self, link):
         title,id,artist,song = link
         try:
-            request = urllib.request.Request(self.SONG_URL % (id))
-            request.add_header('User-Agent', UserAgent)
-            response = urllib.request.urlopen(request)
-            data = response.read().decode('utf-8')
-            url = re.compile('<lyric>(.+?)</lyric>').search(data).group(1)
-            request = urllib.request.Request(url)
-            request.add_header('User-Agent', UserAgent)
-            response = urllib.request.urlopen(request)
-            lyrics = response.read().decode('utf-8')
+            response = self.session.get(self.SONG_URL % (id), headers={'User-Agent': UserAgent, 'Referer': 'http://www.xiami.com/play'})
+            result = response.text
+            data = json.loads(result)
+            if 'data' in data and 'trackList' in data['data'] and data['data']['trackList'] and 'lyric' in data['data']['trackList'][0] and data['data']['trackList'][0]['lyric']:
+                url = data['data']['trackList'][0]['lyric']
+        except:
+            log( "%s: %s::%s (%d) [%s]" % (
+                   __title__, self.__class__.__name__,
+                   sys.exc_info()[ 2 ].tb_frame.f_code.co_name,
+                   sys.exc_info()[ 2 ].tb_lineno,
+                   sys.exc_info()[ 1 ]
+                   ))
+            return
+        try:
+            response = self.session.get(url, headers={'User-Agent': UserAgent, 'Referer': 'http://www.xiami.com/play'})
+            lyrics = response.content
         except:
             log( "%s: %s::%s (%d) [%s]" % (
                    __title__, self.__class__.__name__,
