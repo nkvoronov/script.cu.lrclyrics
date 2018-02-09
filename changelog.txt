@@ -1,5 +1,6 @@
 v5.4.7
 - fix letssingit scraper
+- fix xiami scraper
 
 v5.4.6
 - fix embedded uslt lyrics
