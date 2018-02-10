@@ -68,7 +68,6 @@ class LyricsFetcher:
             sup_ext = ['.mp3', '.ogg', '.wma', '.flac', '.ape', '.wav']
             if ext in sup_ext and key == None:
                 key = gomClient.GetKeyFromFile(song.filepath)
-                print(str(key))
             if not key:
                 return None
             url = GOM_URL %(key, urllib.parse.quote(remove_accents(song.title).encode('euc-kr')), (remove_accents(song.artist).encode('euc-kr')))
@@ -93,7 +92,7 @@ class LyricsFetcher:
             t = '%02d:%02d.%02d' % gomClient.mSecConv(int(sync[0]))
             # unescape string
             try:
-                s = str(sync[1], 'euc-kr').encode('utf-8').replace('&apos;',"'").replace('&quot;','"')
+                s = sync[1].replace('&apos;',"'").replace('&quot;','"')
                 lyrline.append('[%s]%s' %(t,s))
             except:
                 pass
