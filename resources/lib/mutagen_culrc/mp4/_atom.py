@@ -41,13 +41,13 @@ class Atom(object):
 
         self.offset = fileobj.tell()
         try:
-            self.length, self.name = struct.unpack(">I4s", fileobj.read(8))
+            self.length, self.name = struct.unpack(">I4s", fileobj.readBytes(8))
         except struct.error:
             raise AtomError("truncated data")
         self._dataoffset = self.offset + 8
         if self.length == 1:
             try:
-                self.length, = struct.unpack(">Q", fileobj.read(8))
+                self.length, = struct.unpack(">Q", fileobj.readBytes(8))
             except struct.error:
                 raise AtomError("truncated data")
             self._dataoffset += 8
@@ -83,7 +83,7 @@ class Atom(object):
         """Return if all data could be read and the atom payload"""
 
         fileobj.seek(self._dataoffset, 0)
-        data = fileobj.read(self.datalength)
+        data = fileobj.readBytes(self.datalength)
         return len(data) == self.datalength, data
 
     @staticmethod

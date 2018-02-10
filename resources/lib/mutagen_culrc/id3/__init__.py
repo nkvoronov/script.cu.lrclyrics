@@ -69,7 +69,7 @@ def _fullread(fileobj, size):
 
     if size < 0:
         raise ValueError('Requested bytes (%s) less than zero' % size)
-    data = fileobj.read(size)
+    data = fileobj.readBytes(size)
     if len(data) != size:
         raise EOFError("Not enough data to read")
     return data
@@ -803,7 +803,7 @@ def delete(filename, delete_v1=True, delete_v2=True):
     # (primarily because we used to write it)
     if delete_v2:
         f.seek(0, 0)
-        idata = f.read(10)
+        idata = f.readBytes(10)
         try:
             id3, vmaj, vrev, flags, insize = unpack('>3sBBB4s', idata)
         except struct.error:
@@ -891,7 +891,7 @@ def _find_id3v1(fileobj):
         else:
             raise
 
-    data = fileobj.read(128 + extra_read)
+    data = fileobj.readBytes(128 + extra_read)
     try:
         idx = data.index(b"TAG")
     except ValueError:

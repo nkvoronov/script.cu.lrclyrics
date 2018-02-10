@@ -103,11 +103,7 @@ class MAIN():
         if song.title:
             lyrics = self.find_lyrics(song)
             if lyrics.lyrics and ADDON.getSetting('strip') == 'true':
-                if isinstance (lyrics.lyrics,str):
-                    fulltext = lyrics.lyrics
-                else:
-                    fulltext = lyrics.lyrics
-                strip_k1 = re.sub('r[\u1100-\u11ff]+', '', fulltext)
+                strip_k1 = re.sub('r[\u1100-\u11ff]+', '', lyrics.lyrics)
                 strip_k2 = re.sub('r[\uAC00-\uD7A3]+', '', strip_k1)
                 strip_c = re.sub('r[\u3000-\u9fff]+', '', strip_k2)
                 lyrics.lyrics = strip_c
@@ -596,7 +592,8 @@ class GUI(xbmcgui.WindowXMLDialog):
                     match2 = tag2.match(x)
                 for time in times:
                     self.pOverlay.append((time, x))
-        self.pOverlay.sort(cmp=lambda x,y: cmp(x[0], y[0]))
+#TODO check if this is correct:
+        self.pOverlay.sort()
         if ADDON.getSetting('strip') == 'true':
             poplist = []
             prev_time = []

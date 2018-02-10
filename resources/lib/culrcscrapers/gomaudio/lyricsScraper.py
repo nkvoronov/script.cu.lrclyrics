@@ -93,7 +93,7 @@ class LyricsFetcher:
             t = '%02d:%02d.%02d' % gomClient.mSecConv(int(sync[0]))
             # unescape string
             try:
-                s = unicode(sync[1], 'euc-kr').encode('utf-8').replace('&apos;',"'").replace('&quot;','"')
+                s = str(sync[1], 'euc-kr').encode('utf-8').replace('&apos;',"'").replace('&quot;','"')
                 lyrline.append('[%s]%s' %(t,s))
             except:
                 pass

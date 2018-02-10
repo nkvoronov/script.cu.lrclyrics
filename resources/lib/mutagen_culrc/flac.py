@@ -62,16 +62,16 @@ class StrictFileObject(object):
                 setattr(self, m, getattr(fileobj, m))
 
     def read(self, size=-1):
-        if size == 0: # Kodi bug: xbmcvfs.File(file).read(0) returns the entire file, instead of an empty string
+        if size == 0: # Kodi bug: xbmcvfs.File(file).readBytes(0) returns the entire file, instead of an empty string
             return ''
-        data = self._fileobj.read(size)
+        data = self._fileobj.readBytes(size)
         if size >= 0 and len(data) != size:
             raise error("file said %d bytes, read %d bytes" % (
                         size, len(data)))
         return data
 
     def tryread(self, *args):
-        return self._fileobj.read(*args)
+        return self._fileobj.readBytes(*args)
 
 
 class MetadataBlock(object):
@@ -110,7 +110,7 @@ class MetadataBlock(object):
             self.load(data)
 
     def load(self, data):
-        self.data = data.read()
+        self.data = data.readBytes()
 
     def write(self):
         return self.data
@@ -205,16 +205,16 @@ class StreamInfo(MetadataBlock, mutagen_culrc.StreamInfo):
     __hash__ = MetadataBlock.__hash__
 
     def load(self, data):
-        self.min_blocksize = int(to_int_be(data.read(2)))
-        self.max_blocksize = int(to_int_be(data.read(2)))
-        self.min_framesize = int(to_int_be(data.read(3)))
-        self.max_framesize = int(to_int_be(data.read(3)))
+        self.min_blocksize = int(to_int_be(data.readBytes(2)))
+        self.max_blocksize = int(to_int_be(data.readBytes(2)))
+        self.min_framesize = int(to_int_be(data.readBytes(3)))
+        self.max_framesize = int(to_int_be(data.readBytes(3)))
         # first 16 bits of sample rate
-        sample_first = to_int_be(data.read(2))
+        sample_first = to_int_be(data.readBytes(2))
         # last 4 bits of sample rate, 3 of channels, first 1 of bits/sample
-        sample_channels_bps = to_int_be(data.read(1))
+        sample_channels_bps = to_int_be(data.readBytes(1))
         # last 4 of bits/sample, 36 of total samples
-        bps_total = to_int_be(data.read(5))
+        bps_total = to_int_be(data.readBytes(5))
 
         sample_tail = sample_channels_bps >> 4
         self.sample_rate = int((sample_first << 4) + sample_tail)
@@ -227,7 +227,7 @@ class StreamInfo(MetadataBlock, mutagen_culrc.StreamInfo):
         self.total_samples = bps_total & 0xFFFFFFFFF
         self.length = self.total_samples / float(self.sample_rate)
 
-        self.md5_signature = to_int_be(data.read(16))
+        self.md5_signature = to_int_be(data.readBytes(16))
 
     def write(self):
         f = cBytesIO()
@@ -465,7 +465,7 @@ class CueSheet(MetadataBlock):
     __hash__ = MetadataBlock.__hash__
 
     def load(self, data):
-        header = data.read(self.__CUESHEET_SIZE)
+        header = data.readBytes(self.__CUESHEET_SIZE)
         media_catalog_number, lead_in_samples, flags, num_tracks = \
             struct.unpack(self.__CUESHEET_FORMAT, header)
         self.media_catalog_number = media_catalog_number.rstrip(b'\0')
@@ -473,7 +473,7 @@ class CueSheet(MetadataBlock):
         self.compact_disc = bool(flags & 0x80)
         self.tracks = []
         for i in xrange(num_tracks):
-            track = data.read(self.__CUESHEET_TRACK_SIZE)
+            track = data.readBytes(self.__CUESHEET_TRACK_SIZE)
             start_offset, track_number, isrc_padded, flags, num_indexes = \
                 struct.unpack(self.__CUESHEET_TRACK_FORMAT, track)
             isrc = isrc_padded.rstrip(b'\0')
@@ -482,7 +482,7 @@ class CueSheet(MetadataBlock):
             val = CueSheetTrack(
                 track_number, start_offset, isrc, type_, pre_emphasis)
             for j in xrange(num_indexes):
-                index = data.read(self.__CUESHEET_TRACKINDEX_SIZE)
+                index = data.readBytes(self.__CUESHEET_TRACKINDEX_SIZE)
                 index_offset, index_number = struct.unpack(
                     self.__CUESHEET_TRACKINDEX_FORMAT, index)
                 val.indexes.append(
@@ -544,7 +544,7 @@ class Picture(MetadataBlock):
         p = Picture()
 
         with open("Folder.jpg", "rb") as f:
-            pic.data = f.read()
+            pic.data = f.readBytes()
 
         pic.type = id3.PictureType.COVER_FRONT
         pic.mime = u"image/jpeg"
@@ -583,13 +583,13 @@ class Picture(MetadataBlock):
     __hash__ = MetadataBlock.__hash__
 
     def load(self, data):
-        self.type, length = struct.unpack('>2I', data.read(8))
-        self.mime = data.read(length).decode('UTF-8', 'replace')
-        length, = struct.unpack('>I', data.read(4))
-        self.desc = data.read(length).decode('UTF-8', 'replace')
+        self.type, length = struct.unpack('>2I', data.readBytes(8))
+        self.mime = data.readBytes(length).decode('UTF-8', 'replace')
+        length, = struct.unpack('>I', data.readBytes(4))
+        self.desc = data.readBytes(length).decode('UTF-8', 'replace')
         (self.width, self.height, self.depth,
-         self.colors, length) = struct.unpack('>5I', data.read(20))
-        self.data = data.read(length)
+         self.colors, length) = struct.unpack('>5I', data.readBytes(20))
+        self.data = data.readBytes(length)
 
     def write(self):
         f = cBytesIO()
@@ -623,7 +623,7 @@ class Padding(MetadataBlock):
         super(Padding, self).__init__(data)
 
     def load(self, data):
-        self.length = len(data.read())
+        self.length = len(data.readBytes())
 
     def write(self):
         try:
@@ -674,8 +674,8 @@ class FLAC(mutagen_culrc.FileType):
                 endswith(filename.lower(), ".flac") * 3)
 
     def __read_metadata_block(self, fileobj):
-        byte = ord(fileobj.read(1))
-        size = to_int_be(fileobj.read(3))
+        byte = ord(fileobj.readBytes(1))
+        size = to_int_be(fileobj.readBytes(3))
         code = byte & 0x7F
         last_block = bool(byte & 0x80)
 
@@ -696,7 +696,7 @@ class FLAC(mutagen_culrc.FileType):
             # http://code.google.com/p/mutagen_culrc/issues/detail?id=106
             block = block_type(fileobj)
         else:
-            data = fileobj.read(size)
+            data = fileobj.readBytes(size)
             block = block_type(data)
         block.code = code
 
@@ -823,15 +823,15 @@ class FLAC(mutagen_culrc.FileType):
                 except IOError:
                     pass
                 else:
-                    if f.read(3) == b"TAG":
+                    if f.readBytes(3) == b"TAG":
                         f.seek(-128, 2)
                         f.truncate()
 
     def __find_audio_offset(self, fileobj):
         byte = 0x00
         while not (byte & 0x80):
-            byte = ord(fileobj.read(1))
-            size = to_int_be(fileobj.read(3))
+            byte = ord(fileobj.readBytes(1))
+            size = to_int_be(fileobj.readBytes(3))
             try:
                 block_type = self.METADATA_BLOCKS[byte & 0x7F]
             except IndexError:
@@ -842,7 +842,7 @@ class FLAC(mutagen_culrc.FileType):
                 # be trusted for Vorbis comment blocks and Picture block
                 block_type(fileobj)
             else:
-                fileobj.read(size)
+                fileobj.readBytes(size)
         return fileobj.tell()
 
     def __check_header(self, fileobj):
@@ -852,13 +852,13 @@ class FLAC(mutagen_culrc.FileType):
         """
 
         size = 4
-        header = fileobj.read(4)
+        header = fileobj.readBytes(4)
         if header != b"fLaC":
             size = None
             if header[:3] == b"ID3":
-                size = 14 + BitPaddedInt(fileobj.read(6)[2:])
+                size = 14 + BitPaddedInt(fileobj.readBytes(6)[2:])
                 fileobj.seek(size - 4)
-                if fileobj.read(4) != b"fLaC":
+                if fileobj.readBytes(4) != b"fLaC":
                     size = None
         if size is None:
             raise FLACNoHeaderError(
