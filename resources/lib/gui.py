@@ -103,10 +103,7 @@ class MAIN():
         if song.title:
             lyrics = self.find_lyrics(song)
             if lyrics.lyrics and ADDON.getSetting('strip') == 'true':
-                strip_k1 = re.sub('r[\u1100-\u11ff]+', '', lyrics.lyrics)
-                strip_k2 = re.sub('r[\uAC00-\uD7A3]+', '', strip_k1)
-                strip_c = re.sub('r[\u3000-\u9fff]+', '', strip_k2)
-                lyrics.lyrics = strip_c
+                lyrics.lyrics = re.sub(r'[ᄀ-ᇿ⺀-⺙⺛-⻳⼀-⿕々〇〡-〩〸-〺〻㐀-䶵一-鿃豈-鶴侮-頻並-龎]+', '', lyrics.lyrics)
         # no song title, we can't search online. try matching local filename
         elif (ADDON.getSetting('save_lyrics2') == 'true'):
             lyrics = self.get_lyrics_from_file(song, True)
@@ -592,7 +589,6 @@ class GUI(xbmcgui.WindowXMLDialog):
                     match2 = tag2.match(x)
                 for time in times:
                     self.pOverlay.append((time, x))
-#TODO check if this is correct:
         self.pOverlay.sort()
         if ADDON.getSetting('strip') == 'true':
             poplist = []
