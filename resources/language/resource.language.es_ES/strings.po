@@ -50,11 +50,11 @@ msgstr "Sincronizar manualmente letra"
 
 msgctxt "#32008"
 msgid "Delayed by: %ss"
-msgstr "Retrasado por: %ss"
+msgstr "Retrasar: %ss"
 
 msgctxt "#32009"
 msgid "Ahead by: %ss"
-msgstr "Adelantado por: %ss"
+msgstr "Adelantar: %ss"
 
 #empty strings from id 32010 to 32100
 #Settings labels
@@ -101,7 +101,7 @@ msgstr ""
 
 msgctxt "#32111"
 msgid "Lyrics are in a subfolder"
-msgstr "En una subcarpeta"
+msgstr "En subcarpeta"
 
 msgctxt "#32112"
 msgid "- Subfolder name"
