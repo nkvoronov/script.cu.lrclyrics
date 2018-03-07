@@ -38,15 +38,15 @@ msgstr "Buscando letra...."
 
 msgctxt "#32005"
 msgid "Select lyrics:"
-msgstr "Seleccionar letra:"
+msgstr "Seleccione otra letra"
 
 msgctxt "#32006"
 msgid "Select different lyrics"
-msgstr "Seleccionar diferente letra"
+msgstr "Seleccionar letra diferente"
 
 msgctxt "#32007"
 msgid "Manually sync lyrics"
-msgstr "Sincronizar manualmente letra"
+msgstr "Sincronizar letra manualmente"
 
 msgctxt "#32008"
 msgid "Delayed by: %ss"
