@@ -1,6 +1,10 @@
 v6.0.0
 - changes for python 3
 
+v5.4.8
+- fix letssingit scraper
+- fix pvr radio
+
 v5.4.7
 - fix letssingit scraper
 - fix xiami scraper
