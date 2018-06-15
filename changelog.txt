@@ -1,5 +1,5 @@
-v6.0.0
-- changes for python 3
+v5.5.2
+- move repo to gitlab
 
 v5.5.1
 - add azlyrics scraper
