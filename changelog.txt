@@ -1,6 +1,14 @@
 v6.0.0
 - changes for python 3
 
+v5.5.1
+- add azlyrics scraper
+- re-add minilyrics scraper
+- fix xiami scraper
+
+v5.5.0
+- remove broken scrapers
+
 v5.4.8
 - fix letssingit scraper
 - fix pvr radio
