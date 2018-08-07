@@ -37,6 +37,7 @@ class LyricsFetcher:
         keyword = "%s %s" % (song.title, song.artist)
         url = self.LIST_URL % (urllib.parse.quote(keyword))
         try:
+
             response = self.session.get(url, headers={'User-Agent': UserAgent, 'Referer': 'https://www.xiami.com/play'})
             result = response.text
         except:
