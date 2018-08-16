@@ -17,6 +17,8 @@ __title__ = "TTPlayer"
 __priority__ = '120'
 __lrc__ = True
 
+UserAgent = 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0'
+
 socket.setdefaulttimeout(10)
 
 LYRIC_TITLE_STRIP=["\(live[^\)]*\)", "\(acoustic[^\)]*\)",
@@ -170,10 +172,13 @@ class LyricsFetcher:
 
     def get_lyrics_from_list(self, link):
         title,Id,artist,song = link
-        log('%s %s %s' %(Id, artist, song))
         try:
+
             url = self.LYRIC_URL %(int(Id),ttpClient.CodeFunc(int(Id), artist + song), random.randint(0,0xFFFFFFFFFFFF))
-            f = urllib.request.urlopen(url)
+            log('%s: search url: %s' % (__title__, url))
+            header = {'User-Agent':UserAgent}
+            req = urllib.request.Request(url, headers=header)
+            f = urllib.request.urlopen(req)
             Page = f.read().decode('utf-8')
         except:
             log("%s: %s::%s (%d) [%s]" % (
