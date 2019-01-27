@@ -73,7 +73,7 @@
 		<language></language>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE Version 2</license>
-		<forum>http://forum.kodi.tv/showthread.php?tid=147340</forum>
+		<forum>https://forum.kodi.tv/showthread.php?tid=147340</forum>
 		<source>https://gitlab.com/ronie/script.cu.lrclyrics/</source>
 		<assets>
 			<icon>resources/icon.png</icon>
