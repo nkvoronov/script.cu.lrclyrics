@@ -714,7 +714,7 @@ class MyPlayer(xbmc.Player):
         self.function = kwargs['function']
         self.clear = kwargs['clear']
 
-    def onPlayBackStarted(self):
+    def onAVStarted(self):
         self.clear()
         if xbmc.getCondVisibility('Window.IsVisible(12006)'):
             self.function()
