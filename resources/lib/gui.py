@@ -96,9 +96,7 @@ class MAIN():
         if lyrics:
             if lyrics.lyrics:
                 log('found lyrics in memory')
-            else:
-                log('no lyrics found on previous search')
-            return lyrics
+                return lyrics
         if song.title:
             lyrics = self.find_lyrics(song)
             if lyrics.lyrics and ADDON.getSetting('strip') == 'true':
@@ -258,6 +256,10 @@ class MAIN():
             return False
 
     def delete_lyrics(self, lyrics):
+        # delete lyrics from memory
+        if lyrics in self.fetchedLyrics:
+            self.fetchedLyrics.remove(lyrics)
+        # delete saved lyrics
         if (ADDON.getSetting('save_lyrics1') == 'true'):
             file_path = lyrics.song.path1(lyrics.lrc)
             success = self.delete_file(file_path)
