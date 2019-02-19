@@ -1,3 +1,7 @@
+v5.5.10
+- delete lyrics from memory as well
+- re-search for lyrics if it was not found previously
+
 v5.5.9
 - fix lyricsmode scraper
 
