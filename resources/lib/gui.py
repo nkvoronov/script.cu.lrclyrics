@@ -107,7 +107,7 @@ class MAIN():
                 strip_k1 = re.sub(ur'[\u1100-\u11ff]+', '', fulltext)
                 strip_k2 = re.sub(ur'[\uAC00-\uD7A3]+', '', strip_k1)
                 strip_c = re.sub(ur'[\u3000-\u9fff]+', '', strip_k2)
-                lyrics.lyrics = strip_c.encode('utf-8')
+                lyrics.lyrics = strip_c.encode('utf-8').replace('：',':') #replace fullwith colon (not present in many font files)
         # no song title, we can't search online. try matching local filename
         elif (ADDON.getSetting('save_lyrics2') == 'true'):
             lyrics = self.get_lyrics_from_file(song, True)
@@ -213,7 +213,7 @@ class MAIN():
         savedLyrics = self.get_lyrics_from_memory(lyrics.song)
         if (savedLyrics is None):
             self.fetchedLyrics.append(lyrics)
-            self.fetchedLyrics = self.fetchedLyrics[:10]
+            self.fetchedLyrics = self.fetchedLyrics[-10:]
 
     def save_lyrics_to_file(self, lyrics, adjust=None):
         if isinstance (lyrics.lyrics, str):
