@@ -4,6 +4,18 @@ v6.0.1
 v6.0.0
 - changes for python 3
 
+v5.5.10
+- delete lyrics from memory as well
+- re-search for lyrics if it was not found previously
+- fix lyrics from memory
+- fix lyricwiki scraper
+- more accurate results from ttplayer scraper
+- genius scraper strip blank lines
+- change manual sync range to +/ 20 secs
+
+v5.5.9
+- fix lyricsmode scraper
+
 v5.5.8
 - cosmetics
 

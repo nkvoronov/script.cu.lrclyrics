@@ -101,7 +101,8 @@ class MAIN():
         if song.title:
             lyrics = self.find_lyrics(song)
             if lyrics.lyrics and ADDON.getSetting('strip') == 'true':
-                lyrics.lyrics = re.sub(r'[ᄀ-ᇿ⺀-⺙⺛-⻳⼀-⿕々〇〡-〩〸-〺〻㐀-䶵一-鿃豈-鶴侮-頻並-龎]+', '', lyrics.lyrics)
+                # replace CJK and fullwith colon (not present in many font files)
+                lyrics.lyrics = re.sub(r'[ᄀ-ᇿ⺀-⺙⺛-⻳⼀-⿕々〇〡-〩〸-〺〻㐀-䶵一-鿃豈-鶴侮-頻並-龎]+', '', lyrics.lyrics).replace('：',':') 
         # no song title, we can't search online. try matching local filename
         elif (ADDON.getSetting('save_lyrics2') == 'true'):
             lyrics = self.get_lyrics_from_file(song, True)
@@ -207,7 +208,7 @@ class MAIN():
         savedLyrics = self.get_lyrics_from_memory(lyrics.song)
         if (savedLyrics is None):
             self.fetchedLyrics.append(lyrics)
-            self.fetchedLyrics = self.fetchedLyrics[:10]
+            self.fetchedLyrics = self.fetchedLyrics[-10:]
 
     def save_lyrics_to_file(self, lyrics, adjust=None):
         if isinstance (lyrics.lyrics, str):
