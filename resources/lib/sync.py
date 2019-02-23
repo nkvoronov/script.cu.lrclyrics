@@ -8,7 +8,6 @@ class GUI(xbmcgui.WindowXMLDialog):
         self.offset = kwargs['offset']
 
     def onInit(self):
-        self.val = 0.0
         self._get_controls()
         self._init_values()
         self.exit = False
