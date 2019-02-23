@@ -255,10 +255,14 @@ class MAIN():
             log('failed to save lyrics')
             return False
 
-    def delete_lyrics(self, lyrics):
+    def remove_lyrics_from_memory(self, lyrics):
         # delete lyrics from memory
         if lyrics in self.fetchedLyrics:
             self.fetchedLyrics.remove(lyrics)
+
+    def delete_lyrics(self, lyrics):
+        # delete lyrics from memory
+        self.remove_lyrics_from_memory(lyrics)
         # delete saved lyrics
         if (ADDON.getSetting('save_lyrics1') == 'true'):
             file_path = lyrics.song.path1(lyrics.lrc)
@@ -274,7 +278,6 @@ class MAIN():
         except:
             log('failed to delete file')
             return False
-
 
     def myPlayerChanged(self):
         global lyrics
@@ -298,7 +301,7 @@ class MAIN():
                     # check if gui is already running
                     if not WIN.getProperty('culrc.guirunning') == 'TRUE':
                         WIN.setProperty('culrc.guirunning', 'TRUE')
-                        gui = guiThread(mode=self.mode, save=self.save_lyrics_to_file, delete=self.delete_lyrics, function=self.return_time)
+                        gui = guiThread(mode=self.mode, save=self.save_lyrics_to_file, remove=self.remove_lyrics_from_memory, delete=self.delete_lyrics, function=self.return_time)
                         gui.start()
                 else:
                     # signal gui thread to exit
@@ -360,11 +363,12 @@ class guiThread(threading.Thread):
         threading.Thread.__init__(self)
         self.mode = kwargs['mode']
         self.save = kwargs['save']
+        self.remove = kwargs['remove']
         self.delete = kwargs['delete']
         self.function = kwargs['function']
 
     def run(self):
-        ui = GUI('script-cu-lrclyrics-main.xml', CWD, 'Default', mode=self.mode, save=self.save, delete=self.delete, function=self.function)
+        ui = GUI('script-cu-lrclyrics-main.xml', CWD, 'Default', mode=self.mode, save=self.save, remove=self.remove, delete=self.delete, function=self.function)
         ui.doModal()
         del ui
         WIN.clearProperty('culrc.guirunning')
@@ -375,6 +379,7 @@ class syncThread(threading.Thread):
         self.function = kwargs['function']
         self.adjust = kwargs['adjust']
         self.save = kwargs['save']
+        self.remove = kwargs['remove']
         self.lyrics = kwargs['lyrics']
 
     def run(self):
@@ -384,12 +389,15 @@ class syncThread(threading.Thread):
         adjust = dialog.val
         del dialog
         self.save(self.lyrics, adjust)
+        # file has changed, remove it from memory
+        self.remove(self.lyrics)
 
 class GUI(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXMLDialog.__init__(self)
         self.mode = kwargs['mode']
         self.save = kwargs['save']
+        self.remove = kwargs['remove']
         self.delete = kwargs['delete']
         self.function = kwargs['function']
         self.Monitor = MyMonitor(function = None)
@@ -650,7 +658,7 @@ class GUI(xbmcgui.WindowXMLDialog):
                 if functions[selection] == 'select':
                     self.reshow_choices()
                 elif functions[selection] == 'sync':
-                    sync = syncThread(adjust=self.syncadjust, function=self.set_synctime, save=self.save, lyrics=self.lyrics)
+                    sync = syncThread(adjust=self.syncadjust, function=self.set_synctime, save=self.save, lyrics=self.lyrics, remove=self.remove)
                     sync.start()
                 elif functions[selection] == 'delete':
                     self.lyrics.lyrics = ''
