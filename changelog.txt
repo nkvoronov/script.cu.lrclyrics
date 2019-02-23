@@ -1,3 +1,6 @@
+v5.5.11
+- fix lyrics sync
+
 v5.5.10
 - delete lyrics from memory as well
 - re-search for lyrics if it was not found previously
