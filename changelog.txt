@@ -1,3 +1,6 @@
+v5.5.12
+- fix for empty lyrics files
+
 v5.5.11
 - fix lyrics sync
 
