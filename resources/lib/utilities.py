@@ -36,7 +36,10 @@ def get_textfile(filepath):
         f.close()
         # Detect text encoding
         enc = chardet.detect(data)
-        return data.decode(enc['encoding'])
+        if enc['encoding']:
+            return data.decode(enc['encoding'])
+        else:
+            return data
     except:
         return None
 

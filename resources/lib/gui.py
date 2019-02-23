@@ -191,7 +191,7 @@ class MAIN():
             lyricsfile = song.path1(getlrc)
             if xbmcvfs.exists(lyricsfile):
                 lyr = get_textfile(lyricsfile)
-                if lyr:
+                if lyr != None:
                     lyrics.lyrics = lyr
                     return lyrics
         if ADDON.getSetting('save_lyrics2') == 'true':
@@ -199,7 +199,7 @@ class MAIN():
             lyricsfile = song.path2(getlrc)
             if xbmcvfs.exists(lyricsfile):
                 lyr = get_textfile(lyricsfile)
-                if lyr:
+                if lyr != None:
                     lyrics.lyrics = lyr
                     return lyrics
         return None
