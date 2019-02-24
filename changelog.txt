@@ -1,3 +1,6 @@
+v5.5.13
+- fix negative offset
+
 v5.5.12
 - fix for empty lyrics files
 
