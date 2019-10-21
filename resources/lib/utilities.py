@@ -167,7 +167,7 @@ class Song:
                 # Radio version, short version, year of the song...
                 # It often disturbs the lyrics search so we remove it
                 song.title = re.sub(r'\([^\)]*\)$', '', song.title)
-        if (song.filepath and ((not song.title) or (not song.artist) or (ADDON.getSettingBool('read_filename'))):
+        if (song.filepath and ((not song.title) or (not song.artist) or (ADDON.getSettingBool('read_filename')))):
             song.artist, song.title = get_artist_from_filename(song.filepath)
         if ADDON.getSettingBool('clean_title'):
             song.title = re.sub(r'\([^\)]*\)$', '', song.title)
