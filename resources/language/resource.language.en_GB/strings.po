@@ -210,3 +210,46 @@ msgstr ""
 msgctxt "#32167"
 msgid "Delete lyrics"
 msgstr ""
+
+# Scrapers - do not translate!
+
+msgctxt "#32901"
+msgid "MiniLyrics"
+msgstr ""
+
+msgctxt "#32902"
+msgid "TTPlayer"
+msgstr ""
+
+msgctxt "#32903"
+msgid "GomAudio"
+msgstr ""
+
+msgctxt "#32904"
+msgid "Music 163"
+msgstr ""
+
+msgctxt "#32905"
+msgid "LyricWiki"
+msgstr ""
+
+msgctxt "#32906"
+msgid "Genius"
+msgstr ""
+
+msgctxt "#32907"
+msgid "Lyrics Mode"
+msgstr ""
+
+msgctxt "#32908"
+msgid "AZLyrics"
+msgstr ""
+
+msgctxt "#32909"
+msgid "Lyrics.com"
+msgstr ""
+
+msgctxt "#32910"
+msgid "Dark Lyrics"
+msgstr ""
+
