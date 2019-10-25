@@ -104,7 +104,7 @@ class MAIN():
                 # replace CJK and fullwith colon (not present in many font files)
                 lyrics.lyrics = re.sub(r'[ᄀ-ᇿ⺀-⺙⺛-⻳⼀-⿕々〇〡-〩〸-〺〻㐀-䶵一-鿃豈-鶴侮-頻並-龎]+', '', lyrics.lyrics).replace('：',':') 
         # no song title, we can't search online. try matching local filename
-        elif (ADDON.getSettingBool('save_lyrics2') == 'true') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+        elif ADDON.getSettingBool('save_lyrics2') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
             lyrics = self.get_lyrics_from_file(song, True)
             if not lyrics:
                 lyrics = self.get_lyrics_from_file(song, False)
@@ -121,7 +121,7 @@ class MAIN():
         # search embedded lrc lyrics
         ext = os.path.splitext(song.filepath)[1].lower()
         sup_ext = ['.mp3', '.flac']
-        if (ADDON.getSettingBool('search_embedded') == 'true') and song.analyze_safe and (ext in sup_ext) and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+        if ADDON.getSettingBool('search_embedded') and song.analyze_safe and (ext in sup_ext) and xbmc.getCondVisibility('Window.IsVisible(12006)'):
             log('searching for embedded lrc lyrics')
             try:
                 lyrics = getEmbedLyrics(song, True)
@@ -131,7 +131,8 @@ class MAIN():
                 log('found embedded lrc lyrics')
                 return lyrics
         # search lrc lyrics from file
-        if (ADDON.getSettingBool('search_file') == 'true') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+        if ADDON.getSettingBool('search_file') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+            log('searching for local lrc files')
             lyrics = self.get_lyrics_from_file(song, True)
             if (lyrics):
                 log('found lrc lyrics from file')
@@ -145,7 +146,7 @@ class MAIN():
                     self.save_lyrics_to_file(lyrics)
                     return lyrics
         # search embedded txt lyrics
-        if (ADDON.getSettingBool('search_embedded') == 'true' and song.analyze_safe) and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+        if ADDON.getSettingBool('search_embedded') and song.analyze_safe and xbmc.getCondVisibility('Window.IsVisible(12006)'):
             log('searching for embedded txt lyrics')
             try:
                 lyrics = getEmbedLyrics(song, False)
@@ -155,7 +156,8 @@ class MAIN():
                 log('found embedded txt lyrics')
                 return lyrics
         # search txt lyrics from file
-        if (ADDON.getSettingBool('search_file') == 'true') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+        if ADDON.getSettingBool('search_file') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+            log('searching for local txt files')
             lyrics = self.get_lyrics_from_file(song, False)
             if (lyrics):
                 log('found txt lyrics from file')
