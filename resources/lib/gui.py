@@ -343,7 +343,7 @@ class MAIN():
             self.mode = 'service'
         else:
             self.mode = 'manual'
-            # quit the script is mode was changed from service to manual
+            # quit the script if mode was changed from service to manual
             WIN.setProperty('culrc.quit', 'TRUE')
 
     def clear(self):
