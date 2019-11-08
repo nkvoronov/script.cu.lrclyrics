@@ -1,3 +1,6 @@
+v6.0.2
+- don't display/focus the first line from the start of the song
+
 v6.0.1
 - bump
 
