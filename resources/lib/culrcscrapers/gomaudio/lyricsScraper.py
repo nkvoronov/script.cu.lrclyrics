@@ -8,7 +8,8 @@ edge
 import sys
 import socket
 import hashlib
-import urllib
+import urllib.request
+import urllib.parse
 import re
 import unicodedata
 from utilities import *
@@ -41,7 +42,8 @@ class gomClient(object):
         if not buf:
             return
         # calculate hashkey
-        m = hashlib.md5(); m.update(buf);
+        m = hashlib.md5()
+        m.update(buf)
         return m.hexdigest()
 
     @staticmethod
@@ -62,15 +64,15 @@ class LyricsFetcher:
         lyrics.lrc = __lrc__
         try:
             if not ext:
-               ext = os.path.splitext(song.filepath.decode('utf-8'))[1].lower()
+               ext = os.path.splitext(song.filepath)[1].lower()
             sup_ext = ['.mp3', '.ogg', '.wma', '.flac', '.ape', '.wav']
             if ext in sup_ext and key == None:
                 key = gomClient.GetKeyFromFile(song.filepath)
             if not key:
                 return None
-            url = GOM_URL %(key, urllib.quote(remove_accents(song.title.decode('utf-8')).encode('euc-kr')), (remove_accents(song.artist.decode('utf-8')).encode('euc-kr')))
-            response = urllib.urlopen(url)
-            Page = response.read()
+            url = GOM_URL %(key, urllib.parse.quote(remove_accents(song.title).encode('euc-kr')), urllib.parse.quote(remove_accents(song.artist).encode('euc-kr')))
+            response = urllib.request.urlopen(url)
+            Page = response.read().decode('euc-kr')
         except:
             log('%s: %s::%s (%d) [%s]' % (
                     __title__, self.__class__.__name__,
@@ -90,7 +92,7 @@ class LyricsFetcher:
             t = '%02d:%02d.%02d' % gomClient.mSecConv(int(sync[0]))
             # unescape string
             try:
-                s = unicode(sync[1], 'euc-kr').encode('utf-8').replace('&apos;',"'").replace('&quot;','"')
+                s = sync[1].replace('&apos;',"'").replace('&quot;','"')
                 lyrline.append('[%s]%s' %(t,s))
             except:
                 pass

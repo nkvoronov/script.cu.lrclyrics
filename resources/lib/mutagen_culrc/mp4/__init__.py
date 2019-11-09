@@ -318,7 +318,7 @@ class MP4Tags(DictProxy, Metadata):
 
         ilst = path[-1]
         for atom in ilst.children:
-            ok, data = atom.read(fileobj)
+            ok, data = atom.readBytes(fileobj)
             if not ok:
                 raise MP4MetadataError("Not enough data")
 
@@ -485,10 +485,10 @@ class MP4Tags(DictProxy, Metadata):
 
         for atom in path:
             fileobj.seek(atom.offset)
-            size = cdata.uint_be(fileobj.read(4))
+            size = cdata.uint_be(fileobj.readBytes(4))
             if size == 1:  # 64bit
                 # skip name (4B) and read size (8B)
-                size = cdata.ulonglong_be(fileobj.read(12)[4:])
+                size = cdata.ulonglong_be(fileobj.readBytes(12)[4:])
                 fileobj.seek(atom.offset + 8)
                 fileobj.write(cdata.to_ulonglong_be(size + delta))
             else:  # 32bit
@@ -500,7 +500,7 @@ class MP4Tags(DictProxy, Metadata):
         if atom.offset > offset:
             atom.offset += delta
         fileobj.seek(atom.offset + 12)
-        data = fileobj.read(atom.length - 12)
+        data = fileobj.readBytes(atom.length - 12)
         fmt = fmt % cdata.uint_be(data[:4])
         offsets = struct.unpack(fmt, data[4:])
         offsets = [o + (0, delta)[offset < o] for o in offsets]
@@ -511,7 +511,7 @@ class MP4Tags(DictProxy, Metadata):
         if atom.offset > offset:
             atom.offset += delta
         fileobj.seek(atom.offset + 9)
-        data = fileobj.read(atom.length - 9)
+        data = fileobj.readBytes(atom.length - 9)
         flags = cdata.uint_be(b"\x00" + data[:3])
         if flags & 1:
             o = cdata.ulonglong_be(data[7:15])
@@ -855,7 +855,7 @@ class MP4Info(StreamInfo):
 
         for trak in moov.findall(b"trak"):
             hdlr = trak[b"mdia", b"hdlr"]
-            ok, data = hdlr.read(fileobj)
+            ok, data = hdlr.readBytes(fileobj)
             if not ok:
                 raise MP4StreamInfoError("Not enough data")
             if data[8:12] == b"soun":
@@ -864,7 +864,7 @@ class MP4Info(StreamInfo):
             raise MP4StreamInfoError("track has no audio data")
 
         mdhd = trak[b"mdia", b"mdhd"]
-        ok, data = mdhd.read(fileobj)
+        ok, data = mdhd.readBytes(fileobj)
         if not ok:
             raise MP4StreamInfoError("Not enough data")
 
@@ -904,7 +904,7 @@ class MP4Info(StreamInfo):
 
         assert atom.name == b"stsd"
 
-        ok, data = atom.read(fileobj)
+        ok, data = atom.readBytes(fileobj)
         if not ok:
             raise MP4StreamInfoError("Invalid stsd")
 

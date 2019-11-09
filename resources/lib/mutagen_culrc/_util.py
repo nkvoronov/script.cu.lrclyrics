@@ -336,7 +336,7 @@ def insert_bytes(fobj, size, offset, BUFFER_SIZE=2 ** 16):
             fobj.seek(-thismove, 1)
             nextpos = fobj.tell()
             # Read it, so we're back at the end.
-            data = fobj.read(thismove)
+            data = fobj.readBytes(thismove)
             # Seek back to where we need to write it.
             fobj.seek(-thismove + size, 1)
             # Write it.
@@ -376,13 +376,13 @@ def delete_bytes(fobj, size, offset, BUFFER_SIZE=2 ** 16):
         except (ValueError, EnvironmentError, ImportError, AttributeError):
             # handle broken mmap scenarios, BytesIO()
             fobj.seek(offset + size)
-            buf = fobj.read(BUFFER_SIZE)
+            buf = fobj.readBytes(BUFFER_SIZE)
             while buf:
                 fobj.seek(offset)
                 fobj.write(buf)
                 offset += len(buf)
                 fobj.seek(offset + size)
-                buf = fobj.read(BUFFER_SIZE)
+                buf = fobj.readBytes(BUFFER_SIZE)
     fobj.truncate(filesize - size)
     fobj.flush()
 
@@ -484,7 +484,7 @@ class BitReader(object):
 
         if count > self._bits:
             n_bytes = (count - self._bits + 7) // 8
-            data = self._fileobj.read(n_bytes)
+            data = self._fileobj.readBytes(n_bytes)
             if len(data) != n_bytes:
                 raise BitReaderError("not enough data")
             for b in bytearray(data):
@@ -505,7 +505,7 @@ class BitReader(object):
 
         # fast path
         if self._bits == 0:
-            data = self._fileobj.read(count)
+            data = self._fileobj.readBytes(count)
             if len(data) != count:
                 raise BitReaderError("not enough data")
             return data

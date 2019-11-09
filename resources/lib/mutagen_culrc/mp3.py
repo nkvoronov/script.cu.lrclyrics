@@ -158,7 +158,7 @@ class MPEGInfo(StreamInfo):
         # If we don't get an offset, try to skip an ID3v2 tag.
         if offset is None:
             fileobj.seek(0, 0)
-            idata = fileobj.read(10)
+            idata = fileobj.readBytes(10)
             try:
                 id3, insize = struct.unpack('>3sxxx4s', idata)
             except struct.error:
@@ -194,7 +194,7 @@ class MPEGInfo(StreamInfo):
         # valid MPEG data. If we can't find them in 32k of reads, something
         # is horribly wrong (the longest frame can only be about 4k). This
         # is assuming the offset didn't lie.
-        data = fileobj.read(32768)
+        data = fileobj.readBytes(32768)
 
         frame_1 = data.find(b"\xff")
         while 0 <= frame_1 <= (len(data) - 4):

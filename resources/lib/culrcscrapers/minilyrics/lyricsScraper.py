@@ -3,15 +3,18 @@
 Scraper for http://www.viewlyrics.com
 
 PedroHLC
+https://github.com/PedroHLC/ViewLyricsOpenSearcher
+
+rikels
+https://github.com/rikels/LyricsSearch
 '''
 
-import urllib
-import urllib2
 import socket
 import re
 import hashlib
 import difflib
 import chardet
+import requests
 from utilities import *
 
 __title__ = 'MiniLyrics'
@@ -26,16 +29,20 @@ class MiniLyrics(object):
     Minilyrics specific functions
     '''
     @staticmethod
+    def hexToStr(hexx):
+        string = ''
+        i = 0
+        while (i < (len(hexx) - 1)):
+            string += chr(int(hexx[i] + hexx[i + 1], 16))
+            i += 2
+        return string
+
+    @staticmethod
     def vl_enc(data, md5_extra):
         datalen = len(data)
         md5 = hashlib.md5()
         md5.update(data + md5_extra)
-        hexx = md5.hexdigest()
-        hasheddata = ''
-        i = 0
-        while (i < (len(hexx) - 1)):
-            hasheddata += chr(int(hexx[i] + hexx[i + 1], 16))
-            i += 2
+        hasheddata = MiniLyrics.hexToStr(md5.hexdigest())
         j = 0
         i = 0
         while (i < datalen):
@@ -64,7 +71,7 @@ class MiniLyrics(object):
     @staticmethod
     def vl_dec(data):
         magickey = data[1]
-        result = ''
+        result = ""
         i = 22
         datalen = len(data)
         if isinstance(magickey, int):
@@ -88,26 +95,6 @@ class LyricsFetcher:
             string = string.replace(i,entities[i])
         return string
 
-    def miniLyricsParser(self, text):
-        lines = text.splitlines()
-        ret = []
-        for line in lines:
-            if line.strip().startswith("<fileinfo "):
-                loc = []
-                loc.append(self.htmlDecode(re.search('link=\"([^\"]*)\"',line).group(1)))
-                if not loc[0].lower().endswith(".lrc"):
-                    continue
-                if(re.search('artist=\"([^\"]*)\"',line)):
-                    loc.insert(0,self.htmlDecode(re.search('artist=\"([^\"]*)\"',line).group(1)))
-                else:
-                    loc.insert(0,' ')
-                if(re.search('title=\"([^\"]*)\"',line)):
-                    loc.insert(1,self.htmlDecode(re.search('title=\"([^\"]*)\"',line).group(1)))
-                else:
-                    loc.insert(1,' ')
-                ret.append(loc)
-        return ret
-
     def get_lyrics(self, song):
         log('%s: searching lyrics for %s - %s' % (__title__, song.artist, song.title))
         lyrics = Lyrics()
@@ -115,10 +102,10 @@ class LyricsFetcher:
         lyrics.source = __title__
         lyrics.lrc = __lrc__
         search_url = 'http://search.crintsoft.com/searchlyrics.htm'
-        search_query_base = u"<?xml version='1.0' encoding='utf-8' standalone='yes' ?><searchV1 client=\"ViewLyricsOpenSearcher\" artist=\"{artist}\" title=\"{title}\" OnlyMatched=\"1\" />"
+        search_query_base = "<?xml version='1.0' encoding='utf-8' standalone='yes' ?><searchV1 client=\"ViewLyricsOpenSearcher\" artist=\"{artist}\" title=\"{title}\" OnlyMatched=\"1\" />"
         search_useragent = 'MiniLyrics'
         search_md5watermark = b'Mlv1clt4.0'
-        search_encquery = MiniLyrics.vl_enc(search_query_base.format(artist=song.artist.decode('utf-8'), title=song.title.decode('utf-8')).encode('utf-8'), search_md5watermark)
+        search_encquery = MiniLyrics.vl_enc(search_query_base.format(artist=song.artist, title=song.title).encode('utf-8'), search_md5watermark)
         headers = {"User-Agent": "{ua}".format(ua=search_useragent),
                    "Content-Length": "{content_length}".format(content_length=len(search_encquery)),
                    "Connection": "Keep-Alive",
@@ -126,17 +113,26 @@ class LyricsFetcher:
                    "Content-Type": "application/x-www-form-urlencoded"
                    }
         try:
-            request = urllib2.Request(search_url, data=search_encquery, headers=headers)
-            response = urllib2.urlopen(request)
-            search_result = response.read()
+            request = requests.post(search_url, data=search_encquery, headers=headers)
+            search_result = request.text
         except:
             return
-        xml = MiniLyrics.vl_dec(search_result)
-        lrcList = self.miniLyricsParser(xml)
+        rawdata = MiniLyrics.vl_dec(search_result)
+        # might be a better way to parse the data 
+        lrcdata = rawdata.replace('\x00', '*')
+        artistmatch = re.search('artist\*(.*?)\*',lrcdata)
+        if not artistmatch:
+            return
+        titlematch = re.search('title\*(.*?)\*',lrcdata)
+        if not titlematch:
+            return
+        artist = artistmatch.group(1)
+        title = titlematch.group(1)
         links = []
-        for x in lrcList:
-            if (difflib.SequenceMatcher(None, song.artist.lower(), x[0].lower()).ratio() > 0.8) and (difflib.SequenceMatcher(None, song.title.lower(), x[1].lower()).ratio() > 0.8):
-                links.append((x[0] + ' - ' + x[1], x[2], x[0], x[1]))
+        if (difflib.SequenceMatcher(None, song.artist.lower(), artist.lower()).ratio() > 0.8) and (difflib.SequenceMatcher(None, song.title.lower(), title.lower()).ratio() > 0.8):
+            results = re.findall('[a-z0-9/_]*?\.lrc', lrcdata)
+            for item in results:
+                links.append((artist + ' - ' + title, item, artist, title))
         if len(links) == 0:
             return None
         elif len(links) > 1:
@@ -150,8 +146,8 @@ class LyricsFetcher:
     def get_lyrics_from_list(self, link):
         title,url,artist,song = link
         try:
-            f = urllib.urlopen('http://minilyrics.com/' + url)
-            lyrics = f.read()
+            f = requests.get('http://search.crintsoft.com/l/' + url)
+            lyrics = f.content
         except:
             return
         enc = chardet.detect(lyrics)

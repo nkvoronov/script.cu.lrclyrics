@@ -7,8 +7,8 @@ ADDON = xbmcaddon.Addon()
 ADDONID = ADDON.getAddonInfo('id')
 ADDONNAME = ADDON.getAddonInfo('name')
 ADDONVERSION = ADDON.getAddonInfo('version')
-CWD = xbmc.translatePath(ADDON.getAddonInfo('path')).decode('utf-8')
-PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile')).decode('utf-8')
+CWD = xbmc.translatePath(ADDON.getAddonInfo('path'))
+PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile'))
 LANGUAGE = ADDON.getLocalizedString
 
 BASE_RESOURCE_PATH = os.path.join(CWD, 'resources', 'lib')
@@ -28,15 +28,15 @@ def culrc_run(mode):
         WIN.setProperty('culrc.force','TRUE')
     else:
         log('script already running')
-        if ADDON.getSetting('silent') == 'false':
+        if ADDON.getSettingBool('silent'):
             dialog = xbmcgui.Dialog()
             dialog.notification(ADDONNAME, LANGUAGE(32158), time=2000, sound=False)
 
 if (__name__ == '__main__'):
-    service = ADDON.getSetting('service')
+    service = ADDON.getSettingBool('service')
     # started as a service
     if sys.argv == ['']:
-        if service == 'true':
+        if service:
             culrc_run('service')
         else:
             log('service not enabled')
@@ -44,7 +44,7 @@ if (__name__ == '__main__'):
     else:
         if len(sys.argv) == 2 and sys.argv[1] == 'test':
             test_scrapers()
-        elif service == 'true':
+        elif service:
             culrc_run('service')
         else:
             culrc_run('manual')

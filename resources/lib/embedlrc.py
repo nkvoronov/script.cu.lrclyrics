@@ -14,7 +14,7 @@ def getEmbedLyrics(song, getlrc):
     lyrics.song = song
     lyrics.source = LANGUAGE(32002)
     lyrics.lrc = getlrc
-    filename = song.filepath.decode('utf-8')
+    filename = song.filepath
     ext = os.path.splitext(filename)[1].lower()
     lry = None
     if ext == '.mp3':
@@ -44,27 +44,27 @@ See: http://id3.org/Lyrics3
 def getLyrics3(filename, getlrc):
     f = xbmcvfs.File(filename)
     f.seek(-128-9, os.SEEK_END)
-    buf = f.read(9)
-    if (buf != 'LYRICS200' and buf != 'LYRICSEND'):
+    buf = f.readBytes(9)
+    if (buf != b'LYRICS200' and buf != b'LYRICSEND'):
         f.seek(-9, os.SEEK_END)
-        buf = f.read(9)
-    if (buf == 'LYRICSEND'):
+        buf = f.readBytes(9)
+    if (buf == b'LYRICSEND'):
         ''' Find Lyrics3v1 '''
         f.seek(-5100-9-11, os.SEEK_CUR)
-        buf = f.read(5100+11)
+        buf = f.readBytes(5100+11)
         f.close();
-        start = buf.find('LYRICSBEGIN')
+        start = buf.find(b'LYRICSBEGIN')
         content = buf[start+11:]
         if (getlrc and isLRC(content)) or (not getlrc and not isLRC(content)):
             return content
-    elif (buf == 'LYRICS200'):
+    elif (buf == b'LYRICS200'):
         ''' Find Lyrics3v2 '''
         f.seek(-9-6, os.SEEK_CUR)
-        size = int(f.read(6))
+        size = int(f.readBytes(6))
         f.seek(-size-6, os.SEEK_CUR)
-        buf = f.read(11)
-        if(buf == 'LYRICSBEGIN'):
-            buf = f.read(size-11)
+        buf = f.readBytes(11)
+        if(buf == b'LYRICSBEGIN'):
+            buf = f.readBytes(size-11)
             f.close();
             tags=[]
             while buf!= '':
@@ -91,7 +91,7 @@ def getID3Lyrics(filename, getlrc):
     try:
         data = MP3(filename)
         lyr = ''
-        for tag,value in data.iteritems():
+        for tag,value in data.items():
             if getlrc and tag.startswith('SYLT'):
                 for line in data[tag].text:
                     txt = line[0].encode('utf-8').strip()
@@ -99,7 +99,7 @@ def getID3Lyrics(filename, getlrc):
                     lyr += '%s%s\r\n' % (stamp, txt)
             elif not getlrc and tag.startswith('USLT'):
                 if data[tag].text:
-                    lyr = data[tag].text.encode('utf-8')
+                    lyr = data[tag].text
             elif tag.startswith('TXXX'):
                 if getlrc and tag.upper().endswith('SYNCEDLYRICS'): # TXXX tags contain arbitrary info. only accept 'TXXX:SYNCEDLYRICS'
                     lyr = data[tag].text[0]

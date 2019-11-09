@@ -2,6 +2,7 @@
 import re
 import urllib
 import requests
+>>>>>>> f565637... fix letssingit scraper
 import socket
 import difflib
 from utilities import *
@@ -24,7 +25,7 @@ class LyricsFetcher:
         lyrics.song = song
         lyrics.source = __title__
         lyrics.lrc = __lrc__
-        query = '%s+%s' % (urllib.quote_plus(song.artist), urllib.quote_plus(song.title))
+        query = '%s+%s' % (urllib.parse.quote_plus(song.artist), urllib.parse.quote_plus(song.title))
         try:
             headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0'}
             request = self.rqs.get(self.url % query, headers=headers, cookies={'cookieconsent':'1'})

@@ -7,8 +7,7 @@ taxigps
 
 import os
 import socket
-import urllib
-import urllib2
+import urllib.request
 import re
 import random
 import difflib
@@ -103,13 +102,11 @@ class ttpClient(object):
         return tmp1
     
     @staticmethod
-    def EncodeArtTit(str):
+    def EncodeArtTit(data):
+        data = data.encode('UTF-16').decode('UTF-16')
         rtn = ''
-        uni = unicode(str, 'UTF-8')
-        str = uni.encode('UTF-16')[2:]
-        for i in range(len(str)):
-            rtn += '%02x' % ord(str[i])
-
+        for i in range(len(data)):
+            rtn += '%02x00' % ord(data[i])
         return rtn
 
 
@@ -146,8 +143,8 @@ class LyricsFetcher:
 
         try:
             url = self.LIST_URL %(ttpClient.EncodeArtTit(artist.replace(' ','').lower()), ttpClient.EncodeArtTit(title.replace(' ','').lower()))
-            f = urllib.urlopen(url)
-            Page = f.read()
+            f = urllib.request.urlopen(url)
+            Page = f.read().decode('utf-8')
         except:
             log("%s: %s::%s (%d) [%s]" % (
                    __title__, self.__class__.__name__,
@@ -176,12 +173,13 @@ class LyricsFetcher:
     def get_lyrics_from_list(self, link):
         title,Id,artist,song = link
         try:
+
             url = self.LYRIC_URL %(int(Id),ttpClient.CodeFunc(int(Id), artist + song), random.randint(0,0xFFFFFFFFFFFF))
             log('%s: search url: %s' % (__title__, url))
-            request = urllib2.Request(url)
-            request.add_header('User-Agent', UserAgent)
-            response = urllib2.urlopen(request)
-            Page = response.read()
+            header = {'User-Agent':UserAgent}
+            req = urllib.request.Request(url, headers=header)
+            f = urllib.request.urlopen(req)
+            Page = f.read().decode('utf-8')
         except:
             log("%s: %s::%s (%d) [%s]" % (
                    __title__, self.__class__.__name__,

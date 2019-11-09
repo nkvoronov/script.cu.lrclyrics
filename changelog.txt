@@ -1,14 +1,17 @@
+v6.0.2
+- don't display/focus the first line from the start of the song
+
+v6.0.1
+- bump
+
 v5.5.14
 - stop searching for lyrics when exiting the visualization screen
 
 v5.5.13
 - fix negative offset
 
-v5.5.12
-- fix for empty lyrics files
-
-v5.5.11
-- fix lyrics sync
+v6.0.0
+- changes for python 3
 
 v5.5.10
 - delete lyrics from memory as well

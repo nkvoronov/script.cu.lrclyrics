@@ -22,28 +22,24 @@ LYRIC_SCRAPER_DIR = os.path.join(CWD, 'resources', 'lib', 'culrcscrapers')
 WIN = xbmcgui.Window(10000)
 
 def log(txt):
-    if (ADDON.getSetting('log_enabled') == 'true'):
-        if isinstance (txt,str):
-            txt = txt.decode('utf-8')
-        message = u'%s: %s' % (ADDONID, txt)
-        xbmc.log(msg=message.encode('utf-8'), level=xbmc.LOGDEBUG)
+    if ADDON.getSettingBool('log_enabled'):
+        message = '%s: %s' % (ADDONID, txt)
+        xbmc.log(msg=message, level=xbmc.LOGDEBUG)
 
 def deAccent(str):
-    return unicodedata.normalize('NFKD', unicode(str, 'utf-8'))
+    return unicodedata.normalize('NFKD', str)
 
 def get_textfile(filepath):
     try:
-        file = xbmcvfs.File(filepath)
-        data = file.read()
-        file.close()
+        f = xbmcvfs.File(filepath)
+        data = f.readBytes()
+        f.close()
         # Detect text encoding
         enc = chardet.detect(data)
-        if enc['encoding'] == 'utf-8' or enc['encoding'] == None:
-            return data
+        if enc['encoding']:
+            return data.decode(enc['encoding'])
         else:
-            return unicode(data, enc['encoding']).encode('utf-8')
-    except UnicodeDecodeError:
-        return data
+            return data
     except:
         return None
 
@@ -53,25 +49,25 @@ def get_artist_from_filename(filename):
         title = ''
         basename = os.path.basename(filename)
         # Artist - title.ext
-        if (ADDON.getSetting('read_filename_format') == '0'):
+        if ADDON.getSettingInt('read_filename_format') == 0:
             artist = basename.split('-', 1)[0].strip()
             title = os.path.splitext(basename.split('-', 1)[1].strip())[0]
         # Artist/Album/title.ext or Artist/Album/Track (-) title.ext
-        elif (ADDON.getSetting('read_filename_format') in ('1', '2',)):
+        elif ADDON.getSettingInt('read_filename_format') in (1,2):
             artist = os.path.basename(os.path.split(os.path.split(filename)[0])[0])
             # Artist/Album/title.ext
-            if (ADDON.getSetting('read_filename_format') == '1'):
+            if ADDON.getSettingInt('read_filename_format') == 1:
                 title = os.path.splitext(basename)[0]
             # Artist/Album/Track (-) title.ext
-            elif (ADDON.getSetting('read_filename_format') == '2'):
+            elif ADDON.getSettingInt('read_filename_format') == 2:
                 title = os.path.splitext(basename)[0].split(' ', 1)[1].lstrip('-').strip()
         # Track Artist - title.ext
-        elif (ADDON.getSetting('read_filename_format') == '3'):
+        elif ADDON.getSettingInt('read_filename_format') == 3:
             at = basename.split(' ', 1)[1].strip()
             artist = at.split('-', 1)[0].strip()
             title = os.path.splitext(at.split('-', 1)[1].strip())[0]
         # Track - Artist - title.ext
-        elif (ADDON.getSetting('read_filename_format') == '4'):
+        elif ADDON.getSettingInt('read_filename_format') == 4:
             artist = basename.split('-', 2)[1].strip()
             title = os.path.splitext(basename.split('-', 2)[2].strip())[0]
     except:
@@ -108,10 +104,10 @@ class Song:
             ext = '.lrc'
         else:
             ext = '.txt'
-        if (ADDON.getSetting('save_filename_format') == '0'):
-            return unicode(os.path.join(ADDON.getSetting('save_lyrics_path'), self.artist, self.title + ext), 'utf-8')
+        if ADDON.getSettingInt('save_filename_format') == 0:
+            return os.path.join(ADDON.getSettingString('save_lyrics_path'), self.artist, self.title + ext)
         else:
-            return unicode(os.path.join(ADDON.getSetting('save_lyrics_path'), self.artist + ' - ' + self.title) + ext, 'utf-8')
+            return os.path.join(ADDON.getSettingString('save_lyrics_path'), self.artist + ' - ' + self.title + ext)
 
     def path2(self, lrc):
         if lrc:
@@ -121,10 +117,10 @@ class Song:
         dirname = os.path.dirname(self.filepath)
         basename = os.path.basename(self.filepath)
         filename = basename.rsplit('.', 1)[0]
-        if (ADDON.getSetting('save_subfolder') == 'true'):
-            return unicode(os.path.join(dirname, ADDON.getSetting('save_subfolder_path'), filename + ext), 'utf-8')
+        if ADDON.getSettingBool('save_subfolder'):
+            return os.path.join(dirname, ADDON.getSettingString('save_subfolder_path'), filename + ext)
         else:
-            return unicode(os.path.join(dirname, filename + ext), 'utf-8')
+            return os.path.join(dirname, filename + ext)
 
     @staticmethod
     def current():
@@ -145,7 +141,6 @@ class Song:
             try:
                 pos = int(xbmc.getInfoLabel('MusicPlayer.PlaylistPosition')) + offset
                 json_query = xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Playlist.GetItems", "params":{"properties":["file"], "playlistid":0, "limits":{"start":%i, "end":%i}}, "id": 1}' % (pos-1, pos))
-                json_query = unicode(json_query, 'utf-8', errors='ignore')
                 json_response = json.loads(json_query)
                 song.filepath = json_response['result']['items'][0]['file'].encode('utf-8')
             except:
@@ -172,9 +167,9 @@ class Song:
                 # Radio version, short version, year of the song...
                 # It often disturbs the lyrics search so we remove it
                 song.title = re.sub(r'\([^\)]*\)$', '', song.title)
-        if (song.filepath and ((not song.title) or (not song.artist) or (ADDON.getSetting('read_filename') == 'true'))):
+        if (song.filepath and ((not song.title) or (not song.artist) or (ADDON.getSettingBool('read_filename')))):
             song.artist, song.title = get_artist_from_filename(song.filepath)
-        if ADDON.getSetting('clean_title') == 'true':
+        if ADDON.getSettingBool('clean_title'):
             song.title = re.sub(r'\([^\)]*\)$', '', song.title)
         #Check if analyzing the stream is discouraged
         do_not_analyze = xbmc.getInfoLabel('MusicPlayer.Property(do_not_analyze)')

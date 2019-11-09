@@ -42,7 +42,7 @@ class AudioSampleEntry(object):
     codec_description = None
 
     def __init__(self, atom, fileobj):
-        ok, data = atom.read(fileobj)
+        ok, data = atom.readBytes(fileobj)
         if not ok:
             raise ASEntryError("too short %r atom" % atom.name)
 
@@ -89,7 +89,7 @@ class AudioSampleEntry(object):
 
         assert atom.name == b"dac3"
 
-        ok, data = atom.read(fileobj)
+        ok, data = atom.readBytes(fileobj)
         if not ok:
             raise ASEntryError("truncated %s atom" % atom.name)
         fileobj = cBytesIO(data)
@@ -121,7 +121,7 @@ class AudioSampleEntry(object):
 
         assert atom.name == b"alac"
 
-        ok, data = atom.read(fileobj)
+        ok, data = atom.readBytes(fileobj)
         if not ok:
             raise ASEntryError("truncated %s atom" % atom.name)
 
@@ -155,7 +155,7 @@ class AudioSampleEntry(object):
     def _parse_esds(self, esds, fileobj):
         assert esds.name == b"esds"
 
-        ok, data = esds.read(fileobj)
+        ok, data = esds.readBytes(fileobj)
         if not ok:
             raise ASEntryError("truncated %s atom" % esds.name)
 
@@ -212,7 +212,7 @@ class BaseDescriptor(object):
         value = 0
         for i in xrange(4):
             try:
-                b = cdata.uint8(fileobj.read(1))
+                b = cdata.uint8(fileobj.readBytes(1))
             except cdata.error as e:
                 raise ValueError(e)
             value = (value << 7) | (b & 0x7f)

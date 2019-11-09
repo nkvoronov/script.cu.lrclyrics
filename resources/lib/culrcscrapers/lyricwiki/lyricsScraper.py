@@ -1,16 +1,17 @@
 #-*- coding: UTF-8 -*-
 import sys
 import re
-import urllib2
+import urllib.request
+import urllib.parse
 import socket
-import HTMLParser
+from html.parser import HTMLParser
 import xbmc
 import xbmcaddon
 import json
 from utilities import *
 
 __title__ = 'lyricwiki'
-__priority__ = '100'
+__priority__ = '200'
 __lrc__ = False
 
 LIC_TXT = 'we are not licensed to display the full lyrics for this song at the moment'
@@ -28,7 +29,7 @@ class LyricsFetcher:
         lyrics.source = __title__
         lyrics.lrc = __lrc__
         try:
-            req = urllib2.urlopen(self.url % (urllib2.quote(song.artist), urllib2.quote(song.title)))
+            req = urllib.request.urlopen(self.url % (urllib.parse.quote(song.artist), urllib.parse.quote(song.title)))
             response = req.read()
         except:
             return None
@@ -41,18 +42,18 @@ class LyricsFetcher:
         if not self.page.endswith('action=edit'):
             log('%s: search url: %s' % (__title__, self.page))
             try:
-                req = urllib2.urlopen(self.page)
-                response = req.read()
-            except urllib2.HTTPError, error: # strange... sometimes lyrics are returned with a 404 error
+                req = urllib.request.urlopen(self.page)
+                response = req.read().decode('utf-8')
+            except urllib.request.HTTPError as error: # strange... sometimes lyrics are returned with a 404 error
                 if error.code == 404:
-                    response = error.read()
+                    response = error.read().decode('utf-8')
                 else:
                     return None
             req.close()
-            matchcode = re.search("lyricbox'>.*?span>(&#.*?)<div", response)
+            matchcode = re.search("class='lyricbox'>(.*?)<div", response)
             try:
                 lyricscode = (matchcode.group(1))
-                htmlparser = HTMLParser.HTMLParser()
+                htmlparser = HTMLParser()
                 lyricstext = htmlparser.unescape(lyricscode).replace('<br />', '\n')
                 lyr = re.sub('<[^<]+?>', '', lyricstext)
                 if LIC_TXT in lyr:
