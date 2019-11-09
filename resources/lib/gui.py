@@ -607,6 +607,8 @@ class GUI(xbmcgui.WindowXMLDialog):
                 for time in times:
                     self.pOverlay.append((time, x))
         self.pOverlay.sort(cmp=lambda x,y: cmp(x[0], y[0]))
+        # don't display/focus the first line from the start of the song
+        self.pOverlay.insert(0, (00.00, ''))
         if ADDON.getSetting('strip') == 'true':
             poplist = []
             prev_time = []
