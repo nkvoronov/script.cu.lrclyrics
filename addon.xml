@@ -10,7 +10,11 @@
 	<extension point="xbmc.service" library="default.py" start="login"/>
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en_GB">CU LRC Lyrics</summary>
+		<summary lang="ru_RU">Тексты песен</summary>
+		<summary lang="uk_UA">Тексти пісень</summary>
 		<description lang="en_GB">CU LRC Lyrics is a lyrics script for Kodi. It supports regular as well as LRC Lyrics. The script can search synchronized/unsynchronized lyrics embedded, from file or by scrapers. It can read .lrc/.txt lyrics file saved at the same path by same file name with .mp3(or other type of music).</description>
+		<description lang="ru_RU">CU LRC Lyrics - это текст песни для Kodi. Он поддерживает как обычные, так и LRC тексты песен. Скрипт может искать встроенные синхронизированные/несинхронизированные тексты песен из файла или с помощью скребков. Он может читать файл текста песен .lrc/.txt, сохраненный по тому же пути под тем же именем что и файл .mp3 (или другой тип музыки).</description>
+		<description lang="uk_UA">CU LRC Lyrics - це текст пісні для Kodi. Він підтримує як звичайні, так і LRC тексти пісень. Скрипт може шукати вбудовані синхронізовані/несинхронізовані тексти пісень з файлу або за допомогою скребків. Він може читати файл тексту пісень .lrc/.txt, збережений тим самим шляхом під тим же ім'ям що і файл .mp3 (або інший тип музики).</description>
 		<language></language>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE Version 2</license>
