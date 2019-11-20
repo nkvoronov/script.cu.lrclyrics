@@ -3,7 +3,6 @@ import sys
 import os
 import re
 import time
-import _thread
 import threading
 import xbmc
 import xbmcgui
@@ -453,7 +452,7 @@ class GUI(xbmcgui.WindowXMLDialog):
         WIN.clearProperty('culrc.newlyrics')
         WIN.clearProperty('culrc.nolyrics')
         WIN.clearProperty('culrc.haslist')
-        self.lock = _thread.allocate_lock()
+        self.lock = threading.Lock()
         self.timer = None
         self.allowtimer = True
         self.refreshing = False
