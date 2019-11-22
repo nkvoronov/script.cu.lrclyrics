@@ -464,7 +464,7 @@ class GUI(xbmcgui.WindowXMLDialog):
 
     def get_page_lines(self):
         self.text.setVisible(False)
-        listitem = xbmcgui.ListItem()
+        listitem = xbmcgui.ListItem(offscreen=True)
         while xbmc.getInfoLabel('Container(110).NumPages') != '2':
             self.getControl(110).addItem(listitem)
             xbmc.sleep(50)
@@ -547,7 +547,7 @@ class GUI(xbmcgui.WindowXMLDialog):
             splitLyrics = lyrics.lyrics.splitlines()
             for line in splitLyrics:
                 parts = self.get_parts(line)
-                listitem = xbmcgui.ListItem(line)
+                listitem = xbmcgui.ListItem(line, offscreen=True)
                 for count, item in enumerate(parts):
                     listitem.setProperty('part%i' % (count + 1), item)
                 self.text.addItem(listitem)
@@ -623,7 +623,7 @@ class GUI(xbmcgui.WindowXMLDialog):
     def prepare_list(self, list):
         listitems = []
         for song in list:
-            listitem = xbmcgui.ListItem(song[0])
+            listitem = xbmcgui.ListItem(song[0], offscreen=True)
             listitem.setProperty('lyric', str(song))
             listitem.setProperty('source', lyrics.source)
             listitems.append(listitem)
