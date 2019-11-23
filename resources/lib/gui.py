@@ -295,7 +295,7 @@ class MAIN():
                 if lyrics.lyrics:
                     # signal the gui thread to display the next lyrics
                     WIN.setProperty('culrc.newlyrics', 'TRUE')
-                    # double-check if we're still on the  visualisation screen and check if gui is already running
+                    # double-check if we're still on the visualisation screen and check if gui is already running
                     if xbmc.getCondVisibility('Window.IsVisible(12006)') and not WIN.getProperty('culrc.guirunning') == 'TRUE':
                         WIN.setProperty('culrc.guirunning', 'TRUE')
                         gui = guiThread(mode=self.mode, save=self.save_lyrics_to_file, remove=self.remove_lyrics_from_memory, delete=self.delete_lyrics, function=self.return_time)
@@ -440,6 +440,9 @@ class GUI(xbmcgui.WindowXMLDialog):
             elif WIN.getProperty('culrc.nolyrics') == 'TRUE':
                 # no lyrics, close the gui
                 self.exit_gui('close')
+            elif not xbmc.getCondVisibility('Window.IsVisible(12006)'):
+                # we're not on the visualisation screen anymore
+                self.exit_gui('quit')
             xbmc.sleep(100)
         # music ended, close the gui
         if (not xbmc.Player().isPlayingAudio()):
