@@ -1,4 +1,5 @@
 v6.0.4
+- handle dialog.close()
 - create listitems offscreen
 
 v6.0.3
