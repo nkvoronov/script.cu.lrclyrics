@@ -1,3 +1,9 @@
+v5.7.1
+- more offscreen listitems
+
+v5.7.0
+- create listitems offscreen
+
 v5.6.2
 - don't display/focus the first line from the start of the song
 
