@@ -468,9 +468,12 @@ class GUI(xbmcgui.WindowXMLDialog):
     def get_page_lines(self):
         self.text.setVisible(False)
         listitem = xbmcgui.ListItem(offscreen=True)
-        while xbmc.getInfoLabel('Container(110).NumPages') != '2':
+        while xbmc.getInfoLabel('Container(110).NumPages') != '2' and (not self.Monitor.abortRequested()):
             self.getControl(110).addItem(listitem)
             xbmc.sleep(50)
+        # xbmc quits, close the gui 
+        if self.Monitor.abortRequested():
+            self.exit_gui('quit')
         lines = self.text.size() - 1
         return lines
 
