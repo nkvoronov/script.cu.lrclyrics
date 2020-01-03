@@ -237,7 +237,7 @@ def File(filename, options=None, easy=False):
         return None
 
     with open(filename, "rb") as fileobj:
-        header = fileobj.read(128)
+        header = fileobj.readBytes(128)
         # Sort by name after score. Otherwise import order affects
         # Kind sort order, which affects treatment of things with
         # equals scores.

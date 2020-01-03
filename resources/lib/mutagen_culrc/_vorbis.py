@@ -100,13 +100,13 @@ class VComment(mutagen_culrc.Metadata, list):
         """
 
         try:
-            vendor_length = cdata.uint_le(fileobj.read(4))
-            self.vendor = fileobj.read(vendor_length).decode('utf-8', errors)
-            count = cdata.uint_le(fileobj.read(4))
+            vendor_length = cdata.uint_le(fileobj.readBytes(4))
+            self.vendor = fileobj.readBytes(vendor_length).decode('utf-8', errors)
+            count = cdata.uint_le(fileobj.readBytes(4))
             for i in xrange(count):
-                length = cdata.uint_le(fileobj.read(4))
+                length = cdata.uint_le(fileobj.readBytes(4))
                 try:
-                    string = fileobj.read(length).decode('utf-8', errors)
+                    string = fileobj.readBytes(length).decode('utf-8', errors)
                 except (OverflowError, MemoryError):
                     raise error("cannot read %d bytes, too large" % length)
                 try:
@@ -129,7 +129,7 @@ class VComment(mutagen_culrc.Metadata, list):
                     if is_valid_key(tag):
                         self.append((tag, value))
 
-            if framing and not bytearray(fileobj.read(1))[0] & 0x01:
+            if framing and not bytearray(fileobj.readBytes(1))[0] & 0x01:
                 raise VorbisUnsetFrameError("framing bit was unset")
         except (cdata.error, TypeError):
             raise error("file is not a valid Vorbis comment")

@@ -1,3 +1,28 @@
+v6.0.5
+- fix music163 error
+
+v6.0.4
+- handle dialog.close()
+- create listitems offscreen
+
+v6.0.3
+- use threading lock
+
+v6.0.2
+- don't display/focus the first line from the start of the song
+
+v6.0.1
+- bump
+
+v5.5.14
+- stop searching for lyrics when exiting the visualization screen
+
+v5.5.13
+- fix negative offset
+
+v6.0.0
+- changes for python 3
+
 v5.7.3
 - fix music163 error
 

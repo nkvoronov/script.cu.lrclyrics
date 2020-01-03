@@ -282,14 +282,14 @@ class AACInfo(StreamInfo):
     def __init__(self, fileobj):
         # skip id3v2 header
         start_offset = 0
-        header = fileobj.read(10)
+        header = fileobj.readBytes(10)
         from mutagen_culrc.id3 import BitPaddedInt
         if header.startswith(b"ID3"):
             size = BitPaddedInt(header[6:])
             start_offset = size + 10
 
         fileobj.seek(start_offset)
-        adif = fileobj.read(4)
+        adif = fileobj.readBytes(4)
         if adif == b"ADIF":
             self._parse_adif(fileobj)
             self._type = "ADIF"

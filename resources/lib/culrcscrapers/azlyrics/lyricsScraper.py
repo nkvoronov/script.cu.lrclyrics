@@ -1,15 +1,15 @@
 #-*- coding: UTF-8 -*-
 import sys
 import re
-import urllib2
+import requests
 import socket
-import HTMLParser
+from html.parser import HTMLParser
 import xbmc
 import xbmcaddon
 from utilities import *
 
 __title__ = 'azlyrics'
-__priority__ = '230'
+__priority__ = '240'
 __lrc__ = False
 
 
@@ -28,14 +28,14 @@ class LyricsFetcher:
         artist = re.sub("[^a-zA-Z0-9]+", "", song.artist).lower().lstrip('the ')
         title = re.sub("[^a-zA-Z0-9]+", "", song.title).lower()
         try:
-            req = urllib2.urlopen(self.url % (artist, title))
-            response = req.read()
+            req = requests.get(self.url % (artist, title))
+            response = req.text
         except:
             return None
         req.close()
         try:
             lyricscode = response.split('. -->')[1].split('</div')[0]
-            htmlparser = HTMLParser.HTMLParser()
+            htmlparser = HTMLParser()
             lyricstext = htmlparser.unescape(lyricscode).replace('<br />', '\n')
             lyr = re.sub('<[^<]+?>', '', lyricstext)
             lyrics.lyrics = lyr

@@ -8,7 +8,7 @@ osdlyrics
 import os
 import socket
 import urllib
-import urllib2
+import urllib.request
 import re
 import random
 import difflib
@@ -38,11 +38,11 @@ class LyricsFetcher:
         search = '?s=%s+%s&type=1' % (artist, title)
         try:
             url = self.SEARCH_URL + search
-            request = urllib2.Request(url)
+            request = urllib.request.Request(url)
             request.add_header('User-Agent', UserAgent)
-            response = urllib2.urlopen(request)
+            response = urllib.request.urlopen(request)
             Page = response.read()
-            result = json.loads(Page.decode('utf-8'))
+            result = json.loads(Page)
         except:
             return None
         links = []
@@ -65,11 +65,11 @@ class LyricsFetcher:
         title,url,artist,song = link
         try:
             log('%s: search url: %s' % (__title__, url))
-            request = urllib2.Request(url)
+            request = urllib.request.Request(url)
             request.add_header('User-Agent', UserAgent)
-            response = urllib2.urlopen(request)
+            response = urllib.request.urlopen(request)
             Page = response.read()
-            result = json.loads(Page.decode('utf-8'))
+            result = json.loads(Page)
         except:
             return None
         if 'lrc' in result:

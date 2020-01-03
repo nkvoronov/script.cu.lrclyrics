@@ -1,14 +1,14 @@
 #-*- coding: UTF-8 -*-
 import re
-import urllib
-import urllib2
+import urllib.request
+import urllib.parse
 import socket
 import difflib
 from bs4 import BeautifulSoup
 from utilities import *
 
 __title__ = 'lyricscom'
-__priority__ = '240'
+__priority__ = '230'
 __lrc__ = False
 
 
@@ -25,7 +25,7 @@ class LyricsFetcher:
         lyrics.source = __title__
         lyrics.lrc = __lrc__
         try:
-            request = urllib2.urlopen(self.url % urllib.quote_plus(song.artist))
+            request = urllib.request.urlopen(self.url % urllib.parse.quote_plus(song.artist))
             response = request.read()
         except:
             return
@@ -38,7 +38,7 @@ class LyricsFetcher:
                 break
         if url:
             try:
-                req = urllib2.urlopen(url)
+                req = urllib.request.urlopen(url)
                 resp = req.read()
             except:
                 return
@@ -51,8 +51,8 @@ class LyricsFetcher:
                     break
             if url:
                 try:
-                    req2 = urllib2.urlopen(url)
-                    resp2 = req2.read()
+                    req2 = urllib.request.urlopen(url)
+                    resp2 = req2.read().decode('utf-8')
                 except:
                     return
                 req2.close()

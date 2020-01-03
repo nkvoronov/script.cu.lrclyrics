@@ -100,7 +100,7 @@ class LAMEHeader(object):
     def __init__(self, xing, fileobj):
         """Raises LAMEError if parsing fails"""
 
-        payload = fileobj.read(27)
+        payload = fileobj.readBytes(27)
         if len(payload) != 27:
             raise LAMEError("Not enough data")
 
@@ -184,7 +184,7 @@ class LAMEHeader(object):
 
         # http://wiki.hydrogenaud.io/index.php?title=LAME_version_string
 
-        data = fileobj.read(20)
+        data = fileobj.readBytes(20)
         if len(data) != 20:
             raise LAMEError("Not a lame header")
         if not data.startswith((b"LAME", b"L3.99")):
@@ -285,7 +285,7 @@ class XingHeader(object):
         The file position after this returns is undefined.
         """
 
-        data = fileobj.read(8)
+        data = fileobj.readBytes(8)
         if len(data) != 8 or data[:4] not in (b"Xing", b"Info"):
             raise XingHeaderError("Not a Xing header")
 
@@ -294,25 +294,25 @@ class XingHeader(object):
         flags = cdata.uint32_be_from(data, 4)[0]
 
         if flags & XingHeaderFlags.FRAMES:
-            data = fileobj.read(4)
+            data = fileobj.readBytes(4)
             if len(data) != 4:
                 raise XingHeaderError("Xing header truncated")
             self.frames = cdata.uint32_be(data)
 
         if flags & XingHeaderFlags.BYTES:
-            data = fileobj.read(4)
+            data = fileobj.readBytes(4)
             if len(data) != 4:
                 raise XingHeaderError("Xing header truncated")
             self.bytes = cdata.uint32_be(data)
 
         if flags & XingHeaderFlags.TOC:
-            data = fileobj.read(100)
+            data = fileobj.readBytes(100)
             if len(data) != 100:
                 raise XingHeaderError("Xing header truncated")
             self.toc = list(bytearray(data))
 
         if flags & XingHeaderFlags.VBR_SCALE:
-            data = fileobj.read(4)
+            data = fileobj.readBytes(4)
             if len(data) != 4:
                 raise XingHeaderError("Xing header truncated")
             self.vbr_scale = cdata.uint32_be(data)
@@ -377,7 +377,7 @@ class VBRIHeader(object):
         The file position is undefined after this returns
         """
 
-        data = fileobj.read(26)
+        data = fileobj.readBytes(26)
         if len(data) != 26 or not data.startswith(b"VBRI"):
             raise VBRIHeaderError("Not a VBRI header")
 
@@ -397,7 +397,7 @@ class VBRIHeader(object):
         toc_entry_size, offset = cdata.uint16_be_from(data, offset)
         self.toc_frames, offset = cdata.uint16_be_from(data, offset)
         toc_size = toc_entry_size * toc_num_entries
-        toc_data = fileobj.read(toc_size)
+        toc_data = fileobj.readBytes(toc_size)
         if len(toc_data) != toc_size:
             raise VBRIHeaderError("VBRI header truncated")
 

@@ -23,8 +23,8 @@ class MAIN():
         self.setup_main()
         WIN.setProperty('culrc.running', 'true')
         self.get_scraper_list()
-        if (ADDON.getSetting('save_lyrics_path') == ''):
-            ADDON.setSetting(id='save_lyrics_path', value=os.path.join(PROFILE.encode('utf-8'), 'lyrics'))
+        if (ADDON.getSettingString('save_lyrics_path') == ''):
+            ADDON.setSettingString(id='save_lyrics_path', value=os.path.join(PROFILE, 'lyrics'))
         self.main_loop()
         self.cleanup_main()
 
@@ -44,7 +44,8 @@ class MAIN():
     def get_scraper_list(self):
         self.scrapers = []
         for scraper in os.listdir(LYRIC_SCRAPER_DIR):
-            if os.path.isdir(os.path.join(LYRIC_SCRAPER_DIR, scraper)) and ADDON.getSetting(scraper) == 'true':
+            # meh to python3 creating folders
+            if os.path.isdir(os.path.join(LYRIC_SCRAPER_DIR, scraper)) and scraper != '__pycache__' and ADDON.getSettingBool(scraper):
                 exec ('from culrcscrapers.%s import lyricsScraper as lyricsScraper_%s' % (scraper, scraper))
                 exec ('self.scrapers.append([lyricsScraper_%s.__priority__,lyricsScraper_%s.LyricsFetcher(),lyricsScraper_%s.__title__,lyricsScraper_%s.__lrc__])' % (scraper, scraper, scraper, scraper))
         self.scrapers.sort()
@@ -64,7 +65,7 @@ class MAIN():
                 if not self.triggered:
                     self.triggered = True
                     # notify user the script is searching for lyrics
-                    if ADDON.getSetting('silent') == 'false':
+                    if ADDON.getSettingBool('silent'):
                         dialog = xbmcgui.Dialog()
                         dialog.notification(ADDONNAME, LANGUAGE(32004), time=2000, sound=False)
                     # start fetching lyrics
@@ -98,17 +99,11 @@ class MAIN():
                 return lyrics
         if song.title and xbmc.getCondVisibility('Window.IsVisible(12006)'):
             lyrics = self.find_lyrics(song)
-            if lyrics.lyrics and ADDON.getSetting('strip') == 'true':
-                if isinstance (lyrics.lyrics,str):
-                    fulltext = lyrics.lyrics.decode('utf-8')
-                else:
-                    fulltext = lyrics.lyrics
-                strip_k1 = re.sub(ur'[\u1100-\u11ff]+', '', fulltext)
-                strip_k2 = re.sub(ur'[\uAC00-\uD7A3]+', '', strip_k1)
-                strip_c = re.sub(ur'[\u3000-\u9fff]+', '', strip_k2)
-                lyrics.lyrics = strip_c.encode('utf-8').replace('：',':') #replace fullwith colon (not present in many font files)
+            if lyrics.lyrics and ADDON.getSettingBool('strip'):
+                # replace CJK and fullwith colon (not present in many font files)
+                lyrics.lyrics = re.sub(r'[ᄀ-ᇿ⺀-⺙⺛-⻳⼀-⿕々〇〡-〩〸-〺〻㐀-䶵一-鿃豈-鶴侮-頻並-龎]+', '', lyrics.lyrics).replace('：',':') 
         # no song title, we can't search online. try matching local filename
-        elif (ADDON.getSetting('save_lyrics2') == 'true') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+        elif ADDON.getSettingBool('save_lyrics2') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
             lyrics = self.get_lyrics_from_file(song, True)
             if not lyrics:
                 lyrics = self.get_lyrics_from_file(song, False)
@@ -123,9 +118,9 @@ class MAIN():
 
     def find_lyrics(self, song):
         # search embedded lrc lyrics
-        ext = os.path.splitext(song.filepath.decode('utf-8'))[1].lower()
+        ext = os.path.splitext(song.filepath)[1].lower()
         sup_ext = ['.mp3', '.flac']
-        if (ADDON.getSetting('search_embedded') == 'true') and song.analyze_safe and (ext in sup_ext) and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+        if ADDON.getSettingBool('search_embedded') and song.analyze_safe and (ext in sup_ext) and xbmc.getCondVisibility('Window.IsVisible(12006)'):
             log('searching for embedded lrc lyrics')
             try:
                 lyrics = getEmbedLyrics(song, True)
@@ -135,7 +130,8 @@ class MAIN():
                 log('found embedded lrc lyrics')
                 return lyrics
         # search lrc lyrics from file
-        if (ADDON.getSetting('search_file') == 'true') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+        if ADDON.getSettingBool('search_file') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+            log('searching for local lrc files')
             lyrics = self.get_lyrics_from_file(song, True)
             if (lyrics):
                 log('found lrc lyrics from file')
@@ -149,7 +145,7 @@ class MAIN():
                     self.save_lyrics_to_file(lyrics)
                     return lyrics
         # search embedded txt lyrics
-        if (ADDON.getSetting('search_embedded') == 'true' and song.analyze_safe) and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+        if ADDON.getSettingBool('search_embedded') and song.analyze_safe and xbmc.getCondVisibility('Window.IsVisible(12006)'):
             log('searching for embedded txt lyrics')
             try:
                 lyrics = getEmbedLyrics(song, False)
@@ -159,7 +155,8 @@ class MAIN():
                 log('found embedded txt lyrics')
                 return lyrics
         # search txt lyrics from file
-        if (ADDON.getSetting('search_file') == 'true') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+        if ADDON.getSettingBool('search_file') and xbmc.getCondVisibility('Window.IsVisible(12006)'):
+            log('searching for local txt files')
             lyrics = self.get_lyrics_from_file(song, False)
             if (lyrics):
                 log('found txt lyrics from file')
@@ -191,7 +188,7 @@ class MAIN():
         lyrics.song = song
         lyrics.source = LANGUAGE(32000)
         lyrics.lrc = getlrc
-        if ADDON.getSetting('save_lyrics1') == 'true':
+        if ADDON.getSettingBool('save_lyrics1'):
             # Search save path by Cu LRC Lyrics
             lyricsfile = song.path1(getlrc)
             if xbmcvfs.exists(lyricsfile):
@@ -199,7 +196,7 @@ class MAIN():
                 if lyr != None:
                     lyrics.lyrics = lyr
                     return lyrics
-        if ADDON.getSetting('save_lyrics2') == 'true':
+        if ADDON.getSettingBool('save_lyrics2'):
             # Search same path with song file
             lyricsfile = song.path2(getlrc)
             if xbmcvfs.exists(lyricsfile):
@@ -219,7 +216,7 @@ class MAIN():
         if isinstance (lyrics.lyrics, str):
             lyr = lyrics.lyrics
         else:
-            lyr = lyrics.lyrics.encode('utf-8')
+            lyr = lyrics.lyrics
         if adjust:
             # save our manual sync offset to file
             adjust = int(adjust * 1000)
@@ -236,10 +233,10 @@ class MAIN():
                 lyr = lyr.replace(found.group(0) + '\n','')
             # write our new offset tag
             lyr = '[offset:%i]\n' % adjust + lyr
-        if (ADDON.getSetting('save_lyrics1') == 'true'):
+        if ADDON.getSettingBool('save_lyrics1'):
             file_path = lyrics.song.path1(lyrics.lrc)
             success = self.write_lyrics_file(file_path, lyr)
-        if (ADDON.getSetting('save_lyrics2') == 'true'):
+        if ADDON.getSettingBool('save_lyrics2'):
             file_path = lyrics.song.path2(lyrics.lrc)
             success = self.write_lyrics_file(file_path, lyr)
 
@@ -264,10 +261,10 @@ class MAIN():
         # delete lyrics from memory
         self.remove_lyrics_from_memory(lyrics)
         # delete saved lyrics
-        if (ADDON.getSetting('save_lyrics1') == 'true'):
+        if ADDON.getSettingBool('save_lyrics1'):
             file_path = lyrics.song.path1(lyrics.lrc)
             success = self.delete_file(file_path)
-        if (ADDON.getSetting('save_lyrics2') == 'true'):
+        if ADDON.getSettingBool('save_lyrics2'):
             file_path = lyrics.song.path2(lyrics.lrc)
             success = self.delete_file(file_path)
 
@@ -307,7 +304,7 @@ class MAIN():
                     # signal gui thread to exit
                     WIN.setProperty('culrc.nolyrics', 'TRUE')
                     # notify user no lyrics were found
-                    if ADDON.getSetting('silent') == 'false':
+                    if ADDON.getSettingBool('silent'):
                         dialog = xbmcgui.Dialog()
                         dialog.notification(ADDONNAME + ': ' + LANGUAGE(32001), song.artist + ' - ' + song.title, time=2000, sound=False)
                 break
@@ -340,12 +337,12 @@ class MAIN():
 
     def update_settings(self):
         self.get_scraper_list()
-        service = ADDON.getSetting('service')
-        if service == 'true':
+        service = ADDON.getSettingBool('service')
+        if service:
             self.mode = 'service'
         else:
             self.mode = 'manual'
-            # quit the script is mode was changed from service to manual
+            # quit the script if mode was changed from service to manual
             WIN.setProperty('culrc.quit', 'TRUE')
 
     def clear(self):
@@ -408,7 +405,7 @@ class GUI(xbmcgui.WindowXMLDialog):
         self.list = self.getControl(120)
         self.label = self.getControl(200)
         self.list.setVisible(False)
-        self.offset = float(ADDON.getSetting('offset'))
+        self.offset = ADDON.getSettingNumber('offset')
         self.setup_gui()
         self.process_lyrics()
         self.gui_loop()
@@ -608,10 +605,10 @@ class GUI(xbmcgui.WindowXMLDialog):
                     match2 = tag2.match(x)
                 for time in times:
                     self.pOverlay.append((time, x))
-        self.pOverlay.sort(cmp=lambda x,y: cmp(x[0], y[0]))
+        self.pOverlay.sort()
         # don't display/focus the first line from the start of the song
         self.pOverlay.insert(0, (00.00, ''))
-        if ADDON.getSetting('strip') == 'true':
+        if ADDON.getSettingBool('strip'):
             poplist = []
             prev_time = []
             prev_line = ''
