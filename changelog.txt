@@ -1,3 +1,9 @@
+v6.0.7
+- fix osd would interfere with getting page lines
+
+v6.0.6
+- break from loop
+
 v6.0.5
 - fix music163 error
 
@@ -22,41 +28,6 @@ v5.5.13
 
 v6.0.0
 - changes for python 3
-
-v5.7.3
-- fix music163 error
-
-v5.7.2
-- fix music163 scraper
-
-v5.7.1
-- handle dialog.close()
-- more offscreen listitems
-
-v5.7.0
-- create listitems offscreen
-
-v5.6.2
-- don't display/focus the first line from the start of the song
-
-v5.6.1
-- fix minilyrics crashing if no result found
-
-v5.6.0
-- add msuic 163 scraper
-- remove broken scrapers
-
-v5.5.14
-- stop searching for lyrics when exiting the visualization screen
-
-v5.5.13
-- fix negative offset
-
-v5.5.12
-- fix for empty lyrics files
-
-v5.5.11
-- fix lyrics sync
 
 v5.5.10
 - delete lyrics from memory as well
