@@ -284,7 +284,8 @@ class MAIN():
         songchanged = False
         for cnt in range(5):
             song = Song.current()
-            if (song and (self.current_lyrics.song != song)):
+            #TODO why is str() conversion needed when Player.IsInternetStream returns True? The != comparison will always return True without the str() conversion.
+            if (song and (str(self.current_lyrics.song) != str(song))):
                 songchanged = True
                 if xbmc.getCondVisibility('Player.IsInternetStream') and not xbmc.getInfoLabel('MusicPlayer.TimeRemaining'):
                     # internet stream that does not provide time, we need our own timer to sync lrc lyrics
