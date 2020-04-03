@@ -10,7 +10,7 @@ log('script version %s started' % ADDONVERSION)
 
 def culrc_run(service):
     if not WIN.getProperty('culrc.running') == 'true':
-        from lib import  gui
+        from lib import gui
         gui.MAIN(mode=service)
     elif not WIN.getProperty('culrc.guirunning') == 'TRUE':
         # we're already running, user clicked button on osd
