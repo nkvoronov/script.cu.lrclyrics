@@ -1,28 +1,17 @@
-import sys
-import os
-import xbmc
-import xbmcaddon
+from lib.scrapertest import *
+from lib.utils import *
 
 ADDON = xbmcaddon.Addon()
-ADDONID = ADDON.getAddonInfo('id')
 ADDONNAME = ADDON.getAddonInfo('name')
 ADDONVERSION = ADDON.getAddonInfo('version')
-CWD = xbmc.translatePath(ADDON.getAddonInfo('path'))
-PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile'))
 LANGUAGE = ADDON.getLocalizedString
 
-BASE_RESOURCE_PATH = os.path.join(CWD, 'resources', 'lib')
-sys.path.append(BASE_RESOURCE_PATH)
-
-from utilities import *
-from scrapertest import *
 log('script version %s started' % ADDONVERSION)
 
-def culrc_run(mode):
-    log('mode is %s' % mode)
+def culrc_run(service):
     if not WIN.getProperty('culrc.running') == 'true':
-        import gui
-        gui.MAIN(mode=mode)
+        from lib import  gui
+        gui.MAIN(mode=service)
     elif not WIN.getProperty('culrc.guirunning') == 'TRUE':
         # we're already running, user clicked button on osd
         WIN.setProperty('culrc.force','TRUE')
@@ -34,19 +23,13 @@ def culrc_run(mode):
 
 if (__name__ == '__main__'):
     service = ADDON.getSettingBool('service')
-    # started as a service
-    if sys.argv == ['']:
-        if service:
-            culrc_run('service')
-        else:
-            log('service not enabled')
-    # manually started
+    if sys.argv == [''] and not service:
+        log('service not enabled')
     else:
         if len(sys.argv) == 2 and sys.argv[1] == 'test':
+            from lib import scrapertest
             test_scrapers()
-        elif service:
-            culrc_run('service')
         else:
-            culrc_run('manual')
+            culrc_run(service)
 
 log('script version %s ended' % ADDONVERSION)
