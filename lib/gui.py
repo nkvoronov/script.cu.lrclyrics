@@ -55,7 +55,7 @@ class MAIN():
                 if not self.triggered:
                     self.triggered = True
                     # notify user the script is searching for lyrics
-                    if ADDON.getSettingBool('silent'):
+                    if not ADDON.getSettingBool('silent'):
                         dialog = xbmcgui.Dialog()
                         dialog.notification(ADDONNAME, LANGUAGE(32004), time=2000, sound=False)
                     # start fetching lyrics
@@ -298,7 +298,7 @@ class MAIN():
                     # signal gui thread to exit
                     WIN.setProperty('culrc.nolyrics', 'TRUE')
                     # notify user no lyrics were found
-                    if ADDON.getSettingBool('silent'):
+                    if not ADDON.getSettingBool('silent'):
                         dialog = xbmcgui.Dialog()
                         dialog.notification(ADDONNAME + ': ' + LANGUAGE(32001), song.artist + ' - ' + song.title, time=2000, sound=False)
                 break

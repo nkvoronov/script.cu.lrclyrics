@@ -11,6 +11,7 @@ import xbmcvfs
 
 ADDON = xbmcaddon.Addon()
 ADDONNAME = ADDON.getAddonInfo('name')
+ADDONVERSION = ADDON.getAddonInfo('version')
 ADDONID = ADDON.getAddonInfo('id')
 CWD = xbmc.translatePath(ADDON.getAddonInfo('path'))
 PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile'))
