@@ -78,5 +78,6 @@
 		<assets>
 			<icon>resources/icon.png</icon>
 		</assets>
+		<news>- update mutagen</news>
 	</extension>
 </addon>
