@@ -1,3 +1,7 @@
+v6.2.1
+- remove broken ttplayer scraper
+- fix genius scraper
+
 v6.2.0
 - refactor
 - update mutagen

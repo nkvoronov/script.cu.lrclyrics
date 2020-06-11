@@ -29,7 +29,7 @@ class LyricsFetcher:
         lyrics.lrc = __lrc__
         try:
             request = urllib.request.Request(self.url % (urllib.parse.quote(song.artist), '%20', urllib.parse.quote(song.title)))
-            request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0')
+            request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; rv:77.0) Gecko/20100101 Firefox/77.0')
             req = urllib.request.urlopen(request)
             response = req.read()
         except:
@@ -48,7 +48,7 @@ class LyricsFetcher:
         log('%s: search url: %s' % (__title__, self.page))
         try:
             request = urllib.request.Request(self.page)
-            request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; rv:25.0) Gecko/20100101 Firefox/25.0')
+            request.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; rv:77.0) Gecko/20100101 Firefox/77.0')
             req = urllib.request.urlopen(request)
             response = req.read().decode('utf-8')
         except:
@@ -56,7 +56,7 @@ class LyricsFetcher:
         req.close()
         htmlparser = HTMLParser()
         response = htmlparser.unescape(response)
-        matchcode = re.search('<div class="lyrics">(.*?)</div>', response, flags=re.DOTALL)
+        matchcode = re.search('<div class="[lL]yrics.*?">(.*?)</div>', response, flags=re.DOTALL)
         try:
             lyricscode = (matchcode.group(1))
             lyr = re.sub('<[^<]+?>', '', lyricscode)
