@@ -78,6 +78,8 @@
 		<assets>
 			<icon>resources/icon.png</icon>
 		</assets>
-		<news>- update mutagen</news>
+		<news>- remove broken ttplayer scraper
+- fix genius scraper
+- fix manual sync</news>
 	</extension>
 </addon>

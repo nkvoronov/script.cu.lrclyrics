@@ -1,6 +1,7 @@
 v6.2.1
 - remove broken ttplayer scraper
 - fix genius scraper
+- fix manual sync
 
 v6.2.0
 - refactor
