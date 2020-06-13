@@ -80,6 +80,7 @@
 		</assets>
 		<news>- remove broken ttplayer scraper
 - fix genius scraper
-- fix manual sync</news>
+- fix manual sync
+- fix potential crash in minilyrics</news>
 	</extension>
 </addon>
