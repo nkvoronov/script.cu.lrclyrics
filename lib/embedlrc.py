@@ -5,9 +5,6 @@ from lib.utils import *
 
 LANGUAGE = ADDON.getLocalizedString
 
-class BinaryFile(xbmcvfs.File):
-    def read(self, numBytes: int = 0) -> bytes:
-        return bytes(self.readBytes(numBytes))
 
 def getEmbedLyrics(song, getlrc):
     lyrics = Lyrics()
@@ -23,9 +20,8 @@ def getEmbedLyrics(song, getlrc):
     filename = song.filepath
     ext = os.path.splitext(filename)[1].lower()
     lry = None
-    bfile = BinaryFile(filename)
     if ext == '.mp3':
-        lry = getID3Lyrics(bfile, getlrc)
+        lry = getID3Lyrics(filename, getlrc)
         if not lry:
             try:
                 text = getLyrics3(filename, getlrc)
@@ -35,9 +31,9 @@ def getEmbedLyrics(song, getlrc):
             except:
                 pass
     elif  ext == '.flac':
-        lry = getFlacLyrics(bfile, getlrc)
+        lry = getFlacLyrics(filename, getlrc)
     elif  ext == '.m4a':
-        lry = getMP4Lyrics(bfile, getlrc)
+        lry = getMP4Lyrics(filename, getlrc)
     if not lry:
         return None
     lyrics.lyrics = lry
@@ -94,9 +90,9 @@ def ms2timestamp(ms):
 Get USLT/SYLT/TXXX lyrics embed with ID3v2 format
 See: http://id3.org/id3v2.3.0
 '''
-def getID3Lyrics(bfile, getlrc):
+def getID3Lyrics(filename, getlrc):
     try:
-        data = MP3(bfile)
+        data = MP3(filename)
         lyr = ''
         for tag,value in data.items():
             if getlrc and tag.startswith('SYLT'):
@@ -117,9 +113,9 @@ def getID3Lyrics(bfile, getlrc):
     except:
         return
 
-def getFlacLyrics(bfile, getlrc):
+def getFlacLyrics(filename, getlrc):
     try:
-        tags = FLAC(bfile)
+        tags = FLAC(filename)
         if 'lyrics' in tags:
             lyr = tags['lyrics'][0]
             match = isLRC(lyr)
@@ -128,9 +124,9 @@ def getFlacLyrics(bfile, getlrc):
     except:
         return
 
-def getMP4Lyrics(bfile, getlrc):
+def getMP4Lyrics(filename, getlrc):
     try:
-        tags = MP4(bfile)
+        tags = MP4(filename)
         if '©lyr' in tags:
             lyr = tags['©lyr'][0]
             match = isLRC(lyr)
