@@ -1,6 +1,8 @@
 from mutagen.flac import FLAC
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
+from mutagen.oggvorbis import OggVorbis
+from mutagen.apev2 import APEv2
 from lib.utils import *
 
 LANGUAGE = ADDON.getLocalizedString
@@ -30,10 +32,14 @@ def getEmbedLyrics(song, getlrc):
                     lry = text.decode(enc['encoding'])
             except:
                 pass
-    elif  ext == '.flac':
+    elif ext == '.flac':
         lry = getFlacLyrics(filename, getlrc)
-    elif  ext == '.m4a':
+    elif ext == '.m4a':
         lry = getMP4Lyrics(filename, getlrc)
+    elif ext == '.ogg':
+        lry = getOGGLyrics(filename, getlrc)
+    elif ext == '.ape':
+        lry = getAPELyrics(filename, getlrc)
     if not lry:
         return None
     lyrics.lyrics = lry
@@ -129,6 +135,28 @@ def getMP4Lyrics(filename, getlrc):
         tags = MP4(filename)
         if '©lyr' in tags:
             lyr = tags['©lyr'][0]
+            match = isLRC(lyr)
+            if (getlrc and match) or ((not getlrc) and (not match)):
+                return lyr
+    except:
+        return
+
+def getOGGLyrics(filename, getlrc):
+    try:
+        tags = OggVorbis(filename)
+        if 'lyrics' in tags:
+            lyr = tags['lyrics'][0]
+            match = isLRC(lyr)
+            if (getlrc and match) or ((not getlrc) and (not match)):
+                return lyr
+    except:
+        return
+
+def getAPELyrics(filename, getlrc):
+    try:
+        tags = APEv2(filename)
+        if 'lyrics' in tags:
+            lyr = tags['lyrics'][0]
             match = isLRC(lyr)
             if (getlrc and match) or ((not getlrc) and (not match)):
                 return lyr

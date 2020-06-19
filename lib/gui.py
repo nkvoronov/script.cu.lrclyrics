@@ -112,7 +112,7 @@ class MAIN():
     def find_lyrics(self, song):
         # search embedded lrc lyrics
         ext = os.path.splitext(song.filepath)[1].lower()
-        sup_ext = ['.mp3', '.flac']
+        sup_ext = ['.mp3', '.flac', '.ogg', '.ape']
         if ADDON.getSettingBool('search_embedded') and song.analyze_safe and (ext in sup_ext) and xbmc.getCondVisibility('Window.IsVisible(12006)'):
             log('searching for embedded lrc lyrics')
             try:
