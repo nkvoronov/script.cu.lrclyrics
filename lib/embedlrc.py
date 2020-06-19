@@ -14,6 +14,12 @@ def getEmbedLyrics(song, getlrc):
     lyrics.song = song
     lyrics.source = LANGUAGE(32002)
     lyrics.lrc = getlrc
+    lry = lyrics.song.embed
+    if lry:
+        match = isLRC(lry)
+        if (getlrc and match) or ((not getlrc) and (not match)):
+            lyrics.lyrics = lry
+            return lyrics
     filename = song.filepath
     ext = os.path.splitext(filename)[1].lower()
     lry = None

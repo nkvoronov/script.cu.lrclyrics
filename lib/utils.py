@@ -90,6 +90,7 @@ class Song:
         self.artist = in_artist
         self.title = in_title
         self.filepath = ''
+        self.embed = ''
         self.analyze_safe = True
 
     def __str__(self):
@@ -152,6 +153,7 @@ class Song:
             song.filepath = xbmc.getInfoLabel('Player.Filenameandpath')
         song.title = xbmc.getInfoLabel('MusicPlayer%s.Title' % offset_str).replace('\\', ' & ').replace('/', ' & ').replace('  ',' ').replace(':','-').strip('.')
         song.artist = xbmc.getInfoLabel('MusicPlayer%s.Artist' % offset_str).replace('\\', ' & ').replace('/', ' & ').replace('  ',' ').replace(':','-').strip('.')
+        song.embed = xbmc.getInfoLabel('MusicPlayer%s.Lyrics' % offset_str)
         # some third party addons may insert the tracknumber in the song title
         regex = re.compile('\d\d\.\s')
         match = regex.match(song.title)
