@@ -8,6 +8,14 @@ from lib.utils import *
 LANGUAGE = ADDON.getLocalizedString
 
 
+class BinaryFile(xbmcvfs.File):
+    def read(self, numBytes):
+        if numBytes == 0:
+            return b""
+        else:
+            return super().readBytes(numBytes)
+
+
 def getEmbedLyrics(song, getlrc):
     lyrics = Lyrics()
     lyrics.song = song
@@ -21,9 +29,10 @@ def getEmbedLyrics(song, getlrc):
             return lyrics
     filename = song.filepath
     ext = os.path.splitext(filename)[1].lower()
+    bfile = BinaryFile(filename)
     lry = None
     if ext == '.mp3':
-        lry = getID3Lyrics(filename, getlrc)
+        lry = getID3Lyrics(bfile, getlrc)
         if not lry:
             try:
                 text = getLyrics3(filename, getlrc)
@@ -33,13 +42,13 @@ def getEmbedLyrics(song, getlrc):
             except:
                 pass
     elif ext == '.flac':
-        lry = getFlacLyrics(filename, getlrc)
+        lry = getFlacLyrics(bfile, getlrc)
     elif ext == '.m4a':
-        lry = getMP4Lyrics(filename, getlrc)
+        lry = getMP4Lyrics(bfile, getlrc)
     elif ext == '.ogg':
-        lry = getOGGLyrics(filename, getlrc)
+        lry = getOGGLyrics(bfile, getlrc)
     elif ext == '.ape':
-        lry = getAPELyrics(filename, getlrc)
+        lry = getAPELyrics(bfile, getlrc)
     if not lry:
         return None
     lyrics.lyrics = lry
@@ -96,9 +105,9 @@ def ms2timestamp(ms):
 Get USLT/SYLT/TXXX lyrics embed with ID3v2 format
 See: http://id3.org/id3v2.3.0
 '''
-def getID3Lyrics(filename, getlrc):
+def getID3Lyrics(bfile, getlrc):
     try:
-        data = MP3(filename)
+        data = MP3(bfile)
         lyr = ''
         for tag,value in data.items():
             if getlrc and tag.startswith('SYLT'):
@@ -119,9 +128,9 @@ def getID3Lyrics(filename, getlrc):
     except:
         return
 
-def getFlacLyrics(filename, getlrc):
+def getFlacLyrics(bfile, getlrc):
     try:
-        tags = FLAC(filename)
+        tags = FLAC(bfile)
         if 'lyrics' in tags:
             lyr = tags['lyrics'][0]
             match = isLRC(lyr)
@@ -130,9 +139,9 @@ def getFlacLyrics(filename, getlrc):
     except:
         return
 
-def getMP4Lyrics(filename, getlrc):
+def getMP4Lyrics(bfile, getlrc):
     try:
-        tags = MP4(filename)
+        tags = MP4(bfile)
         if '©lyr' in tags:
             lyr = tags['©lyr'][0]
             match = isLRC(lyr)
@@ -141,9 +150,9 @@ def getMP4Lyrics(filename, getlrc):
     except:
         return
 
-def getOGGLyrics(filename, getlrc):
+def getOGGLyrics(bfile, getlrc):
     try:
-        tags = OggVorbis(filename)
+        tags = OggVorbis(bfile)
         if 'lyrics' in tags:
             lyr = tags['lyrics'][0]
             match = isLRC(lyr)
@@ -152,9 +161,9 @@ def getOGGLyrics(filename, getlrc):
     except:
         return
 
-def getAPELyrics(filename, getlrc):
+def getAPELyrics(bfile, getlrc):
     try:
-        tags = APEv2(filename)
+        tags = APEv2(bfile)
         if 'lyrics' in tags:
             lyr = tags['lyrics'][0]
             match = isLRC(lyr)

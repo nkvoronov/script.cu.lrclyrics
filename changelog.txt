@@ -1,5 +1,4 @@
 v6.2.3
-- revert 6.2.2
 - add support for MusicPlayer.Lyrics infolabel
 - support lyrics from .ogg files
 - support lyrics from .ape files
