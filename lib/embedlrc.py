@@ -25,6 +25,8 @@ def getEmbedLyrics(song, getlrc):
     if lry:
         match = isLRC(lry)
         if (getlrc and match) or ((not getlrc) and (not match)):
+            if lyrics.song.source:
+                lyrics.source = lyrics.song.source
             lyrics.lyrics = lry
             return lyrics
     filename = song.filepath
