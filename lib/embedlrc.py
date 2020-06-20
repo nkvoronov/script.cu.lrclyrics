@@ -25,30 +25,34 @@ def getEmbedLyrics(song, getlrc):
     if lry:
         match = isLRC(lry)
         if (getlrc and match) or ((not getlrc) and (not match)):
+            if lyrics.song.source:
+                lyrics.source = lyrics.song.source
             lyrics.lyrics = lry
             return lyrics
     filename = song.filepath
     ext = os.path.splitext(filename)[1].lower()
-    bfile = BinaryFile(filename)
+    sup_ext = ['.mp3', '.flac', '.ogg', '.ape', '.m4a']
     lry = None
-    if ext == '.mp3':
-        lry = getID3Lyrics(bfile, getlrc)
-        if not lry:
-            try:
-                text = getLyrics3(filename, getlrc)
-                if text:
-                    enc = chardet.detect(text)
-                    lry = text.decode(enc['encoding'])
-            except:
-                pass
-    elif ext == '.flac':
-        lry = getFlacLyrics(bfile, getlrc)
-    elif ext == '.m4a':
-        lry = getMP4Lyrics(bfile, getlrc)
-    elif ext == '.ogg':
-        lry = getOGGLyrics(bfile, getlrc)
-    elif ext == '.ape':
-        lry = getAPELyrics(bfile, getlrc)
+    if ext in sup_ext:
+        bfile = BinaryFile(filename)
+        if ext == '.mp3':
+            lry = getID3Lyrics(bfile, getlrc)
+            if not lry:
+                try:
+                    text = getLyrics3(filename, getlrc)
+                    if text:
+                        enc = chardet.detect(text)
+                        lry = text.decode(enc['encoding'])
+                except:
+                    pass
+        elif ext == '.flac':
+            lry = getFlacLyrics(bfile, getlrc)
+        elif ext == '.m4a':
+            lry = getMP4Lyrics(bfile, getlrc)
+        elif ext == '.ogg':
+            lry = getOGGLyrics(bfile, getlrc)
+        elif ext == '.ape':
+            lry = getAPELyrics(bfile, getlrc)
     if not lry:
         return None
     lyrics.lyrics = lry
