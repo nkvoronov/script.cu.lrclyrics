@@ -97,11 +97,8 @@ class Song:
     def __str__(self):
         return 'Artist: %s, Title: %s' % (self.artist, self.title)
 
-    def __cmp__(self, song):
-        if (self.artist != song.artist):
-            return cmp(deAccent(self.artist), deAccent(song.artist))
-        else:
-            return cmp(deAccent(self.title), deAccent(song.title))
+    def __eq__(self, song):
+        return (deAccent(self.artist) == deAccent(song.artist)) and (deAccent(self.title) == deAccent(song.title))
 
     def path1(self, lrc):
         if lrc:
