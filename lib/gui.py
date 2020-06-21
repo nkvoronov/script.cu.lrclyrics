@@ -700,7 +700,7 @@ class GUI(xbmcgui.WindowXMLDialog):
             item = self.list.getSelectedItem()
             source = item.getProperty('source').lower()
             lyric = eval(item.getProperty('lyric'))
-            exec ('from culrcscrapers.%s import lyricsScraper as lyricsScraper_%s' % (source, source))
+            exec ('from lib.culrcscrapers.%s import lyricsScraper as lyricsScraper_%s' % (source, source))
             scraper = eval('lyricsScraper_%s.LyricsFetcher()' % source)
             self.lyrics.lyrics = scraper.get_lyrics_from_list(lyric)
             self.text.reset()
