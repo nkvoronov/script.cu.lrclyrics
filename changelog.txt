@@ -2,6 +2,8 @@ v6.2.3
 - add support for MusicPlayer.Lyrics infolabel
 - support lyrics from .ogg files
 - support lyrics from .ape files
+- really fix reading embedded lyrics from remote files
+- fix getting lyrics from memory
 
 v6.2.2
 - fix reading embedded lyrics from remote files
