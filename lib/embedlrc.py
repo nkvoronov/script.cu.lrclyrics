@@ -39,10 +39,7 @@ def getEmbedLyrics(song, getlrc):
             lry = getID3Lyrics(bfile, getlrc)
             if not lry:
                 try:
-                    text = getLyrics3(filename, getlrc)
-                    if text:
-                        enc = chardet.detect(text)
-                        lry = text.decode(enc['encoding'])
+                    lry = getLyrics3(bfile, getlrc)
                 except:
                     pass
         elif ext == '.flac':
@@ -53,6 +50,7 @@ def getEmbedLyrics(song, getlrc):
             lry = getOGGLyrics(bfile, getlrc)
         elif ext == '.ape':
             lry = getAPELyrics(bfile, getlrc)
+        bfile.close()
     if not lry:
         return None
     lyrics.lyrics = lry
@@ -63,37 +61,38 @@ Get lyrics embed with Lyrics3/Lyrics3V2 format
 See: http://id3.org/Lyrics3
      http://id3.org/Lyrics3v2
 '''
-def getLyrics3(filename, getlrc):
-    f = xbmcvfs.File(filename)
-    f.seek(-128-9, os.SEEK_END)
-    buf = f.readBytes(9)
+def getLyrics3(bfile, getlrc):
+    bfile.seek(-128-9, os.SEEK_END)
+    buf = bfile.read(9)
     if (buf != b'LYRICS200' and buf != b'LYRICSEND'):
-        f.seek(-9, os.SEEK_END)
-        buf = f.readBytes(9)
+        bfile.seek(-9, os.SEEK_END)
+        buf = bfile.read(9)
     if (buf == b'LYRICSEND'):
         ''' Find Lyrics3v1 '''
-        f.seek(-5100-9-11, os.SEEK_CUR)
-        buf = f.readBytes(5100+11)
-        f.close();
+        bfile.seek(-5100-9-11, os.SEEK_CUR)
+        buf = bfile.read(5100+11)
         start = buf.find(b'LYRICSBEGIN')
-        content = buf[start+11:]
+        data = buf[start+11:]
+        enc = chardet.detect(data)
+        content = data.decode(enc['encoding'])
         if (getlrc and isLRC(content)) or (not getlrc and not isLRC(content)):
             return content
     elif (buf == b'LYRICS200'):
         ''' Find Lyrics3v2 '''
-        f.seek(-9-6, os.SEEK_CUR)
-        size = int(f.readBytes(6))
-        f.seek(-size-6, os.SEEK_CUR)
-        buf = f.readBytes(11)
+        bfile.seek(-9-6, os.SEEK_CUR)
+        size = int(bfile.read(6))
+        bfile.seek(-size-6, os.SEEK_CUR)
+        buf = bfile.read(11)
         if(buf == b'LYRICSBEGIN'):
-            buf = f.readBytes(size-11)
-            f.close();
+            buf = bfile.read(size-11)
             tags=[]
             while buf!= '':
                 tag = buf[:3]
                 length = int(buf[3:8])
-                content = buf[8:8+length]
-                if (tag == 'LYR'):
+                data = buf[8:8+length]
+                enc = chardet.detect(data)
+                content = data.decode(enc['encoding'])
+                if (tag == b'LYR'):
                     if (getlrc and isLRC(content)) or (not getlrc and not isLRC(content)):
                         return content
                 buf = buf[8+length:]
@@ -180,3 +179,5 @@ def isLRC(lyr):
     match = re.compile('\[(\d+):(\d\d)(\.\d+|)\]').search(lyr)
     if match:
         return True
+    else:
+        return False
