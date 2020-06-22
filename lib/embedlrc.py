@@ -13,7 +13,7 @@ class BinaryFile(xbmcvfs.File):
         if numBytes == 0:
             return b""
         else:
-            return super().readBytes(numBytes)
+            return bytes(super().readBytes(numBytes))
 
 
 def getEmbedLyrics(song, getlrc):
