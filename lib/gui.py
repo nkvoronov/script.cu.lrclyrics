@@ -23,6 +23,7 @@ class MAIN():
         self.current_lyrics = Lyrics()
         self.MyPlayer = MyPlayer(function=self.myPlayerChanged, clear=self.clear)
         self.Monitor = MyMonitor(function=self.update_settings)
+        self._dialog = xbmcgui.Dialog()
         self.customtimer = False
         self.starttime = 0
 
@@ -56,8 +57,7 @@ class MAIN():
                     self.triggered = True
                     # notify user the script is searching for lyrics
                     if not ADDON.getSettingBool('silent'):
-                        dialog = xbmcgui.Dialog()
-                        dialog.notification(ADDONNAME, LANGUAGE(32004), icon=ADDONICON, time=2000, sound=False)
+                        self._dialog.notification(ADDONNAME, LANGUAGE(32004), icon=ADDONICON, time=2000, sound=False)
                     # start fetching lyrics
                     self.myPlayerChanged()
                     # only the first lyrics are fetched by main_loop, the rest is done through onAVChanged. this makes sure both don't run simultaniously
@@ -296,8 +296,7 @@ class MAIN():
                     WIN.setProperty('culrc.nolyrics', 'TRUE')
                     if self.MyPlayer.isPlayingAudio() and not ADDON.getSettingBool('silent'):
                         # notify user no lyrics were found
-                        dialog = xbmcgui.Dialog()
-                        dialog.notification(ADDONNAME + ': ' + LANGUAGE(32001), song.artist + ' - ' + song.title, icon=ADDONICON, time=2000, sound=False)
+                        self._dialog.notification(ADDONNAME + ': ' + LANGUAGE(32001), song.artist + ' - ' + song.title, icon=ADDONICON, time=2000, sound=False)
                 break
             xbmc.sleep(50)
         # only search for next lyrics if current song has changed
@@ -386,7 +385,8 @@ class GUI(xbmcgui.WindowXMLDialog):
         self.delete = kwargs['delete']
         self.function = kwargs['function']
         self.Monitor = MyMonitor(function = None)
-       
+        self._dialog = xbmcgui.Dialog()
+
     def onInit(self):
         self.matchlist = ['@', 'www\.(.*?)\.(.*?)', 'QQ(.*?)[1-9]', 'artist ?: ?.', 'album ?: ?.', 'title ?: ?.', 'song ?: ?.', 'by ?: ?.']
         self.text = self.getControl(110)
@@ -653,7 +653,7 @@ class GUI(xbmcgui.WindowXMLDialog):
             labels += (LANGUAGE(32167),)
             functions += ('delete',)
         if labels:
-            selection = xbmcgui.Dialog().contextmenu(labels)
+            selection = self._dialog.contextmenu(labels)
             if selection >= 0:
                 if functions[selection] == 'select':
                     self.reshow_choices()
