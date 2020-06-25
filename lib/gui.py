@@ -294,8 +294,8 @@ class MAIN():
                 else:
                     # signal gui thread to exit
                     WIN.setProperty('culrc.nolyrics', 'TRUE')
-                    # notify user no lyrics were found
-                    if not ADDON.getSettingBool('silent'):
+                    if self.MyPlayer.isPlayingAudio() and not ADDON.getSettingBool('silent'):
+                        # notify user no lyrics were found
                         dialog = xbmcgui.Dialog()
                         dialog.notification(ADDONNAME + ': ' + LANGUAGE(32001), song.artist + ' - ' + song.title, icon=ADDONICON, time=2000, sound=False)
                 break
