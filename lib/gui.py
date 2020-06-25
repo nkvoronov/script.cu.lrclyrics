@@ -57,7 +57,7 @@ class MAIN():
                     # notify user the script is searching for lyrics
                     if not ADDON.getSettingBool('silent'):
                         dialog = xbmcgui.Dialog()
-                        dialog.notification(ADDONNAME, LANGUAGE(32004), time=2000, sound=False)
+                        dialog.notification(ADDONNAME, LANGUAGE(32004), icon=ADDONICON, time=2000, sound=False)
                     # start fetching lyrics
                     self.myPlayerChanged()
                     # only the first lyrics are fetched by main_loop, the rest is done through onAVChanged. this makes sure both don't run simultaniously
@@ -297,7 +297,7 @@ class MAIN():
                     # notify user no lyrics were found
                     if not ADDON.getSettingBool('silent'):
                         dialog = xbmcgui.Dialog()
-                        dialog.notification(ADDONNAME + ': ' + LANGUAGE(32001), song.artist + ' - ' + song.title, time=2000, sound=False)
+                        dialog.notification(ADDONNAME + ': ' + LANGUAGE(32001), song.artist + ' - ' + song.title, icon=ADDONICON, time=2000, sound=False)
                 break
             xbmc.sleep(50)
         # only search for next lyrics if current song has changed
