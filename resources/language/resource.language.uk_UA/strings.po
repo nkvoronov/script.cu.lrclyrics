@@ -62,7 +62,7 @@ msgstr "Вперед: %ss"
 #Settings labels
 
 msgctxt "#32101"
-msgid "Search and save lyrics in separate lyrics folder"
+msgid "Search for and save lyrics in separate lyrics folder"
 msgstr "Знайти і зберегти тексти пісень в окремій папці"
 
 msgctxt "#32102"
@@ -110,7 +110,7 @@ msgid "- Subfolder name"
 msgstr "- Назва папки"
 
 msgctxt "#32113"
-msgid "Search and save lyrics in song folder"
+msgid "Search for and save lyrics in song folder"
 msgstr "Знайти і зберегти тексти пісень в папках пісень"
 
 msgctxt "#32114"
@@ -211,9 +211,45 @@ msgctxt "#32167"
 msgid "Delete lyrics"
 msgstr "Видалити текст пісні"
 
-#empty strings from id 32168 to 32198
-#Skin labels
+# Scrapers - do not translate!
 
-msgctxt "#32199"
-msgid "CU LRC Lyrics"
-msgstr "Текст пісні"
+msgctxt "#32901"
+msgid "MiniLyrics"
+msgstr ""
+
+msgctxt "#32903"
+msgid "GomAudio"
+msgstr ""
+
+msgctxt "#32904"
+msgid "Music 163"
+msgstr ""
+
+msgctxt "#32905"
+msgid "Syair"
+msgstr ""
+
+msgctxt "#32911"
+msgid "LyricWiki"
+msgstr ""
+
+msgctxt "#32912"
+msgid "Genius"
+msgstr ""
+
+msgctxt "#32913"
+msgid "Lyrics Mode"
+msgstr ""
+
+msgctxt "#32914"
+msgid "AZLyrics"
+msgstr ""
+
+msgctxt "#32915"
+msgid "Lyrics.com"
+msgstr ""
+
+msgctxt "#32916"
+msgid "Dark Lyrics"
+msgstr ""
+
